@@ -1,9 +1,9 @@
 # Test fixtures
 
-Small, **hand-written** ontology subsets that let `tests/test_data.py` exercise the
-loaders offline. They are not generated and not downloaded — they are crafted to be
-the minimum that covers each loader's behavior, so a reader can see the whole input
-at a glance. (The real files live in the gitignored `data/ontologies/`, fetched by
+Small, **hand-written** data files that let `tests/` exercise the loaders and scorer
+offline. They are not generated and not downloaded — they are crafted to be the
+minimum that covers each module's behavior, so a reader can see the whole input at a
+glance. (The real data files live in the gitignored `data/ontologies/`, fetched by
 `scripts/setup_data.sh`.)
 
 ## `zfa_test.obo`
@@ -36,3 +36,18 @@ through column 11. Hand-written, not a ZFIN export.
 Both fixtures were adapted from the predecessor project's equivalent test files.
 Synonym fan-out across paralogs (one previous-name → several current symbols) is
 tested separately with inline rows in `tests/test_data.py`, not from these files.
+
+## `panels_test.yaml`
+
+A four-bucket panel subset in the `panels.yaml` schema, used by `tests/test_panels.py`
+to exercise `load_panels` and `score_markers` offline:
+
+- `muscle` (identity) — 5 markers: `mylz2, acta1b, tnnt3a, myod1, myog`; includes a
+  `myoblast` subpanel to test subpanel loading without scoring.
+- `blood_erythroid` (identity) — 3 markers: `gata1a, hbae1.1, hbbe1.1`.
+- `endothelium` (identity) — 3 markers: `kdrl, fli1a, cdh5`.
+- `cycling` (state) — 3 markers: `mki67, pcna, top2a`.
+
+The muscle + blood + endothelium combination drives the keystone scorer trace:
+`["mylz2","acta1b","tnnt3a","myod1","myog","hbae1.1","kdrl"]` should score muscle
+≈ 0.81, blood_erythroid ≈ 0.098, endothelium ≈ 0.092, cycling = 0.0.

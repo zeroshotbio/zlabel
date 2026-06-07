@@ -19,6 +19,11 @@ does **not** cluster cells; that's the caller's job (scanpy, in a notebook). Thi
 
 New to the domain? See the [glossary & concepts](docs/glossary.md) (ELI5).
 
+**For AI assistants and agents:** [`AGENTS.md`](AGENTS.md) is the self-contained
+entry point — rules, architecture, commands, and build context in one file.
+[`CLAUDE.md`](CLAUDE.md) adds harness wiring for Claude Code. The build is PR-gated
+(one PR per phase; do not merge without human review).
+
 ## The loop
 
 1. **Normalize** each marker to its official ZFIN symbol (aliases + `a`/`b` paralogs).
@@ -30,12 +35,48 @@ New to the domain? See the [glossary & concepts](docs/glossary.md) (ELI5).
 A label rests on **converging evidence, not one gene**. The full design is in
 [`docs/design.md`](docs/design.md).
 
-## Status
+## Status & Roadmap
 
-Built in [7 phases, one PR each](.claude/docs/workflow.md). **Phase 1 ships the data
-layer** — `zlabel.data`, the pure loaders for the three authorities zlabel grounds
-against (ZFA anatomy, ZFIN wildtype expression, ZFIN GAF gene synonyms). The
-`label()` API arrives in a later phase.
+Built in [7 phases, one PR each](.claude/docs/workflow.md):
+
+- [x] **Phase 1** — Skeleton + data (`zlabel.data` loaders for ZFA, ZFIN expression, GAF synonyms; fixture tests)
+- [x] **Phase 2** — Genes + panels (`normalize_symbol`, `panels.yaml` with 14 curated buckets, `score_markers`)
+- [ ] **Phase 3** — Ground + label (`ground.py` lookups → converging-evidence decision → `Label`)
+- [ ] **Phase 4** — Eval (`build_daniocell_eval.py` + `evaluate.py`; agreement / coverage / calibration)
+- [ ] **Phase 5** — CLI + notebook 01 (`zlabel label/eval`; the one-cluster walkthrough)
+- [ ] **Phase 6** — Notebooks 02/03 (scanpy clustering → markers → zlabel; end-to-end 48 hpf)
+- [ ] **Phase 7** — LLM (optional) (`explain.py` narrator behind the `[llm]` extra)
+
+## Usage
+
+Both loaders run offline (no network after `setup_data.sh`). Phases 1 and 2 already
+ship; `Labeler.label()` arrives in Phase 3.
+
+```python
+import zlabel
+
+# --- Phase 1: load the data authorities ---
+synonyms = zlabel.load_gene_synonym_map("data/ontologies/zfin.gaf")
+synonyms["flk1"]   # -> {'kdrl'}    alias resolved to current ZFIN symbol
+synonyms["kdrl"]   # -> {'kdrl'}    current symbol is its own identity
+
+zfa = zlabel.load_zfa("data/ontologies/zfa.obo")
+zlabel.term_name(zfa, "ZFA:0005307")   # -> 'endothelial cell'
+
+# --- Phase 2: normalize markers and score panels ---
+result = zlabel.normalize_symbol("flk1", synonyms)
+# NormalizedSymbol(input='flk1', status='resolved', symbols=frozenset({'kdrl'}), note=None)
+
+panels = zlabel.load_panels("src/zlabel/panels.yaml")
+# 14 panels (12 identity + 2 state): neural, epidermis, muscle, blood_erythroid,
+# immune_myeloid, endothelium, endoderm_gut, mesenchyme, cartilage, notochord,
+# pigment, germline, cycling, stress_heatshock
+
+markers = ["mylz2", "acta1b", "tnnt3a", "myod1", "myog", "hbae1.1", "kdrl"]
+scores = zlabel.score_markers(markers, panels, synonyms)
+scores[0]   # BucketScore(bucket='muscle', score=0.8105, kind='identity', ...)
+scores[1]   # BucketScore(bucket='blood_erythroid', score=0.0979, ...)
+```
 
 ## Quickstart
 
@@ -64,3 +105,4 @@ Run `make` (or `make help`) to see everything. The essentials:
 - [`docs/design.md`](docs/design.md) — authoritative design + rationale.
 - [`AGENTS.md`](AGENTS.md) — rules + architecture for contributors (human or AI).
 - [`.claude/docs/`](.claude/docs/) — domain primer, build workflow, git conventions.
+- [`notebooks/build-demos/`](notebooks/build-demos/) — executable build walkthroughs (one per completed phase).

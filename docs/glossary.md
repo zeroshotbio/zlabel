@@ -67,8 +67,12 @@ scripts/setup_data.sh   ->  data/ontologies/{zfa.obo, zfin.gaf, zfin_wildtype_ex
                                         |
                                         v
 src/zlabel/data.py      ->  load_zfa() · load_zfin_expression() · load_gene_synonym_map()
-        (this phase)            (files -> in-memory graph + dicts)
+        (Phase 1)               (files -> in-memory graph + dicts)
                                         |
                                         v
-panels · ground · label ->  score markers, ground in ZFA/ZFIN, decide a Label   (later phases)
+src/zlabel/genes.py     ->  normalize_symbol() · normalize_markers()             (Phase 2)
+src/zlabel/panels.py    ->  load_panels() · score_markers() -> list[BucketScore] (Phase 2)
+                                        |
+                                        v
+ground · label          ->  ground in ZFA/ZFIN, decide a Label                   (Phase 3+)
 ```

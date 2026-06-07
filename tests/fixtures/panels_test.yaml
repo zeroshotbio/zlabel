@@ -1,0 +1,41 @@
+# Minimal panel fixture for tests/test_panels.py.
+#
+# Hand-written subset of the real panels.yaml: three identity panels and one
+# state panel, chosen to drive the keystone score_markers trace without
+# downloading any data. Markers are the real ZFIN symbols used in the trace;
+# see tests/test_panels.py for the expected score calculations.
+
+muscle:
+  germ_layer: mesoderm
+  tissue: muscle
+  lineage: skeletal muscle
+  kind: identity
+  cite: "panels_test fixture; see docs/reference/cell_labelling_playbook.md §7"
+  markers: [mylz2, acta1b, tnnt3a, myod1, myog]
+  subpanels:
+    myoblast: [myod1, myog]
+    fast: [mylz2, tnnt3a]
+
+blood_erythroid:
+  germ_layer: mesoderm
+  tissue: blood
+  lineage: erythroid
+  kind: identity
+  cite: "panels_test fixture; see docs/reference/cell_labelling_playbook.md §7"
+  markers: [gata1a, hbae1.1, hbbe1.1]
+
+endothelium:
+  germ_layer: mesoderm
+  tissue: vasculature
+  lineage: endothelium
+  kind: identity
+  cite: "panels_test fixture; see docs/reference/cell_labelling_playbook.md §7"
+  markers: [kdrl, fli1a, cdh5]
+
+cycling:
+  germ_layer: ""
+  tissue: ""
+  lineage: ""
+  kind: state
+  cite: "panels_test fixture; see docs/reference/cell_labelling_playbook.md §7"
+  markers: [mki67, pcna, top2a]
