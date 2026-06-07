@@ -3,10 +3,15 @@
 ## What it is
 
 A small, readable library that **labels one scRNA-seq cluster from its marker
-genes**, for whole-organism zebrafish (*Danio rerio*). Input: a cluster's marker
-genes (+ developmental stage). Output: a cell-identity label **at the deepest tier
-the evidence supports**, with an evidence packet — or an honest abstention. It does
-not cluster cells (the caller does, with scanpy). This is **layer 1 only**.
+genes**, for whole-organism zebrafish (*Danio rerio*). 
+
+**Input**: a cluster's marker genes (+ developmental stage).<br>
+**Output**: a cell-identity label **at the deepest tier the evidence supports**, with an evidence packet — or an honest abstention. 
+
+> [!CAUTION]
+> It does not cluster cells (the caller does, with `scanpy` probably). 
+
+This is **layer 1 only**.
 
 ### Rationale
 
@@ -32,7 +37,8 @@ evidence, not one gene**:
 4. **Decide** → coherent markers + one dominant, corroborated bucket → assign with confidence; otherwise `mixed/unresolved` (honest abstention) or a coarser tier.
 5. **Emit a `Label` evidence packet** → bucket, levels, confidence, positive markers, panel scores, expression evidence, ZFA/ZFS/optional CL ids, rationale, `next_step: subcluster`.
 
-The LLM is **not** in this loop for v1 (see §LLM).
+> [!WARNING]
+> The LLM is **not** in this loop for v1 (see §LLM).
 
 ### Resolution: broad-first is a default, not a ceiling
 
@@ -98,6 +104,8 @@ zlabel/
     01_label_one_cluster.py    # the muscle-cluster walkthrough
     02_cluster_with_scanpy.py  # layer-2 demo: adata -> leiden -> rank_genes -> zlabel
     03_end_to_end.py           # layer-3 demo: a real 48 hpf subset, start to finish
+    build_demos/
+      phase_0*.ipynb           # Each phase has a demo notebook
 ```
 
 **Core deps:** pandas, numpy, obonet, networkx, pyyaml, pydantic. **No scanpy,
@@ -153,5 +161,3 @@ without reshaping the core. Two roles, in order:
    curated panel, coin a specific name from looked-up ZFA / expression evidence
    under cite-discipline. This is where "label lower-level clusters" becomes fully
    general.
-
-Starting without it costs nothing later: it slots into the labeler's output, not around it.
