@@ -17,12 +17,10 @@
     ],
     "deny": [
       "Write(./.env)"
-    ] 
-  }, 
-  {
-    "attribution": {
-      "commit": "",
-      "pr": ""
-    }
+    ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
   }
 }

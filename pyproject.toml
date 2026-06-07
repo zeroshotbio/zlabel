@@ -29,7 +29,6 @@ dev = [
   "ipywidgets>=8.1.8",
   "plotly>=6.8.0",
   "pyvis>=0.3.2",
-  "pygraphviz>=1.14",
   "matplotlib>=3.10.9",
 ]
 
@@ -46,6 +45,7 @@ path = "src/zlabel/__init__.py"
 [tool.ruff]
 line-length = 120
 target-version = "py313"
+exclude = ["notebooks/**"]
 
 [tool.ruff.lint]
 # Correctness (E/F/W), import order (I), bug-prone patterns (B), 3.13 idioms (UP),

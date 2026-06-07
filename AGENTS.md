@@ -40,11 +40,11 @@ panels). See [`docs/design.md`](docs/design.md) §Resolution.
 ## Commands (land in Phase 1)
 
 ```bash
-make setup    # uv sync
+make setup    # uv sync (all groups + extras)
 make format   # ruff format + safe fixes
 make type     # pyright (basic)
 make test     # pytest
-make verify   # lint + types + tests
+make verify   # lint + docstrings + types + tests
 ```
 
 ## Tech stack

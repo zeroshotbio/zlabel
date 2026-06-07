@@ -31,7 +31,7 @@ type:  ## pyright (basic)
 	uv run pyright
 
 test:  ## pytest
-	uv run pytest
+	uv run pytest -vv
 
 verify: lint lint-docstrings type test  ## The PR gate: lint + docstrings + types + tests
 

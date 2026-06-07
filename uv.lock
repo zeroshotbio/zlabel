@@ -1179,12 +1179,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pygraphviz"
-version = "1.14"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/66/ca/823d5c74a73d6b8b08e1f5aea12468ef334f0732c65cbb18df2a7f285c87/pygraphviz-1.14.tar.gz", hash = "sha256:c10df02377f4e39b00ae17c862f4ee7e5767317f1c6b2dfd04cea6acc7fc2bea", size = 106003, upload-time = "2024-09-29T18:31:12.471Z" }
-
-[[package]]
 name = "pyparsing"
 version = "3.3.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1640,7 +1634,6 @@ dev = [
     { name = "jupyterlab" },
     { name = "matplotlib" },
     { name = "plotly" },
-    { name = "pygraphviz" },
     { name = "pyright" },
     { name = "pytest" },
     { name = "pyvis" },
@@ -1659,7 +1652,6 @@ dev = [
     { name = "jupyterlab", specifier = ">=4.5.8" },
     { name = "matplotlib", specifier = ">=3.10.9" },
     { name = "plotly", specifier = ">=6.8.0" },
-    { name = "pygraphviz", specifier = ">=1.14" },
     { name = "pyright", specifier = ">=1.1.410" },
     { name = "pytest", specifier = ">=9.0" },
     { name = "pyvis", specifier = ">=0.3.2" },

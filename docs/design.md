@@ -76,7 +76,7 @@ One entry point. Everything below it is short and inspectable.
 zlabel/
   pyproject.toml          # uv · ruff (120) · pyright basic · py3.13 · minimal deps
   README.md               # what it is + the loop + quickstart
-  Makefile                # setup / format / type / test
+  Makefile                # setup / format / lint / lint-docstrings / type / test / verify
   scripts/
     setup_data.sh         # curl zfa.obo, zfin.gaf, zfin_wildtype_expression.txt -> data/ontologies/
     build_daniocell_eval.py  # one-off: Daniocell 19 broad tissues + cluster markers -> benchmarks/ csv
