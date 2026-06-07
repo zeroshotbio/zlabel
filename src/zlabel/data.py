@@ -85,7 +85,8 @@ def term_name(graph: nx.MultiDiGraph, term_id: str) -> str | None:
         KeyError: If term_id is not in the graph.
     """
     name = get_term(graph, term_id).get("name")
-    return str(name) if isinstance(name, str) else None
+    # The attribute dict is loosely typed; guard against a non-string name.
+    return name if isinstance(name, str) else None
 
 
 def ancestors(
@@ -121,6 +122,7 @@ def ancestors(
     queue: deque[str] = deque([term_id])
     while queue:
         node = queue.popleft()
+        # keys=True yields the edge key, which obonet sets to the relationship type.
         for _, parent, rel in graph.out_edges(node, keys=True):
             if rel in allowed and parent not in seen:
                 seen.add(parent)
@@ -168,21 +170,20 @@ class ZfinExpressionRecord:
 def _most_specific_structure(fields: list[str]) -> tuple[str, str]:
     """Pick a row's most specific anatomy: the sub-structure, else the super.
 
-    ZFIN records both a broad super-structure and (sometimes) a narrower
-    sub-structure. The narrower one is the better grounding, so it wins; the
-    coarser term stays recoverable later via ancestors.
+    ZFIN records a broad super-structure and (sometimes) a narrower sub-structure.
+    The narrower one is the better grounding, so it wins; the coarser term stays
+    recoverable later via ancestors.
 
     Args:
-        fields (list[str]): The tab-split columns of one expression row.
+        fields (list[str]): The tab-split, already-stripped columns of one row.
 
     Returns:
         tuple[str, str]: The chosen (zfa_id, zfa_name). Either may be empty when
             the row records no anatomy.
     """
-    sub_id = fields[_COL_SUB_ID].strip()
-    if sub_id:
-        return sub_id, fields[_COL_SUB_NAME].strip()
-    return fields[_COL_SUPER_ID].strip(), fields[_COL_SUPER_NAME].strip()
+    if fields[_COL_SUB_ID]:
+        return fields[_COL_SUB_ID], fields[_COL_SUB_NAME]
+    return fields[_COL_SUPER_ID], fields[_COL_SUPER_NAME]
 
 
 def load_zfin_expression(path: str | os.PathLike[str]) -> dict[str, list[ZfinExpressionRecord]]:
@@ -208,11 +209,12 @@ def load_zfin_expression(path: str | os.PathLike[str]) -> dict[str, list[ZfinExp
     table: dict[str, list[ZfinExpressionRecord]] = {}
     with path.open(encoding="utf-8") as handle:
         for line in handle:
-            fields = line.rstrip("\n").split("\t")
-            # Skip rows too short to hold the columns we read (e.g. trailing blanks).
-            if len(fields) <= _COL_END_STAGE:
+            # Split into columns once, trimming stray whitespace (and the newline)
+            # so every field read below is clean — no per-field strip needed.
+            fields = [field.strip() for field in line.split("\t")]
+            if len(fields) <= _COL_END_STAGE:  # row too short to hold the columns we read
                 continue
-            symbol = fields[_COL_SYMBOL].strip()
+            symbol = fields[_COL_SYMBOL]
             if not symbol:
                 continue
             zfa_id, zfa_name = _most_specific_structure(fields)
@@ -222,8 +224,8 @@ def load_zfin_expression(path: str | os.PathLike[str]) -> dict[str, list[ZfinExp
                 ZfinExpressionRecord(
                     zfa_id=zfa_id,
                     zfa_name=zfa_name,
-                    start_stage=fields[_COL_START_STAGE].strip(),
-                    end_stage=fields[_COL_END_STAGE].strip(),
+                    start_stage=fields[_COL_START_STAGE],
+                    end_stage=fields[_COL_END_STAGE],
                 ),
             )
     return table
@@ -274,9 +276,10 @@ def load_gene_synonym_map(path: str | os.PathLike[str]) -> dict[str, set[str]]:
             symbol = fields[_GAF_COL_SYMBOL].strip()
             if not symbol:
                 continue
-            # The current symbol maps to itself; the synonym column adds the rest.
-            synonyms = fields[_GAF_COL_SYNONYMS]
-            names = [symbol, *synonyms.split("|")] if synonyms else [symbol]
+            # The current symbol maps to itself; add any pipe-separated synonyms.
+            names = [symbol]
+            if fields[_GAF_COL_SYNONYMS]:
+                names.extend(fields[_GAF_COL_SYNONYMS].split("|"))
             for name in names:
                 key = name.strip().lower()
                 if key:
