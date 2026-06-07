@@ -14,6 +14,11 @@ name: cell
 namespace: zebrafish_anatomy
 
 [Term]
+id: ZFA:0000001
+namespace: zebrafish_anatomy
+def: "A name-less stub term, to exercise term_name() returning None."
+
+[Term]
 id: ZFA:0001262
 name: cardiovascular system
 namespace: zebrafish_anatomy

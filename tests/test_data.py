@@ -1,7 +1,7 @@
-"""Unit tests for the three loaders in `zlabel.data`, on small committed fixtures.
+"""Unit tests for the three loaders in zlabel.data, on small committed fixtures.
 
-No network: ZFA and GAF read fixture files under `tests/fixtures/`; ZFIN expression
-rows are built inline (the 15-col format is self-documenting in `_expr_row`).
+No network: ZFA and GAF read fixture files under tests/fixtures/; ZFIN expression
+rows are built inline (the 15-col format is self-documenting in _expr_row).
 """
 
 from pathlib import Path
@@ -27,6 +27,7 @@ CELL = "ZFA:0009000"
 CARDIOVASCULAR_SYSTEM = "ZFA:0001262"
 ENDOTHELIAL_CELL = "ZFA:0005307"
 ARTERIAL_EC = "ZFA:0009073"
+NAMELESS_TERM = "ZFA:0000001"  # a stub term with no name: field
 
 
 # --- ZFA ---------------------------------------------------------------------
@@ -55,6 +56,10 @@ def test_term_name(zfa):
     assert term_name(zfa, ARTERIAL_EC) == "arterial endothelial cell"
 
 
+def test_term_name_returns_none_for_nameless_term(zfa):
+    assert term_name(zfa, NAMELESS_TERM) is None
+
+
 def test_ancestors_default_mixes_is_a_and_part_of(zfa):
     # is_a chain (endothelial cell, cell) AND part_of chain (cardiovascular
     # system, whole organism) both surface under the default edge types.
@@ -73,7 +78,8 @@ def test_ancestors_is_a_only_excludes_part_of(zfa):
 
 
 def test_ancestors_develops_from_is_a_separate_axis(zfa):
-    assert ancestors(zfa, ARTERIAL_EC, edge_types={"develops_from"}) == [ENDOTHELIAL_CELL]
+    # set(): BFS order is not part of the contract, only the membership.
+    assert set(ancestors(zfa, ARTERIAL_EC, edge_types={"develops_from"})) == {ENDOTHELIAL_CELL}
 
 
 def test_ancestors_of_root_is_empty(zfa):
@@ -190,7 +196,7 @@ def _write_gaf(tmp_path, rows):
 
 
 def test_synonym_previous_name_maps_to_all_paralogs(tmp_path):
-    # `hbae1` is a ZFIN previous-name of both paralogs — the map fans out to both.
+    # hbae1 is a ZFIN previous-name of both paralogs — the map fans out to both.
     rows = [_gaf_row("hbae1.1", "hbae1"), _gaf_row("hbae1.2", "hbae1")]
     assert load_gene_synonym_map(_write_gaf(tmp_path, rows))["hbae1"] == {"hbae1.1", "hbae1.2"}
 
