@@ -22,7 +22,6 @@ from zlabel.genes import (
 from zlabel.panels import (
     KIND_IDENTITY,
     KIND_STATE,
-    VALID_KINDS,
     BucketScore,
     MatchedMarker,
     Panel,
@@ -54,7 +53,6 @@ __all__ = [
     # panels
     "KIND_IDENTITY",
     "KIND_STATE",
-    "VALID_KINDS",
     "BucketScore",
     "MatchedMarker",
     "Panel",

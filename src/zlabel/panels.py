@@ -29,7 +29,6 @@ from zlabel.genes import STATUS_RESOLVED, normalize_symbol
 
 KIND_IDENTITY = "identity"   # a cell-type lineage bucket
 KIND_STATE = "state"         # a transcriptional program, not a lineage
-VALID_KINDS = frozenset({KIND_IDENTITY, KIND_STATE})
 
 
 # --- value types --------------------------------------------------------------
@@ -39,15 +38,16 @@ VALID_KINDS = frozenset({KIND_IDENTITY, KIND_STATE})
 class Panel:
     """One curated broad-bucket panel loaded from panels.yaml.
 
+    State panels (kind state) leave germ_layer, tissue, and lineage empty: they
+    describe a transcriptional program, not a lineage.
+
     Attributes:
         bucket (str): Short identifier matching the top-level yaml key
             (e.g. muscle, neural, cycling).
         germ_layer (str): Broad germ-layer origin (e.g. mesoderm, ectoderm).
-            Empty string for state panels where germ layer is not applicable.
-        tissue (str): Tissue or organ system (e.g. muscle, blood). Empty
-            string for state panels.
+        tissue (str): Tissue or organ system (e.g. muscle, blood).
         lineage (str): Lineage or cell-type category (e.g. erythroid, skeletal
-            muscle). Empty string for state panels.
+            muscle).
         markers (frozenset[str]): Lowercased current ZFIN symbols that define
             this bucket. Lowercased at load time so lookup is O(1) and
             case-insensitive.
@@ -67,16 +67,15 @@ class Panel:
     markers: frozenset[str]
     cite: str
     kind: str
-    # hash=False: dict is not hashable, so we exclude subpanels from the
-    # auto-generated __hash__ while still including it in __eq__. The hash
-    # contract holds because unequal-subpanel panels compare unequal (!=),
-    # so two objects with the same hash are not required to be equal.
     subpanels: Mapping[str, frozenset[str]] = field(hash=False)
 
 
 @dataclass(frozen=True)
 class MatchedMarker:
-    """One marker that hit a panel during scoring.
+    """A resolved input marker with its rank weight.
+
+    score_markers builds one MatchedMarker per resolved input marker and
+    records, on each BucketScore, those whose symbol is in that panel.
 
     Attributes:
         input (str): The marker symbol as supplied by the caller (before
@@ -147,11 +146,13 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
 
     panels: list[Panel] = []
     for bucket, entry in raw.items():
-        kind = entry["kind"]
-        if kind not in VALID_KINDS:
+        # yaml.safe_load values are typed object; coerce each scalar we store to str
+        # (this also guards a field mistyped in the file, e.g. a bare int).
+        kind = str(entry["kind"])
+        if kind not in (KIND_IDENTITY, KIND_STATE):
             raise ValueError(
                 f"panel {bucket!r} has invalid kind {kind!r}; "
-                f"expected one of {sorted(VALID_KINDS)}"
+                f"expected {KIND_IDENTITY!r} or {KIND_STATE!r}"
             )
         markers_raw: list[str] = entry.get("markers", [])  # type: ignore[assignment]
         if not markers_raw:
@@ -173,7 +174,7 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
                 lineage=str(entry.get("lineage", "")),
                 markers=markers,
                 cite=str(entry.get("cite", "")),
-                kind=str(kind),
+                kind=kind,
                 subpanels=subpanels,
             )
         )
@@ -212,28 +213,23 @@ def score_markers(
             then ascending by bucket name for a stable, readable order.
     """
     # Normalize in rank order; keep only resolved markers for scoring.
-    # Tuple layout: (rank, weight, original_input, resolved_symbol).
-    resolved: list[tuple[int, float, str, str]] = []
+    resolved: list[MatchedMarker] = []
     for rank, raw in enumerate(markers, start=1):
         result = normalize_symbol(raw, synonym_map)
         if result.status == STATUS_RESOLVED:
             weight = 1.0 / math.log2(rank + 1)
             symbol = next(iter(result.symbols))
-            resolved.append((rank, weight, raw, symbol))
+            resolved.append(MatchedMarker(input=raw, symbol=symbol, rank=rank, weight=weight))
 
     # Denominator is the total weight of all resolved markers, whether or not
     # they hit any panel. A cluster with mostly off-panel markers cannot
     # score any bucket highly — this allows Phase 3 to abstain honestly.
-    total_weight = sum(w for _, w, _, _ in resolved)
+    total_weight = sum(m.weight for m in resolved)
 
     scores: list[BucketScore] = []
     for panel in panels:
-        matched: list[MatchedMarker] = []
-        hit_weight = 0.0
-        for rank, weight, raw, symbol in resolved:
-            if symbol in panel.markers:
-                hit_weight += weight
-                matched.append(MatchedMarker(input=raw, symbol=symbol, rank=rank, weight=weight))
+        matched = tuple(m for m in resolved if m.symbol in panel.markers)
+        hit_weight = sum(m.weight for m in matched)
         score = hit_weight / total_weight if total_weight > 0.0 else 0.0
         scores.append(
             BucketScore(
@@ -243,7 +239,7 @@ def score_markers(
                 tissue=panel.tissue,
                 lineage=panel.lineage,
                 kind=panel.kind,
-                matched_markers=tuple(matched),
+                matched_markers=matched,
             )
         )
 

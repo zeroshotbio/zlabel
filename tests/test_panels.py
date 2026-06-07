@@ -109,7 +109,8 @@ def test_score_markers_muscle_keystone_trace(test_panels):
     assert top.bucket == "muscle"
     assert top.score > 0.8
 
-    # Every runner-up is well below the muscle score.
+    # Every runner-up scores far below muscle: the next-highest bucket
+    # (blood_erythroid) is ~0.098 in this trace, comfortably under the 0.15 bound.
     for s in scores[1:]:
         assert s.score < 0.15, f"expected {s.bucket} < 0.15, got {s.score:.4f}"
 

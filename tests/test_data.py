@@ -170,52 +170,27 @@ def test_expression_missing_file_returns_empty(tmp_path):
 # --- GAF gene-synonym map ----------------------------------------------------
 
 
-def _gaf_row(symbol, synonyms):
-    """Build one GAF row carrying through column 11 (the synonym column)."""
-    return "\t".join(
-        [
-            "ZFIN",
-            "ZDB-GENE-x",
-            symbol,
-            "involved_in",
-            "GO:0",
-            "PMID:0",
-            "IEA",
-            "GO_REF:0",
-            "P",
-            f"{symbol} name",
-            synonyms,
-        ]
-    )
-
-
-def _write_gaf(tmp_path, rows):
-    path = tmp_path / "syn.gaf"
-    path.write_text("\n".join(rows) + "\n", encoding="utf-8")
-    return path
-
-
-def test_synonym_previous_name_maps_to_all_paralogs(tmp_path):
+def test_synonym_previous_name_maps_to_all_paralogs(gaf_row, write_gaf):
     # hbae1 is a ZFIN previous-name of both paralogs — the map fans out to both.
-    rows = [_gaf_row("hbae1.1", "hbae1"), _gaf_row("hbae1.2", "hbae1")]
-    assert load_gene_synonym_map(_write_gaf(tmp_path, rows))["hbae1"] == {"hbae1.1", "hbae1.2"}
+    rows = [gaf_row("hbae1.1", "hbae1"), gaf_row("hbae1.2", "hbae1")]
+    assert load_gene_synonym_map(write_gaf(rows))["hbae1"] == {"hbae1.1", "hbae1.2"}
 
 
-def test_synonym_keys_are_case_folded(tmp_path):
-    rows = [_gaf_row("ppardb", "NR1C2-B|PPARb")]
-    syn = load_gene_synonym_map(_write_gaf(tmp_path, rows))
+def test_synonym_keys_are_case_folded(gaf_row, write_gaf):
+    rows = [gaf_row("ppardb", "NR1C2-B|PPARb")]
+    syn = load_gene_synonym_map(write_gaf(rows))
     assert syn["nr1c2-b"] == {"ppardb"}
     assert syn["pparb"] == {"ppardb"}
 
 
-def test_synonym_current_symbol_maps_to_itself(tmp_path):
-    rows = [_gaf_row("kdrl", "kdr|flk1")]
-    assert load_gene_synonym_map(_write_gaf(tmp_path, rows))["kdrl"] == {"kdrl"}
+def test_synonym_current_symbol_maps_to_itself(gaf_row, write_gaf):
+    rows = [gaf_row("kdrl", "kdr|flk1")]
+    assert load_gene_synonym_map(write_gaf(rows))["kdrl"] == {"kdrl"}
 
 
-def test_synonym_comments_and_short_rows_skipped(tmp_path):
-    rows = ["!gaf-version: 2.2", "", "too\tshort", _gaf_row("kdrl", "flk1")]
-    syn = load_gene_synonym_map(_write_gaf(tmp_path, rows))
+def test_synonym_comments_and_short_rows_skipped(gaf_row, write_gaf):
+    rows = ["!gaf-version: 2.2", "", "too\tshort", gaf_row("kdrl", "flk1")]
+    syn = load_gene_synonym_map(write_gaf(rows))
     assert syn["flk1"] == {"kdrl"}
 
 

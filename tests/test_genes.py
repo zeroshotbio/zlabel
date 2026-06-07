@@ -21,34 +21,6 @@ from zlabel import (
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
-# --- helpers (same pattern as test_data.py) ----------------------------------
-
-
-def _gaf_row(symbol: str, synonyms: str) -> str:
-    """Build one 11-column GAF row (minimum needed for the synonym loader)."""
-    return "\t".join(
-        [
-            "ZFIN",
-            "ZDB-GENE-x",
-            symbol,
-            "involved_in",
-            "GO:0",
-            "PMID:0",
-            "IEA",
-            "GO_REF:0",
-            "P",
-            f"{symbol} name",
-            synonyms,
-        ]
-    )
-
-
-def _write_gaf(tmp_path: Path, rows: list[str]) -> Path:
-    path = tmp_path / "syn.gaf"
-    path.write_text("\n".join(rows) + "\n", encoding="utf-8")
-    return path
-
-
 # --- normalize_symbol: happy paths from committed fixture --------------------
 
 
@@ -88,12 +60,12 @@ def test_normalize_symbol_input_preserved_before_lowercasing(syn_fixture):
 # --- normalize_symbol: paralog fan-out (ambiguous) ---------------------------
 
 
-def test_normalize_symbol_paralog_fanout_is_ambiguous(tmp_path):
+def test_normalize_symbol_paralog_fanout_is_ambiguous(gaf_row, write_gaf):
     # hbae1 is a ZFIN previous-name shared by hbae1.1 and hbae1.2 — two
     # current symbols for one old name. The result must be ambiguous, not
     # collapsed to either paralog.
-    rows = [_gaf_row("hbae1.1", "hbae1"), _gaf_row("hbae1.2", "hbae1")]
-    syn = load_gene_synonym_map(_write_gaf(tmp_path, rows))
+    rows = [gaf_row("hbae1.1", "hbae1"), gaf_row("hbae1.2", "hbae1")]
+    syn = load_gene_synonym_map(write_gaf(rows))
     result = normalize_symbol("hbae1", syn)
     assert result.status == STATUS_AMBIGUOUS
     assert result.symbols == frozenset({"hbae1.1", "hbae1.2"})
@@ -114,9 +86,9 @@ def test_normalize_symbol_miss_is_unresolved_and_empty(syn_fixture):
 # --- normalize_markers -------------------------------------------------------
 
 
-def test_normalize_markers_preserves_order_and_length(tmp_path):
-    rows = [_gaf_row("hbae1.1", "hbae1"), _gaf_row("hbae1.2", "hbae1")]
-    syn = load_gene_synonym_map(_write_gaf(tmp_path, rows))
+def test_normalize_markers_preserves_order_and_length(gaf_row, write_gaf):
+    rows = [gaf_row("hbae1.1", "hbae1"), gaf_row("hbae1.2", "hbae1")]
+    syn = load_gene_synonym_map(write_gaf(rows))
     # Three markers covering all three statuses in order.
     results = normalize_markers(["hbae1.1", "hbae1", "zyxwvut"], syn)
     assert len(results) == 3

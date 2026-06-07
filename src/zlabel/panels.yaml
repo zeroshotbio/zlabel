@@ -156,7 +156,7 @@ mesenchyme:
     - fn1a     # fibronectin 1a; ECM glycoprotein; mesenchymal and migratory cells
 
 cartilage:
-  germ_layer: neural crest  # craniofacial cartilage; also lateral plate for some trunk
+  germ_layer: neural crest  # craniofacial cartilage is neural-crest-derived (some trunk cartilage is lateral-plate mesoderm)
   tissue: cartilage/skeleton
   lineage: chondrogenic
   kind: identity
@@ -236,5 +236,5 @@ stress_heatshock:
     - hsp70l   # heat shock cognate 70 kDa protein, like; canonical HSP70 family member
     - hspa5    # heat shock protein family A member 5 (BiP/GRP78); ER stress sentinel
     - dnajb1b  # DnaJ heat shock protein family member B1b; HSP40 co-chaperone
-    - fosab    # FBJ murine osteosarcoma viral oncogene homolog A b copy; IEG
+    - fosab    # fos proto-oncogene b; immediate-early gene; stress/activity-induced
     - atf3     # activating transcription factor 3; integrated stress response TF

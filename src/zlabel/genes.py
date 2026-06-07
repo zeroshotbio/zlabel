@@ -20,9 +20,9 @@ from dataclasses import dataclass
 
 # --- status constants ---------------------------------------------------------
 #
-# Three outcomes cover all cases. The scorer checks only STATUS_RESOLVED and
-# treats ambiguous / unresolved identically (exclude from both numerator and
-# denominator), so a single constant is enough for the common branch.
+# Three outcomes cover all cases. The scorer acts on STATUS_RESOLVED only;
+# ambiguous and unresolved are both excluded from numerator and denominator,
+# so scoring needs no separate branch for them.
 
 STATUS_RESOLVED = "resolved"      # exactly one current symbol
 STATUS_AMBIGUOUS = "ambiguous"    # one previous name -> several current paralogs
