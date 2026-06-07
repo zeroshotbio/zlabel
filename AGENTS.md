@@ -40,11 +40,11 @@ panels). See [`docs/design.md`](docs/design.md) §Resolution.
 ## Commands (land in Phase 1)
 
 ```bash
-make setup    # uv sync
+make setup    # uv sync (all groups + extras)
 make format   # ruff format + safe fixes
 make type     # pyright (basic)
 make test     # pytest
-make verify   # lint + types + tests
+make verify   # lint + docstrings + types + tests
 ```
 
 ## Tech stack
@@ -62,7 +62,11 @@ make verify   # lint + types + tests
 - **The "model" is data.** Domain knowledge lives in `panels.yaml`, not buried in code.
 - **Deterministic core.** v1 has no LLM in the labeling decision; the LLM is a
   designed-in fast-follow (see design §LLM).
-- **Google-style docstrings**, `name (type): desc` for Args. Single backticks, no reST.
+- **Google-style docstrings, written as plain text.** `name (type): desc` for Args;
+  a type-first `Returns:` (`type: desc`). **No backticks**, no reST (`:roles:`), and
+  no block markdown (bullet lists, fences, headers) inside Python docstrings or
+  comments — they don't render reliably there, so keep code prose plain. (Backticks
+  belong in Markdown files like this one.) `make lint-docstrings` enforces it.
 - **Verify library docs against the pinned version online**, not from memory.
 - **One PR per build phase** ([`.claude/docs/workflow.md`](.claude/docs/workflow.md)).
 

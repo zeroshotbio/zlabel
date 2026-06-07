@@ -1,0 +1,78 @@
+[project]
+name = "zlabel"
+dynamic = ["version"]  # single source of truth: __version__ in src/zlabel/__init__.py
+description = "Label one whole-organism zebrafish scRNA-seq cluster from its marker genes."
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+license = { text = "MIT" }
+authors = [{ name = "Darien Schettler", email = "darien@zeroshot.bio" }]
+keywords = ["single-cell", "scRNA-seq", "cell-type", "annotation", "zebrafish", "ontology"]
+classifiers = [
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+# Per-phase deps: declare only what the shipped code imports. Phase 1's data.py
+# needs obonet (OBO parsing) + networkx (the ontology graph). Later phases add
+# pyyaml (panels), pydantic (the Label packet), and pandas/numpy (eval).
+dependencies = [
+  "obonet>=1.3.0",   # read_obo -> networkx.MultiDiGraph keyed by relation type
+  "networkx>=3.6.1",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=9.0",
+  "ruff>=0.15",
+  "pyright>=1.1.410",
+  "jupyterlab>=4.5.8",
+  "ipywidgets>=8.1.8",
+  "plotly>=6.8.0",
+  "pyvis>=0.3.2",
+  "matplotlib>=3.10.9",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/zlabel"]
+
+[tool.hatch.version]
+path = "src/zlabel/__init__.py"
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+exclude = ["notebooks/**"]
+
+[tool.ruff.lint]
+# Correctness (E/F/W), import order (I), bug-prone patterns (B), 3.13 idioms (UP),
+# docstrings (D, google) and typed signatures (ANN) — the readability bar, no more.
+select = ["E", "F", "W", "I", "B", "UP", "D", "ANN"]
+ignore = [
+  "D203",    # one-blank-line-before-class — conflicts with D211 (no blank line)
+  "D213",    # multi-line-summary-second-line — we want the summary on line one (D212)
+  "ANN401",  # `Any` is honest for an OBO node's heterogeneous attribute dict
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D", "ANN"]  # tests need neither docstrings nor signature annotations
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pyright]
+include = ["src/zlabel", "tests"]
+pythonVersion = "3.13"
+typeCheckingMode = "basic"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--import-mode=importlib -q"
+python_files = "test_*.py"

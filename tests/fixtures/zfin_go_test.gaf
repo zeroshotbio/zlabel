@@ -1,0 +1,10 @@
+!gaf-version: 2.2
+!generated-by: zlabel-test-fixture
+!date-generated: 2026-06-07
+ZFIN	ZDB-GENE-980526-322	kdrl	enables	GO:0001525	PMID:0	IEA	GO_REF:0000002	P	kinase insert domain receptor like	kdr|flk1	gene	taxon:7955	20260520	ZFIN
+ZFIN	ZDB-GENE-980526-322	kdrl	involved_in	GO:0001568	PMID:0	IEA	GO_REF:0000002	P	kinase insert domain receptor like	kdr|flk1	gene	taxon:7955	20260520	ZFIN
+ZFIN	ZDB-GENE-991124-9	cdh5	involved_in	GO:0001525	PMID:0	IEA	GO_REF:0000002	P	cadherin 5	ve-cad	gene	taxon:7955	20260520	ZFIN
+ZFIN	ZDB-GENE-980526-156	gata1a	involved_in	GO:0030218	PMID:0	IEA	GO_REF:0000002	P	GATA binding protein 1a	gata1	gene	taxon:7955	20260520	ZFIN
+ZFIN	ZDB-GENE-040912-15	dll4	involved_in	GO:0001525	PMID:0	IEA	GO_REF:0000002	P	delta-like 4 (Drosophila)	dll4	gene	taxon:7955	20260520	ZFIN
+ZFIN	ZDB-GENE-040912-15	dll4	enables	GO:0005112	PMID:0	IEA	GO_REF:0000002	F	delta-like 4 (Drosophila)	dll4	gene	taxon:7955	20260520	ZFIN
+ZFIN	ZDB-GENE-991124-9	cdh5	located_in	GO:0005886	PMID:0	IEA	GO_REF:0000002	C	cadherin 5	ve-cad	gene	taxon:7955	20260520	ZFIN

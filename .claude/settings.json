@@ -16,10 +16,11 @@
       "Bash(gh *)"
     ],
     "deny": [
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Write(./.env)",
-      "Write(./.env.*)"
+      "Write(./.env)"
     ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
   }
 }

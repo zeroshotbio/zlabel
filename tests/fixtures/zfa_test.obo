@@ -1,0 +1,55 @@
+format-version: 1.2
+ontology: zfa_test
+default-namespace: zebrafish_anatomy
+
+[Term]
+id: ZFA:0001094
+name: whole organism
+namespace: zebrafish_anatomy
+def: "Top-level anatomical root for the zebrafish."
+
+[Term]
+id: ZFA:0009000
+name: cell
+namespace: zebrafish_anatomy
+
+[Term]
+id: ZFA:0000001
+namespace: zebrafish_anatomy
+def: "A name-less stub term, to exercise term_name() returning None."
+
+[Term]
+id: ZFA:0001262
+name: cardiovascular system
+namespace: zebrafish_anatomy
+is_a: ZFA:0001094 ! whole organism
+
+[Term]
+id: ZFA:0005307
+name: endothelial cell
+namespace: zebrafish_anatomy
+is_a: ZFA:0009000 ! cell
+relationship: part_of ZFA:0001262 ! cardiovascular system
+
+[Term]
+id: ZFA:0009073
+name: arterial endothelial cell
+namespace: zebrafish_anatomy
+is_a: ZFA:0005307 ! endothelial cell
+relationship: develops_from ZFA:0005307 ! endothelial cell
+
+[Term]
+id: ZFA:0005304
+name: venous endothelial cell
+namespace: zebrafish_anatomy
+is_a: ZFA:0005307 ! endothelial cell
+relationship: develops_from ZFA:0005307 ! endothelial cell
+
+[Typedef]
+id: part_of
+name: part_of
+is_transitive: true
+
+[Typedef]
+id: develops_from
+name: develops_from
