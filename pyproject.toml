@@ -25,6 +25,12 @@ dev = [
   "pytest>=9.0",
   "ruff>=0.15",
   "pyright>=1.1.410",
+  "jupyterlab>=4.5.8",
+  "ipywidgets>=8.1.8",
+  "plotly>=6.8.0",
+  "pyvis>=0.3.2",
+  "pygraphviz>=1.14",
+  "matplotlib>=3.10.9",
 ]
 
 [build-system]

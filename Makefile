@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup setup-core setup-upgrade format lint lint-docstrings type test verify
+.PHONY: help setup setup-core setup-upgrade format lint lint-docstrings type test verify notebook
 
 help:  ## Show this help
 	@awk 'BEGIN {FS = ":.*## "; print "Usage: make <target>\n"} /^##@/ {printf "\n%s\n", substr($$0, 5)} /^[a-zA-Z0-9_.-]+:.*## / {printf "  %-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -34,3 +34,7 @@ test:  ## pytest
 	uv run pytest
 
 verify: lint lint-docstrings type test  ## The PR gate: lint + docstrings + types + tests
+
+##@ Development
+notebook:  ## Start JupyterLab on port 8888 (no token; run make setup first)
+	uv run jupyter lab --no-browser --port=8888 --ServerApp.token='' --ServerApp.password=''
