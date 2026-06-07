@@ -1,0 +1,147 @@
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+.claude/settings.local.json
+
+# Project-local artifacts
+data/
+.cache/
+outputs/
+runs/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.hypothesis/
+.pytest_cache/
+cover/
+coverage.xml
+nosetests.xml
+*.cover
+*.py,cover
+
+# Linting
+.ruff_cache/
+.mypy_cache/
+.pyright/
+.pyre/
+
+# Sphinx documentation
+docs/_build/
+
+# Jupyter
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# Environments
+.venv
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# OS — macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# OS — Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
+$RECYCLE.BIN/
+
+# Zsh
+*.zwc
+*.zwc.old
+*zcompdump*
+.zsh_history
+.zsh_sessions
+
+# JetBrains
+*.sln.iml
+
+# Large data / models (binary, not committed)
+*.h5ad
+*.h5
+*.hdf5
+*.zarr/
+*.pt
+*.pth
+*.pkl
+*.joblib
+*.rds
+
+# ML run telemetry
+wandb/
+lightning_logs/
+tensorboard_logs/
+mlruns/
+checkpoints/
+
+# marimo session cache (ephemeral, per-kernel)
+__marimo__/
+
+# Interactive pairing scratch (playwright-MCP captures + walkthrough screenshots)
+/.playwright-mcp/
+/walk_main.png
+/walk_state.png
+
+# Claude Code ephemeral data (track config, exclude state)
+.claude/sessions/
+.claude/cache/
+.claude/worktrees/
+.claude/projects/
