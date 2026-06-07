@@ -1,7 +1,7 @@
 # Domain primer — zlabel
 
 Enough zebrafish single-cell biology to work in this repo. The design of record is
-[`docs/design.md`](../../docs/design.md).
+[`docs/design.md`](../../docs/design.md). 
 
 ## The task
 
@@ -49,3 +49,8 @@ first-pass discriminator), (2) **ZFIN in-vivo expression** of the top markers �
 anatomy, and (3) **stage** plausibility. When they agree on one bucket, confidence
 is high; when they conflict, zlabel abstains (`mixed/unresolved`) or rolls up to a
 coarser tier — it never overcalls.
+
+## Additional Information
+
+Additional documentation can be found in [`docs/reference/`](../../docs/reference/)
+Feel free to add additional resources/information here as needed.
