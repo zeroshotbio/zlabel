@@ -83,6 +83,17 @@ def test_load_panels_invalid_kind_raises(tmp_path):
         load_panels(path)
 
 
+def test_load_panels_missing_kind_raises(tmp_path):
+    path = tmp_path / "bad.yaml"
+    path.write_text(
+        "bucket_x:\n  cite: test\n  markers: [abc]\n"
+        "  germ_layer: ''\n  tissue: ''\n  lineage: ''\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="missing required field 'kind'"):
+        load_panels(path)
+
+
 def test_load_panels_empty_markers_raises(tmp_path):
     path = tmp_path / "bad.yaml"
     path.write_text(

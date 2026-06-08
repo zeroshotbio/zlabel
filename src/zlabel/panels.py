@@ -96,6 +96,9 @@ class MatchedMarker:
 class BucketScore:
     """Score for one panel bucket against the input marker list.
 
+    germ_layer, tissue, lineage, and kind are propagated from Panel so Phase 3's
+    decision logic can inspect a score without needing the full panel list.
+
     Attributes:
         bucket (str): Panel identifier matching Panel.bucket.
         score (float): Fraction of resolved-marker weight that hit this bucket.
@@ -137,8 +140,8 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
         list[Panel]: One Panel per top-level yaml entry, in file order.
 
     Raises:
-        ValueError: If any entry has an unrecognized kind or an empty
-            marker list.
+        ValueError: If any entry is missing kind, has an unrecognized kind,
+            or has an empty marker list.
         FileNotFoundError: If path does not exist.
     """
     with Path(path).open(encoding="utf-8") as handle:
@@ -148,7 +151,9 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
     for bucket, entry in raw.items():
         # yaml.safe_load values are typed object; coerce each scalar we store to str
         # (this also guards a field mistyped in the file, e.g. a bare int).
-        kind = str(entry["kind"])
+        kind = str(entry.get("kind", ""))
+        if not kind:
+            raise ValueError(f"panel {bucket!r} is missing required field 'kind'")
         if kind not in (KIND_IDENTITY, KIND_STATE):
             raise ValueError(
                 f"panel {bucket!r} has invalid kind {kind!r}; "

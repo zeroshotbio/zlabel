@@ -86,7 +86,7 @@ def test_normalize_symbol_miss_is_unresolved_and_empty(syn_fixture):
 # --- normalize_markers -------------------------------------------------------
 
 
-def test_normalize_markers_preserves_order_and_length(gaf_row, write_gaf):
+def test_normalize_markers_preserves_order_status_and_length(gaf_row, write_gaf):
     rows = [gaf_row("hbae1.1", "hbae1"), gaf_row("hbae1.2", "hbae1")]
     syn = load_gene_synonym_map(write_gaf(rows))
     # Three markers covering all three statuses in order.

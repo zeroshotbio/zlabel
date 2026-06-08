@@ -22,7 +22,8 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   These are zlabel's input.
 - **Cell identity vs. state** — *identity* is what a cell is (muscle, neuron);
   *state* is what it's doing (dividing, stressed). A stressed muscle cell is still
-  muscle. zlabel labels identity and keeps state separate.
+  muscle. zlabel labels identity and keeps state separate. Tracked via the `kind`
+  field in `panels.yaml` (`identity` or `state`).
 - **Broad-first** — on a low-resolution cluster, the honest call is a broad bucket
   (muscle, blood, neural...). Finer labels come after sub-clustering. Broad is a
   floor, not a ceiling.
@@ -58,6 +59,18 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   are comments. We read the gene symbol (col 3) and synonyms (col 11).
 - **ZFIN wildtype expression** — tab-separated, no header, 15 columns: a gene, the
   anatomy (ZFA) it was seen in, and the stage range. One observation per row.
+
+## Panels and scoring
+
+- **Panel** — one entry in `panels.yaml`. Has a `bucket` name (e.g. `muscle`), a
+  `kind` (`identity` or `state`), a frozenset of curated marker symbols, and optional
+  `subpanels` for finer resolution on subclusters. Domain knowledge lives here; the
+  scorer just does arithmetic over it.
+- **BucketScore** — the output of `score_markers` for one panel: the `bucket` name, a
+  `score` in [0, 1] computed by rank-weighted overlap (`w(r) = 1 / log2(r + 1)` so
+  the most significant markers drive the score), and the matched markers. The top
+  candidate is always at index 0. Ambiguous and unresolved markers are excluded from
+  both numerator and denominator so the score never reflects an uncertain symbol.
 
 ## How data flows through zlabel
 

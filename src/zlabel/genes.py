@@ -19,10 +19,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 # --- status constants ---------------------------------------------------------
-#
-# Three outcomes cover all cases. The scorer acts on STATUS_RESOLVED only;
-# ambiguous and unresolved are both excluded from numerator and denominator,
-# so scoring needs no separate branch for them.
+# Callers filter by STATUS_RESOLVED; ambiguous and unresolved are excluded from scoring.
 
 STATUS_RESOLVED = "resolved"      # exactly one current symbol
 STATUS_AMBIGUOUS = "ambiguous"    # one previous name -> several current paralogs

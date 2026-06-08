@@ -65,20 +65,19 @@ muscle:
   tissue: muscle
   lineage: skeletal muscle
   kind: identity
-  cite: "playbook §7; ZFIN wt-expr (myod1, mylz2, acta1b); literature"
+  cite: "playbook §7; ZFIN wt-expr (myod1, mylpfa, acta1b); literature"
   markers:
     - myod1    # myogenic regulatory factor; master TF for myoblast commitment
     - myog     # myogenin; terminal myogenic differentiation
     - myf5     # myogenic factor 5; early myoblast specification
-    - mylz2    # myosin light chain; abundant in differentiated fast muscle
-    - mylpfa   # myosin light chain phosphorylatable fast skeletal muscle a
+    - mylpfa   # myosin light chain phosphorylatable fast skeletal muscle a (prev. mylz2)
     - acta1b   # actin alpha 1b; sarcomeric; fast skeletal muscle
     - tnnt3a   # troponin T type 3a; sarcomeric; fast skeletal muscle
     - tnnc2    # troponin C type 2; fast skeletal muscle
     - ckma     # creatine kinase muscle a; energy metabolism in mature muscle
   subpanels:
     # Subpanels are loaded in Phase 2 but scored only in Phase 3+ (subclusters).
-    fast:     [mylz2, mylpfa, tnnt3a, acta1b]
+    fast:     [mylpfa, tnnt3a, acta1b]
     slow:     [smyhc1, tnnc1a]          # smyhc1: slow myosin heavy chain 1
     cardiac:  [myh6, vmhc]              # myh6: alpha-MHC; vmhc: ventricular MHC
     myoblast: [myod1, myog, myf5]
@@ -226,15 +225,19 @@ cycling:
     - hmgb2a   # high mobility group box 2a; chromatin remodeling in proliferating cells
     - stmn1a   # stathmin 1a; microtubule destabilizer; mitotic spindle
 
-stress_heatshock:
+stress_response:
   germ_layer: ""
   tissue: ""
   lineage: ""
   kind: state
-  cite: "playbook §7; GO heat-shock / stress-response terms; literature"
+  cite: "playbook §7; GO stress-response terms; literature"
+  # hsp70l/hspa5/dnajb1b are canonical heat-shock proteins; fosab and atf3 are
+  # immediate-early genes (IEGs) induced broadly by stress. IEGs co-occur reliably
+  # with HSP markers in heat-shocked zebrafish clusters, making them useful ensemble
+  # members even though they are not heat-shock specific.
   markers:
     - hsp70l   # heat shock cognate 70 kDa protein, like; canonical HSP70 family member
     - hspa5    # heat shock protein family A member 5 (BiP/GRP78); ER stress sentinel
     - dnajb1b  # DnaJ heat shock protein family member B1b; HSP40 co-chaperone
-    - fosab    # fos proto-oncogene b; immediate-early gene; stress/activity-induced
-    - atf3     # activating transcription factor 3; integrated stress response TF
+    - fosab    # fos proto-oncogene b; IEG; stress/activity-induced
+    - atf3     # activating transcription factor 3; IEG; integrated stress response TF
