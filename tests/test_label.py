@@ -154,7 +154,8 @@ def test_invariant_assigned_implies_tier(zfa):
 
 
 def test_rollup_same_germ_layer(zfa):
-    # Two mesoderm buckets within DOMINANCE_GAP of each other.
+    # Two evidence-bearing mesoderm buckets, exactly tied (same matched weight) so
+    # they are within DOMINANCE_GAP -> roll up to the shared germ layer.
     muscle = _bs(
         "muscle", germ_layer="mesoderm", tissue="muscle",
         lineage="skeletal muscle", markers=["myod1", "myog"], total_weight=3.0,
@@ -163,22 +164,17 @@ def test_rollup_same_germ_layer(zfa):
         "blood_erythroid", germ_layer="mesoderm", tissue="blood",
         lineage="erythroid", markers=["gata1a", "hbae1.1"], total_weight=3.0,
     )
-    # Make the gap tiny so they're within DOMINANCE_GAP.
-    # Force them to near-tied by having the same matched weight.
     scores = [muscle, blood]
     anchors = {"muscle": MUSCLE_ANCHOR, "blood_erythroid": BLOOD_ANCHOR}
     label = decide(scores, anchors=anchors, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
-    # If they're actually within DOMINANCE_GAP: rollup to mesoderm
-    if label.bucket == "mesoderm":
-        assert label.ambiguity_flag == "underclustered"
-        assert label.zfa_id is None
-        assert label.confidence in (TIER_MEDIUM_NAME, TIER_LOW_NAME)
-    else:
-        # If one dominates: an assigned single bucket is also valid.
-        assert not label.abstained
+    assert label.bucket == "mesoderm"
+    assert label.ambiguity_flag == "underclustered"
+    assert label.zfa_id is None
+    assert label.confidence in (TIER_MEDIUM_NAME, TIER_LOW_NAME)
 
 
 def test_rollup_contradictory_germ_layers_abstains(zfa):
+    # Two evidence-bearing buckets in different germ layers, exactly tied -> mixed.
     neural = _bs(
         "neural", germ_layer="ectoderm", tissue="nervous system",
         lineage="neural", markers=["elavl3", "neurod1"], total_weight=3.0,
@@ -189,12 +185,30 @@ def test_rollup_contradictory_germ_layers_abstains(zfa):
     )
     scores = [neural, blood]
     label = decide(scores, anchors={}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
-    if label.ambiguity_flag == "mixed":
-        assert label.abstained
-    else:
-        # If one dominates, fine — the test is just that contradictory germ layers
-        # abstain when they're truly within DOMINANCE_GAP.
-        pass
+    assert label.abstained
+    assert label.ambiguity_flag == "mixed"
+
+
+def test_weak_single_signal_assigns_not_mixed(zfa):
+    # Regression guard: a lone, weak-but-genuine identity signal (one neural marker,
+    # adj 0.25) alongside empty buckets in other germ layers must assign neural.
+    # Zero-marker buckets used to pad the contender set and force a false "mixed".
+    neural = BucketScore(
+        bucket="neural",
+        score=0.25,
+        germ_layer="ectoderm",
+        tissue="nervous system",
+        lineage="neural",
+        kind=KIND_IDENTITY,
+        matched_markers=(_mm("elavl3", 1),),
+        total_weight=4.0,  # off-panel filler in the denominator -> adj 0.25
+    )
+    muscle = _empty_bs("muscle", germ_layer="mesoderm")
+    gut = _empty_bs("endoderm_gut", germ_layer="endoderm")
+    scores = [neural, muscle, gut]
+    label = decide(scores, anchors={}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+    assert not label.abstained
+    assert label.bucket == "neural"
 
 
 # ---------------------------------------------------------------------------
@@ -270,8 +284,8 @@ def test_single_state_marker_not_called(zfa):
 
 
 def test_floor_low_when_weak_signal_but_still_assigned(zfa):
-    # Muscle scores just above MIN_SIGNAL but below TIER_MEDIUM, no grounding.
-    # Result must be low, not None.
+    # Muscle is the only evidence-bearing bucket, scoring just above MIN_SIGNAL
+    # (adj 0.2) with no grounding -> assigned (not rolled up), floored at low.
     muscle = BucketScore(
         bucket="muscle",
         score=0.2,
@@ -285,20 +299,22 @@ def test_floor_low_when_weak_signal_but_still_assigned(zfa):
     blood = _empty_bs("blood_erythroid")
     scores = [muscle, blood]
     label = decide(scores, anchors={"muscle": MUSCLE_ANCHOR}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
-    if not label.abstained:
-        assert label.confidence == TIER_LOW_NAME
+    assert not label.abstained
+    assert label.bucket == "muscle"
+    assert label.confidence == TIER_LOW_NAME
 
 
 def test_convergence_cap_without_grounding_is_medium(zfa):
-    # Strong panels: 3 muscle markers dominate. No expression data -> grounding = NEUTRAL.
-    # No stage_hpf -> stage = NEUTRAL. With no real corroboration, tier capped at medium.
+    # Strong panels: 3 muscle markers dominate (score -> high). No expression data
+    # and no stage_hpf -> grounding/stage are NEUTRAL, so the convergence cap pulls
+    # the tier down to exactly medium.
     muscle = _bs("muscle", markers=["mylpfa", "myod1", "myog"], total_weight=3.0)
     blood = _empty_bs("blood_erythroid")
     scores = [muscle, blood]
     label = decide(scores, anchors={"muscle": MUSCLE_ANCHOR}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
-    if not label.abstained:
-        # Should be at most medium since no real grounding/stage corroboration.
-        assert label.confidence in (TIER_MEDIUM_NAME, TIER_LOW_NAME)
+    assert not label.abstained
+    assert label.bucket == "muscle"
+    assert label.confidence == TIER_MEDIUM_NAME
 
 
 # ---------------------------------------------------------------------------
@@ -320,6 +336,8 @@ def test_labeler_smoke_muscle_cluster():
     assert not label.abstained
     assert label.bucket == "muscle"
     assert label.next_step == "subcluster"
+    # mylz2 normalized to mylpfa via the GAF synonym map before scoring.
+    assert "mylpfa" in label.positive_markers
     # Grounding: mylpfa and myod1 have records in zfin_expr_test.txt expressing
     # in musculature system / muscle cell — both ground under ZFA:0000548.
     assert len(label.expression_evidence) > 0

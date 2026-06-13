@@ -26,10 +26,10 @@ from pathlib import Path
 
 import networkx as nx
 
-from zlabel.data import ZfinExpressionRecord, load_gene_synonym_map, load_zfa, load_zfin_expression
+from zlabel.data import ZfinExpressionRecord, load_gene_synonym_map, load_zfa, load_zfin_expression, term_name
 from zlabel.ground import expression_lookup, grounds_under, stage_plausibility
 from zlabel.models import TIER_HIGH_NAME, TIER_LOW_NAME, TIER_MEDIUM_NAME, Confidence, ExprHit, Label
-from zlabel.panels import KIND_IDENTITY, KIND_STATE, BucketScore, Panel, load_panels, score_markers
+from zlabel.panels import KIND_IDENTITY, KIND_STATE, BucketScore, MatchedMarker, Panel, load_panels, score_markers
 
 # ---------------------------------------------------------------------------
 # Decision constants
@@ -135,25 +135,8 @@ def _state_only_weight(scores: list[BucketScore]) -> float:
     return sum(sym_weight.get(s, 0.0) for s in state_only)
 
 
-def _build_rationale(bucket: str, top: BucketScore, adj_score: float, flag: str) -> str:
-    """Build a one-line rationale string for an assigned label.
-
-    Args:
-        bucket (str): The assigned bucket name.
-        top (BucketScore): The top-scoring identity bucket.
-        adj_score (float): The adjusted identity score for the winner.
-        flag (str): The ambiguity flag (none, underclustered, etc.).
-
-    Returns:
-        str: One-line rationale.
-    """
-    markers = ", ".join(m.symbol for m in top.matched_markers[:3])
-    suffix = f" (rollup: {flag})" if flag == "underclustered" else ""
-    return f"{bucket} supported by {markers or 'no markers'} (adj_score={adj_score:.2f}){suffix}"
-
-
 def _compute_grounding_evidence(
-    matched_markers: tuple,
+    matched_markers: tuple[MatchedMarker, ...],
     anchor: frozenset[str],
     expr_map: Mapping[str, list[ZfinExpressionRecord]],
     zfa_graph: nx.MultiDiGraph,
@@ -167,7 +150,7 @@ def _compute_grounding_evidence(
     each relevant counter.
 
     Args:
-        matched_markers (tuple): MatchedMarker objects for the winner's panel hits.
+        matched_markers (tuple[MatchedMarker, ...]): MatchedMarker objects for the winner's panel hits.
         anchor (frozenset[str]): Bucket ontology anchor ids.
         expr_map (Mapping[str, list[ZfinExpressionRecord]]): ZFIN expression data.
         zfa_graph (nx.MultiDiGraph): ZFA ontology graph.
@@ -177,8 +160,6 @@ def _compute_grounding_evidence(
         tuple[tuple[ExprHit, ...], dict[str, int]]: Grounded anatomy hits and a
         dict with keys gradable, grounded, datable, plausible.
     """
-    from zlabel.data import term_name as _term_name
-
     hits: list[ExprHit] = []
     counts = {"gradable": 0, "grounded": 0, "datable": 0, "plausible": 0}
 
@@ -199,7 +180,7 @@ def _compute_grounding_evidence(
         if marker_grounded:
             counts["grounded"] += 1
             assert first_hit_rec is not None
-            zfa_name = _term_name(zfa_graph, first_hit_rec.zfa_id) or first_hit_rec.zfa_id
+            zfa_name = term_name(zfa_graph, first_hit_rec.zfa_id) or first_hit_rec.zfa_id
             hits.append(ExprHit(symbol=mm.symbol, zfa_id=first_hit_rec.zfa_id, zfa_name=zfa_name))
 
         # Stage: is any datable record on-stage?
@@ -384,14 +365,16 @@ def decide(
     s_only = _state_only_weight(scores)
     identity_denom = total_weight - s_only
 
-    # Sort identity buckets by adjusted score descending.
+    # Sort identity buckets that actually matched markers, by adjusted score
+    # descending. Dropping zero-marker buckets here is what keeps them from
+    # padding the near-tie contender set and forcing a false "mixed" abstention.
     identity = sorted(
-        [bs for bs in scores if bs.kind == KIND_IDENTITY],
+        [bs for bs in scores if bs.kind == KIND_IDENTITY and bs.matched_markers],
         key=lambda bs: (-_adj(bs, identity_denom), bs.bucket),
     )
 
     # --- Precheck A: no identity evidence at all ---
-    if not identity or not any(bs.matched_markers for bs in identity):
+    if not identity:
         return _abstain("provisional", states, panel_scores)
 
     top = identity[0]
@@ -416,7 +399,6 @@ def decide(
             stage_hpf=stage_hpf,
             states=states,
             panel_scores=panel_scores,
-            flag="none",
         )
 
     # Near-tie: collect contenders within DOMINANCE_GAP of the top.
@@ -454,7 +436,6 @@ def _assign_top(
     stage_hpf: float | None,
     states: tuple[str, ...],
     panel_scores: dict[str, float],
-    flag: str,
 ) -> Label:
     """Build a Label for a clear single-bucket assignment.
 
@@ -468,7 +449,6 @@ def _assign_top(
         stage_hpf (float | None): Dataset stage in hpf, or None.
         states (tuple[str, ...]): Detected state programs.
         panel_scores (dict[str, float]): Raw panel scores.
-        flag (str): Ambiguity flag (none for a clean call).
 
     Returns:
         Label: Assigned evidence packet.
@@ -491,6 +471,7 @@ def _assign_top(
 
     levels = tuple(x for x in (top.germ_layer, top.tissue, top.lineage) if x)
     positive = tuple(m.symbol for m in top.matched_markers)
+    markers = ", ".join(m.symbol for m in top.matched_markers[:3])
 
     # zfa_id: sorted-first anchor id for determinism (None when no anchor).
     zfa_id = sorted(anchor)[0] if anchor else None
@@ -502,13 +483,13 @@ def _assign_top(
         confidence=tier,
         confidence_score=round(conf_score, 4),
         confidence_components={k: round(v, 4) for k, v in components.items()},
-        ambiguity_flag=flag,
+        ambiguity_flag="none",
         states=states,
         zfa_id=zfa_id,
         panel_scores=panel_scores,
         positive_markers=positive,
         expression_evidence=hits,
-        rationale=_build_rationale(top.bucket, top, top_adj, flag),
+        rationale=f"{top.bucket} supported by {markers} (adj_score={top_adj:.2f})",
         next_step="subcluster",
     )
 
@@ -528,7 +509,9 @@ def _assign_rollup(
 ) -> Label:
     """Build a germ-layer rollup Label.
 
-    Grounded against the union of all contenders' anchors. Tier capped at medium.
+    Grounding spans the union of all contenders' markers and anchors, while
+    coherence and margin come from the top contender alone (a rollup has no
+    single dominant bucket to measure breadth from). Tier capped at medium.
 
     Args:
         germ_layer (str): The shared germ layer.
