@@ -62,9 +62,10 @@ class Label(BaseModel):
     Emitted by decide() and Labeler.label(). Every field is a Python primitive so
     model_dump() / to_yaml() are lossless and YAML-safe.
 
-    The invariant bucket == mixed/unresolved <-> abstained == True <-> confidence
-    is None is enforced by the model validator; constructing a contradictory Label
-    raises ValidationError.
+    The validator enforces that confidence and confidence_score are both None
+    exactly when abstained is True; an inconsistent Label raises ValidationError.
+    By convention an abstention also sets bucket to mixed/unresolved and empties the
+    evidence fields, but that convention lives in the decision layer, not this packet.
 
     Attributes:
         bucket (str): The assigned identity bucket (e.g. muscle, endothelium),
@@ -87,8 +88,6 @@ class Label(BaseModel):
         zfa_id (str | None): The bucket's ontology anchor (sorted-first id when
             the anchor has several, for determinism). None for germ-layer rollups
             and abstentions.
-        cl_id (str | None): Deferred: Cell Ontology bridge. Field is present but
-            no logic populates it yet.
         panel_scores (dict[str, float]): Raw BucketScore.score for every panel
             bucket (a direct echo of the scorer output; the adjusted identity
             scores used inside decide() are internal).
@@ -110,7 +109,6 @@ class Label(BaseModel):
     ambiguity_flag: str = "none"
     states: tuple[str, ...] = ()
     zfa_id: str | None = None
-    cl_id: str | None = None
     panel_scores: dict[str, float]
     positive_markers: tuple[str, ...]
     expression_evidence: tuple[ExprHit, ...]
@@ -119,18 +117,19 @@ class Label(BaseModel):
 
     @model_validator(mode="after")
     def _check_abstain_consistency(self) -> Label:
-        """Enforce that abstained == (confidence is None).
+        """Enforce that confidence and confidence_score are None iff abstained.
 
         Returns:
             Label: self, after validation.
 
         Raises:
-            ValueError: If abstained and confidence are inconsistent.
+            ValueError: If abstained, confidence, and confidence_score disagree.
         """
-        if self.abstained and self.confidence is not None:
-            raise ValueError("abstained Label must have confidence=None")
-        if not self.abstained and self.confidence is None:
-            raise ValueError("assigned Label must have a confidence tier")
+        if self.abstained:
+            if self.confidence is not None or self.confidence_score is not None:
+                raise ValueError("abstained Label must have confidence and confidence_score = None")
+        elif self.confidence is None or self.confidence_score is None:
+            raise ValueError("assigned Label must have a confidence tier and score")
         return self
 
     def to_yaml(self) -> str:

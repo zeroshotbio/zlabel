@@ -1,4 +1,5 @@
 # Local environment / secrets
+tmp_*/
 .env
 .env.*
 !.env.example

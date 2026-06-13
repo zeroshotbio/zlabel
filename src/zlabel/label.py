@@ -114,25 +114,9 @@ def _state_only_weight(scores: list[BucketScore]) -> float:
     Returns:
         float: Sum of weights of markers that hit only state panels.
     """
-    sym_weight: dict[str, float] = {}
-    for bs in scores:
-        for m in bs.matched_markers:
-            sym_weight[m.symbol] = m.weight
-
-    identity_symbols: set[str] = set()
-    for bs in scores:
-        if bs.kind == KIND_IDENTITY:
-            for m in bs.matched_markers:
-                identity_symbols.add(m.symbol)
-
-    state_symbols: set[str] = set()
-    for bs in scores:
-        if bs.kind == KIND_STATE:
-            for m in bs.matched_markers:
-                state_symbols.add(m.symbol)
-
-    state_only = state_symbols - identity_symbols
-    return sum(sym_weight.get(s, 0.0) for s in state_only)
+    identity_symbols = {m.symbol for bs in scores if bs.kind == KIND_IDENTITY for m in bs.matched_markers}
+    state_weight = {m.symbol: m.weight for bs in scores if bs.kind == KIND_STATE for m in bs.matched_markers}
+    return sum(weight for symbol, weight in state_weight.items() if symbol not in identity_symbols)
 
 
 def _compute_grounding_evidence(
@@ -169,19 +153,12 @@ def _compute_grounding_evidence(
             continue  # no records -> not gradable for either component
         counts["gradable"] += 1
 
-        # Grounding: is any record under the anchor?
-        marker_grounded = False
-        first_hit_rec: ZfinExpressionRecord | None = None
-        for rec in records:
-            if grounds_under(zfa_graph, rec.zfa_id, anchor):
-                marker_grounded = True
-                if first_hit_rec is None:
-                    first_hit_rec = rec
-        if marker_grounded:
+        # Grounding: the first record (if any) that sits under the anchor.
+        grounded_rec = next((rec for rec in records if grounds_under(zfa_graph, rec.zfa_id, anchor)), None)
+        if grounded_rec is not None:
             counts["grounded"] += 1
-            assert first_hit_rec is not None
-            zfa_name = term_name(zfa_graph, first_hit_rec.zfa_id) or first_hit_rec.zfa_id
-            hits.append(ExprHit(symbol=mm.symbol, zfa_id=first_hit_rec.zfa_id, zfa_name=zfa_name))
+            zfa_name = term_name(zfa_graph, grounded_rec.zfa_id) or grounded_rec.zfa_id
+            hits.append(ExprHit(symbol=mm.symbol, zfa_id=grounded_rec.zfa_id, zfa_name=zfa_name))
 
         # Stage: is any datable record on-stage?
         plausibility = stage_plausibility(records, stage_hpf)
@@ -193,73 +170,79 @@ def _compute_grounding_evidence(
     return tuple(hits), counts
 
 
-def _confidence_score(
+def _supports_high(grounding: float | None, stage: float | None) -> bool:
+    """Whether grounding/stage corroboration justifies high confidence.
+
+    High needs converging evidence, not strong panels alone. When grounding is
+    gradable it decides on its own: supportive (>= NEUTRAL) allows high, and
+    contradictory anatomy (< NEUTRAL) blocks high even if stage is on -- anatomy
+    is the stronger anchor, stage is the soft 0.10 signal. Only when grounding is
+    not gradable does stage stand in as the corroborator.
+
+    Args:
+        grounding (float | None): grounded/gradable fraction, or None when no
+            matched marker had an expression record.
+        stage (float | None): plausible/datable fraction, or None when stage is
+            not gradable (no stage given, or no datable record).
+
+    Returns:
+        bool: True when high confidence is warranted.
+    """
+    if grounding is not None:
+        return grounding >= NEUTRAL
+    return stage is not None and stage >= NEUTRAL
+
+
+def _grade_confidence(
     top: BucketScore,
     second_adj: float,
     top_adj: float,
     counts: dict[str, int],
     stage_hpf: float | None,
-) -> tuple[float, dict[str, float]]:
-    """Compute the weighted confidence score and component breakdown.
+    *,
+    rollup: bool,
+) -> tuple[float, Confidence, dict[str, float]]:
+    """Grade an assigned bucket: weighted score -> tier, with the caps and floor.
+
+    The 0-1 score is W_COHERENCE*coherence + W_MARGIN*margin + W_GROUNDING*grounding
+    + W_STAGE*stage, each component in [0, 1] (absent grounding/stage use NEUTRAL).
+    All confidence policy lives here, in one place:
+      convergence cap -- a single-bucket high needs real corroboration (see
+        _supports_high); strong panels alone top out at medium.
+      rollup cap -- a germ-layer rollup never exceeds medium (it makes no single-
+        anatomy high claim).
+      floor -- any assigned label is at least low.
 
     Args:
-        top (BucketScore): The winner's BucketScore.
-        second_adj (float): Adjusted score of the runner-up (0 if none).
+        top (BucketScore): The winning bucket (the top contender for a rollup).
+        second_adj (float): Adjusted score of the runner-up (0 when none).
         top_adj (float): Adjusted score of the winner.
         counts (dict[str, int]): Marker-level counts from _compute_grounding_evidence.
         stage_hpf (float | None): Dataset stage in hpf, or None.
+        rollup (bool): True for a germ-layer rollup (capped at medium).
 
     Returns:
-        tuple[float, dict[str, float]]: (confidence_score, components dict).
+        tuple[float, Confidence, dict[str, float]]: (score, tier, components).
     """
     coherence = _clamp01(sum(m.weight for m in top.matched_markers) / COHERENCE_SAT)
     margin = _clamp01((top_adj - second_adj) / DOMINANCE_GAP)
+    grounding = counts["grounded"] / counts["gradable"] if counts["gradable"] else None
+    stage = counts["plausible"] / counts["datable"] if stage_hpf is not None and counts["datable"] else None
 
-    grounding_val: float | None = None
-    if counts["gradable"] > 0:
-        grounding_val = counts["grounded"] / counts["gradable"]
-
-    stage_val: float | None = None
-    if stage_hpf is not None and counts["datable"] > 0:
-        stage_val = counts["plausible"] / counts["datable"]
-
-    g = grounding_val if grounding_val is not None else NEUTRAL
-    s = stage_val if stage_val is not None else NEUTRAL
+    g = grounding if grounding is not None else NEUTRAL
+    s = stage if stage is not None else NEUTRAL
     score = W_COHERENCE * coherence + W_MARGIN * margin + W_GROUNDING * g + W_STAGE * s
+    components = {"coherence": coherence, "margin": margin, "grounding": g, "stage": s}
 
-    components = {
-        "coherence": coherence,
-        "margin": margin,
-        "grounding": grounding_val if grounding_val is not None else NEUTRAL,
-        "stage": stage_val if stage_val is not None else NEUTRAL,
-    }
-    return score, components
-
-
-def _has_real_corroboration(counts: dict[str, int], stage_hpf: float | None) -> bool:
-    """Return True when at least one of grounding/stage is gradable and supportive.
-
-    Used for the convergence cap: strong panels alone must not reach high
-    confidence. Real corroboration means the ontology or stage evidence was
-    actually evaluated (not just NEUTRAL-filled) and favourable (>= NEUTRAL).
-
-    Args:
-        counts (dict[str, int]): Marker-level counts from _compute_grounding_evidence.
-        stage_hpf (float | None): Dataset stage in hpf, or None.
-
-    Returns:
-        bool: True when at least one grounding or stage component is genuinely
-        gradable and supportive.
-    """
-    if counts["gradable"] > 0:
-        grounding_val = counts["grounded"] / counts["gradable"]
-        if grounding_val >= NEUTRAL:
-            return True
-    if stage_hpf is not None and counts["datable"] > 0:
-        stage_val = counts["plausible"] / counts["datable"]
-        if stage_val >= NEUTRAL:
-            return True
-    return False
+    tier = _tier(score)
+    if rollup:
+        if tier == TIER_HIGH_NAME:
+            tier = TIER_MEDIUM_NAME
+    elif tier == TIER_HIGH_NAME and not _supports_high(grounding, stage):
+        tier = TIER_MEDIUM_NAME
+    if tier not in (TIER_HIGH_NAME, TIER_MEDIUM_NAME):
+        tier = TIER_LOW_NAME
+    return score, tier, components
 
 
 def _detect_states(scores: list[BucketScore]) -> tuple[str, ...]:
@@ -458,16 +441,7 @@ def _assign_top(
         top.matched_markers, anchor, expr_map, zfa_graph, stage_hpf
     )
 
-    conf_score, components = _confidence_score(top, second_adj, top_adj, counts, stage_hpf)
-    tier = _tier(conf_score)
-
-    # Convergence cap: high requires real grounding/stage corroboration.
-    if tier == TIER_HIGH_NAME and not _has_real_corroboration(counts, stage_hpf):
-        tier = TIER_MEDIUM_NAME
-
-    # Floor: any assigned label is at least low.
-    if tier not in (TIER_HIGH_NAME, TIER_MEDIUM_NAME):
-        tier = TIER_LOW_NAME
+    conf_score, tier, components = _grade_confidence(top, second_adj, top_adj, counts, stage_hpf, rollup=False)
 
     levels = tuple(x for x in (top.germ_layer, top.tissue, top.lineage) if x)
     positive = tuple(m.symbol for m in top.matched_markers)
@@ -547,12 +521,7 @@ def _assign_rollup(
 
     # Use the top contender as a proxy for coherence/margin.
     top = contenders[0]
-    conf_score, components = _confidence_score(top, second_adj, top_adj, counts, stage_hpf)
-    tier: Confidence = _tier(conf_score)
-
-    # Rollup is always capped at medium; floored at low.
-    if tier == TIER_HIGH_NAME:
-        tier = TIER_MEDIUM_NAME
+    conf_score, tier, components = _grade_confidence(top, second_adj, top_adj, counts, stage_hpf, rollup=True)
 
     positive = tuple(mm.symbol for mm in union_matched)
 

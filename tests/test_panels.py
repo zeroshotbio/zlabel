@@ -75,6 +75,27 @@ def test_load_panels_subpanels_loaded(test_panels):
     assert "myod1" in muscle.subpanels["myoblast"]
 
 
+def test_load_panels_ontology_anchor_loaded(test_panels):
+    # The muscle fixture carries an anchor; a panel with no anchor key defaults
+    # to an empty frozenset (load_panels does not require one).
+    muscle = next(p for p in test_panels if p.bucket == "muscle")
+    assert muscle.ontology_anchor == frozenset({"ZFA:0000548"})
+    endothelium = next(p for p in test_panels if p.bucket == "endothelium")
+    assert endothelium.ontology_anchor == frozenset()
+
+
+def test_load_panels_scalar_ontology_anchor_raises(tmp_path):
+    # A bare scalar would silently become a frozenset of characters; reject it.
+    path = tmp_path / "bad.yaml"
+    path.write_text(
+        "bucket_x:\n  kind: identity\n  markers: [abc]\n  germ_layer: ''\n  tissue: ''\n"
+        "  lineage: ''\n  ontology_anchor: ZFA:0000548\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="ontology_anchor must be a list"):
+        load_panels(path)
+
+
 def test_load_panels_invalid_kind_raises(tmp_path):
     path = tmp_path / "bad.yaml"
     path.write_text(
@@ -130,6 +151,12 @@ def test_production_panels_yaml_loads_and_is_well_formed():
     assert {p.kind for p in panels} == {KIND_IDENTITY, KIND_STATE}
     for p in panels:
         assert all(m == m.lower() for m in p.markers)
+        # The shipped model's anchor invariant: identity panels ground somewhere,
+        # state panels (a transcriptional program) carry no anatomy anchor.
+        if p.kind == KIND_IDENTITY:
+            assert p.ontology_anchor, f"identity panel {p.bucket!r} must have an ontology_anchor"
+        else:
+            assert not p.ontology_anchor, f"state panel {p.bucket!r} must not have an ontology_anchor"
 
 
 # --- score_markers: keystone trace -------------------------------------------

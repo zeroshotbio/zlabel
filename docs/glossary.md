@@ -72,6 +72,24 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   candidate is always at index 0. Ambiguous and unresolved markers are excluded from
   both numerator and denominator so the score never reflects an uncertain symbol.
 
+## Decision output
+
+- **Labeler** — the entry point. `Labeler(stage_hpf=48).label([...markers...])` loads the
+  ontologies once and returns a `Label`. The one object most users touch.
+- **Label** — the evidence packet for one cluster: the `bucket` it was assigned (or
+  `mixed/unresolved`), the `confidence`, the markers and in-vivo `expression_evidence` behind
+  the call, a one-line `rationale`, and a suggested `next_step`. `.to_yaml()` serialises it.
+- **ExprHit** — one grounded marker's in-vivo evidence: a marker symbol and a ZFA anatomy term
+  it expresses in that sits under the bucket's anchor.
+- **Confidence** — the tier of an assigned call: `high`, `medium`, or `low` (`None` when the
+  cluster abstains).
+- **abstained** — when the evidence doesn't converge, zlabel declines: `bucket` is
+  `mixed/unresolved` and `confidence` is `None`. An honest "not sure" beats a wrong label.
+- **underclustered** — when no single bucket dominates but the near-top contenders share a germ
+  layer, zlabel rolls up to that coarser tier instead of guessing the finer one.
+- **convergence cap** — strong panels alone top out at `medium`; `high` is reserved for calls
+  the in-vivo expression (or stage) actually corroborates.
+
 ## How data flows through zlabel
 
 ```

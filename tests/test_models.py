@@ -71,7 +71,7 @@ def test_label_with_states():
 
 
 def test_label_validator_rejects_abstained_with_confidence():
-    with pytest.raises(Exception, match="confidence=None"):
+    with pytest.raises(Exception, match="abstained Label"):
         Label(
             bucket="mixed/unresolved",
             levels=(),
@@ -86,14 +86,46 @@ def test_label_validator_rejects_abstained_with_confidence():
         )
 
 
+def test_label_validator_rejects_abstained_with_score():
+    with pytest.raises(Exception, match="abstained Label"):
+        Label(
+            bucket="mixed/unresolved",
+            levels=(),
+            abstained=True,
+            confidence=None,
+            confidence_score=0.3,  # invalid: abstained must have score=None too
+            confidence_components={},
+            panel_scores={},
+            positive_markers=(),
+            expression_evidence=(),
+            rationale="bad",
+        )
+
+
 def test_label_validator_rejects_assigned_without_confidence():
-    with pytest.raises(Exception, match="confidence tier"):
+    with pytest.raises(Exception, match="confidence tier and score"):
         Label(
             bucket="muscle",
             levels=("mesoderm",),
             abstained=False,
             confidence=None,  # invalid: assigned must have a tier
             confidence_score=None,
+            confidence_components={},
+            panel_scores={},
+            positive_markers=("myod1",),
+            expression_evidence=(),
+            rationale="bad",
+        )
+
+
+def test_label_validator_rejects_assigned_without_score():
+    with pytest.raises(Exception, match="confidence tier and score"):
+        Label(
+            bucket="muscle",
+            levels=("mesoderm",),
+            abstained=False,
+            confidence=TIER_LOW_NAME,
+            confidence_score=None,  # invalid: assigned must have a score too
             confidence_components={},
             panel_scores={},
             positive_markers=("myod1",),
