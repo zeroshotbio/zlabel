@@ -19,16 +19,8 @@ from zlabel.genes import (
     normalize_markers,
     normalize_symbol,
 )
-from zlabel.ground import expression_lookup, grounds_under, stage_plausibility
-from zlabel.label import Labeler, decide
-from zlabel.models import (
-    TIER_HIGH_NAME,
-    TIER_LOW_NAME,
-    TIER_MEDIUM_NAME,
-    Confidence,
-    ExprHit,
-    Label,
-)
+from zlabel.label import Labeler
+from zlabel.models import Confidence, Label
 from zlabel.panels import (
     KIND_IDENTITY,
     KIND_STATE,
@@ -60,19 +52,10 @@ __all__ = [
     "NormalizedSymbol",
     "normalize_markers",
     "normalize_symbol",
-    # ground
-    "expression_lookup",
-    "grounds_under",
-    "stage_plausibility",
-    # label
+    # label (the entry point; decide() + grounding helpers stay on submodules)
     "Labeler",
-    "decide",
-    # models
-    "TIER_HIGH_NAME",
-    "TIER_LOW_NAME",
-    "TIER_MEDIUM_NAME",
+    # models (the return packet + its tier type; ExprHit/tier names on zlabel.models)
     "Confidence",
-    "ExprHit",
     "Label",
     # panels
     "KIND_IDENTITY",

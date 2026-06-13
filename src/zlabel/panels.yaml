@@ -17,7 +17,7 @@
 #                     confidence component. Coarse terms are preferred so markers that
 #                     express anywhere in the tissue still ground. State panels carry no
 #                     anchor. All ids verified against data/ontologies/zfa.obo.
-#   subpanels:        (optional) named sub-panels; loaded in Phase 2, scored in Phase 3+
+#   subpanels:        (optional) named sub-panels; loaded but not yet scored (a later phase)
 #
 # Curation rules applied:
 #   - All symbols are lowercased current ZFIN symbols (verified against ZFIN).
@@ -88,7 +88,7 @@ muscle:
     - tnnc2    # troponin C type 2; fast skeletal muscle
     - ckma     # creatine kinase muscle a; energy metabolism in mature muscle
   subpanels:
-    # Subpanels are loaded in Phase 2 but scored only in Phase 3+ (subclusters).
+    # Subpanels are loaded but not yet scored; reserved for subcluster resolution later.
     fast:     [mylpfa, tnnt3a, acta1b]
     slow:     [smyhc1, tnnc1a]          # smyhc1: slow myosin heavy chain 1
     cardiac:  [myh6, vmhc]              # myh6: alpha-MHC; vmhc: ventricular MHC

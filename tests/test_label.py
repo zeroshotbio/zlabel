@@ -317,6 +317,30 @@ def test_convergence_cap_without_grounding_is_medium(zfa):
     assert label.confidence == TIER_MEDIUM_NAME
 
 
+def test_high_blocked_by_contradictory_grounding(zfa):
+    # Strong muscle panel, but only 1 of 4 markers grounds under the muscle anchor;
+    # the other 3 express under endothelial anatomy. All are on-stage at 48 hpf.
+    # Grounding 0.25 (< NEUTRAL) must block high even though stage is fully
+    # supportive — anatomy that contradicts the call is not "converging evidence".
+    muscle = _bs("muscle", markers=["mylpfa", "acta1b", "tnnt3a", "myog"], total_weight=3.0)
+    blood = _empty_bs("blood_erythroid")
+    on_stage = ("Hatching:Long-pec", "Larval:Day 5")
+    expr_map = {
+        "mylpfa": [ZfinExpressionRecord("ZFA:0009234", "muscle cell", *on_stage)],  # under ZFA:0000548
+        "acta1b": [ZfinExpressionRecord("ZFA:0005307", "endothelial cell", *on_stage)],
+        "tnnt3a": [ZfinExpressionRecord("ZFA:0005307", "endothelial cell", *on_stage)],
+        "myog": [ZfinExpressionRecord("ZFA:0005307", "endothelial cell", *on_stage)],
+    }
+    label = decide(
+        [muscle, blood], anchors={"muscle": MUSCLE_ANCHOR}, expr_map=expr_map, zfa_graph=zfa, stage_hpf=48.0
+    )
+    assert not label.abstained
+    assert label.bucket == "muscle"
+    assert label.confidence_components["grounding"] == 0.25
+    assert label.confidence_components["stage"] == 1.0
+    assert label.confidence == TIER_MEDIUM_NAME  # contradictory anatomy caps high -> medium
+
+
 # ---------------------------------------------------------------------------
 # Labeler smoke test (end-to-end over fixture files)
 # ---------------------------------------------------------------------------

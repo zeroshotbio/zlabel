@@ -76,22 +76,11 @@ _STAGE_BEGIN_HPF: tuple[tuple[str, float], ...] = (
 )
 
 
-def _build_windows() -> dict[str, tuple[float, float]]:
-    """Build a stage-name -> (begin_hpf, end_hpf) map.
-
-    The end of each stage is the begin of the next; the last (Adult) is open.
-
-    Returns:
-        dict[str, tuple[float, float]]: Prefixed stage name to (begin, end).
-    """
-    windows: dict[str, tuple[float, float]] = {}
-    for i, (name, begin) in enumerate(_STAGE_BEGIN_HPF):
-        end = _STAGE_BEGIN_HPF[i + 1][1] if i + 1 < len(_STAGE_BEGIN_HPF) else float("inf")
-        windows[name] = (begin, end)
-    return windows
-
-
-_STAGE_WINDOW: dict[str, tuple[float, float]] = _build_windows()
+# Each stage spans [its begin, the next stage's begin); the last (Adult) is open-ended.
+_STAGE_WINDOW: dict[str, tuple[float, float]] = {
+    name: (begin, _STAGE_BEGIN_HPF[i + 1][1] if i + 1 < len(_STAGE_BEGIN_HPF) else float("inf"))
+    for i, (name, begin) in enumerate(_STAGE_BEGIN_HPF)
+}
 
 # Bare substage names (period prefix dropped) -> window.
 # ZFIN distributes the prefixed form (Hatching:Long-pec) but some exports
@@ -130,10 +119,6 @@ def _stage_to_hpf(stage: str) -> tuple[float, float] | None:
 # ---------------------------------------------------------------------------
 # Exported grounding functions
 # ---------------------------------------------------------------------------
-
-# Half-width of the stage window exported so callers can reference the default
-# without importing the private table.
-STAGE_WINDOW_HPF: float = _DEFAULT_WINDOW_HPF
 
 
 def expression_lookup(
