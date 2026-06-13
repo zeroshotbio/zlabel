@@ -63,6 +63,24 @@ curated panel.** That is the LLM's job (§LLM).
 
 ## Public surface (the whole API)
 
+### Phase 2 (ships now)
+
+Gene normalization and panel scoring are live:
+
+```python
+import zlabel
+
+synonyms = zlabel.load_gene_synonym_map("data/ontologies/zfin.gaf")
+result = zlabel.normalize_symbol("flk1", synonyms)
+# NormalizedSymbol(input='flk1', status='resolved', symbols=frozenset({'kdrl'}), note=None)
+
+panels = zlabel.load_panels("src/zlabel/panels.yaml")   # 14 curated buckets
+scores = zlabel.score_markers(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"], panels, synonyms)
+scores[0]   # BucketScore(bucket='muscle', score=0.8105, kind='identity', ...)
+```
+
+### Phase 3 target (the final single entry point)
+
 ```python
 from zlabel import Labeler
 
@@ -78,40 +96,45 @@ One entry point. Everything below it is short and inspectable.
 
 ## Repo structure (~7 core files, ≤~700 LOC core)
 
+Files marked [P1] / [P2] shipped; later phases show their planned target.
+
 ```text
 zlabel/
-  pyproject.toml          # uv · ruff (120) · pyright basic · py3.13 · minimal deps
-  README.md               # what it is + the loop + quickstart
-  Makefile                # setup / format / lint / lint-docstrings / type / test / verify
+  pyproject.toml          # uv · ruff (120) · pyright basic · py3.13 · minimal deps  [P1]
+  README.md               # what it is + the loop + quickstart                         [P1]
+  Makefile                # setup / format / lint / lint-docstrings / type / test / verify [P1]
   scripts/
-    setup_data.sh         # curl zfa.obo, zfin.gaf, zfin_wildtype_expression.txt -> data/ontologies/
-    build_daniocell_eval.py  # one-off: Daniocell 19 broad tissues + cluster markers -> benchmarks/ csv
+    setup_data.sh         # curl zfa.obo, zfin.gaf, zfin_wildtype_expression.txt -> data/ontologies/  [P1]
+    build_daniocell_eval.py  # Daniocell 19 broad tissues + cluster markers -> benchmarks/ csv  [P4]
   src/zlabel/
-    data.py     # LIFT (pure): load ZFA via obonet; parse ZFIN-expr TSV; load GAF synonym map
-    genes.py    # REWRITE-minimal: normalize_symbol() via GAF alias/paralog resolution
-    panels.yaml # THE MODEL: curated buckets -> {germ_layer, tissue, lineage, markers[], cite}
-    panels.py   # load panels + rank-weighted overlap score (readable, no heavy dep)
-    ground.py   # REWRITE-minimal (pure fns): expression_lookup / anatomy_search / anatomy_lineage / stage_ok
-    label.py    # the converging-evidence decision -> Label  (the heart)
-    models.py   # Label evidence packet (pydantic) + to_yaml()
-    evaluate.py # run on labeled clusters -> agreement + coverage + calibration
-    explain.py  # OPTIONAL [llm] extra: thin narrator over a finished Label (never picks the label)
-    cli.py      # typer: `zlabel label --markers ... --stage 48` ; `zlabel eval <csv>`
-  benchmarks/   # committed: curated eval substrate (data/ is gitignored, so eval data lives here)
+    data.py     # LIFT (pure): load ZFA via obonet; parse ZFIN-expr TSV; load GAF synonym map  [P1]
+    genes.py    # normalize_symbol() via GAF alias/paralog resolution                           [P2]
+    panels.yaml # THE MODEL: curated buckets -> {germ_layer, tissue, lineage, kind, markers[], cite, subpanels?}  [P2]
+    panels.py   # load panels + rank-weighted overlap score (readable, no heavy dep)            [P2]
+    ground.py   # pure fns: expression_lookup / anatomy_search / anatomy_lineage / stage_ok    [P3]
+    label.py    # converging-evidence decision -> Label  (the heart)                           [P3]
+    models.py   # Label evidence packet (pydantic) + to_yaml()                                 [P3]
+    evaluate.py # run on labeled clusters -> agreement + coverage + calibration                [P4]
+    explain.py  # OPTIONAL [llm] extra: thin narrator over a finished Label                    [P7]
+    cli.py      # typer: zlabel label --markers ... --stage 48 ; zlabel eval <csv>            [P5]
+  benchmarks/   # committed eval substrate (data/ is gitignored, so eval data lives here)     [P4]
   data/         # gitignored: downloaded ontologies
   tests/        # genes, panel scoring, ground lookups, label decision, eval — real unit tests, no LLM
   notebooks/
-    01_label_one_cluster.py    # the muscle-cluster walkthrough
-    02_cluster_with_scanpy.py  # layer-2 demo: adata -> leiden -> rank_genes -> zlabel
-    03_end_to_end.py           # layer-3 demo: a real 48 hpf subset, start to finish
-    build_demos/
-      phase_0*.ipynb           # Each phase has a demo notebook
+    build-demos/
+      phase_01.ipynb           # data-layer walkthrough (Phase 1)                   [P1 shipped]
+      phase_02.ipynb           # genes + panels walkthrough (Phase 2)               [P2 shipped]
+    demo/
+      01_label_one_cluster.ipynb    # the muscle-cluster walkthrough                [P5]
+      02_cluster_with_scanpy.ipynb  # layer-2: adata -> leiden -> rank_genes -> zlabel [P6]
+      03_end_to_end.ipynb           # layer-3: a real 48 hpf subset, start to finish   [P6]
 ```
 
-**Core deps:** pandas, numpy, obonet, networkx, pyyaml, pydantic. **No scanpy,
-anndata, decoupler, or pydantic-ai in the core** — those live only in the optional
-`[llm]` extra (pydantic-ai) and the notebooks (scanpy/anndata). The labeler takes
-strings in, hands an evidence packet out.
+**Core deps (added per phase):** Phase 1 obonet + networkx; Phase 2 adds pyyaml;
+Phase 3 adds pydantic; Phase 4 adds pandas + numpy. **No scanpy, anndata,
+decoupler, or pydantic-ai in the core** — those live only in the optional `[llm]`
+extra (pydantic-ai) and the notebooks (scanpy/anndata). The labeler takes strings
+in, hands an evidence packet out.
 
 ## Lift vs. rewrite (zero daniotype dependency)
 

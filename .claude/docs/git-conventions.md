@@ -19,7 +19,7 @@ Types: feat, fix, chore, refactor, test, docs, ci, perf.
 ## Before opening a PR
 
 ```bash
-make verify   # lint + types + tests
+make verify   # lint + docstrings + types + tests
 ```
 
 ## Pull requests

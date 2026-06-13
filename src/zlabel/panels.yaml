@@ -1,0 +1,243 @@
+# zlabel broad-bucket panel dictionary
+#
+# Domain knowledge: all marker curation lives here; genes.py and panels.py only
+# load and score it. Each bucket maps to one broad tissue/lineage/state call.
+#
+# Schema per entry:
+#   germ_layer: broad germ-layer origin; empty string for state panels
+#   tissue:     tissue or organ system; empty string for state panels
+#   lineage:    lineage or cell-type category; empty string for state panels
+#   kind:       identity | state  (state panels are scored but labeled separately)
+#   cite:       provenance -- NEVER Daniocell cluster markers (that is the Phase-4
+#               benchmark; citing it here would make the eval circular)
+#   markers:    current lowercase ZFIN symbols only; one previous name -> current
+#               symbol was resolved before committing (see curation notes below)
+#   subpanels:  (optional) named sub-panels; loaded in Phase 2, scored in Phase 3+
+#
+# Curation rules applied:
+#   - All symbols are lowercased current ZFIN symbols (verified against ZFIN).
+#   - Combined notations split: tbxta/ntl -> tbxta only (ntl is a previous name
+#     for tbxta, not a separate gene).
+#   - Non-symbol descriptions dropped: "histone genes", "epcam-like epithelial
+#     genes", "noto-related markers" are prose, not symbols.
+#   - ddx4 used in place of vasa (vasa is a previous name for ddx4 in ZFIN).
+#   - fn1a used instead of fn1 (zebrafish has fn1a/fn1b paralogs; fn1a is the
+#     more broadly expressed form in mesenchymal tissues).
+#
+# Cite abbreviations:
+#   playbook §7 = docs/reference/cell_labelling_playbook.md section 7
+#   ZFIN wt-expr = ZFIN wildtype expression records (zfin.org/downloads)
+#   literature   = peer-reviewed zebrafish scRNA-seq papers
+
+# --- identity panels ----------------------------------------------------------
+
+neural:
+  germ_layer: ectoderm
+  tissue: nervous system
+  lineage: neural/neuroectoderm
+  kind: identity
+  cite: "playbook §7; ZFIN wt-expr (elavl3, neurod1, sox3); literature"
+  markers:
+    - elavl3   # pan-neuronal RNA-binding protein (HuC/HuD); the most reliable neural marker
+    - neurod1  # bHLH TF; proneural differentiation
+    - tubb5    # beta-tubulin; axons and neural progenitors
+    - sox3     # SRY-box TF; pan-neural progenitor
+    - sox2     # SRY-box TF; neural stem/progenitor
+    - her4.1   # hairy/enhancer-of-split; Notch target; radial glia-like
+    - ascl1a   # achaete-scute homolog; proneural bHLH
+    - gfap     # glial fibrillary acidic protein; astrocytes and radial glia
+
+epidermis:
+  germ_layer: ectoderm
+  tissue: skin
+  lineage: epidermis/periderm
+  kind: identity
+  cite: "playbook §7; ZFIN wt-expr (krt4, tp63); literature"
+  markers:
+    - krt4     # keratin 4; suprabasal/periderm
+    - krt5     # keratin 5; basal epidermis
+    - tp63     # tumor protein p63; basal epidermal progenitor TF
+    - cldne    # claudin e; tight-junction protein in zebrafish periderm
+    - epcam    # epithelial cell adhesion molecule; broad epithelial marker
+
+muscle:
+  germ_layer: mesoderm
+  tissue: muscle
+  lineage: skeletal muscle
+  kind: identity
+  cite: "playbook §7; ZFIN wt-expr (myod1, mylpfa, acta1b); literature"
+  markers:
+    - myod1    # myogenic regulatory factor; master TF for myoblast commitment
+    - myog     # myogenin; terminal myogenic differentiation
+    - myf5     # myogenic factor 5; early myoblast specification
+    - mylpfa   # myosin light chain phosphorylatable fast skeletal muscle a (prev. mylz2)
+    - acta1b   # actin alpha 1b; sarcomeric; fast skeletal muscle
+    - tnnt3a   # troponin T type 3a; sarcomeric; fast skeletal muscle
+    - tnnc2    # troponin C type 2; fast skeletal muscle
+    - ckma     # creatine kinase muscle a; energy metabolism in mature muscle
+  subpanels:
+    # Subpanels are loaded in Phase 2 but scored only in Phase 3+ (subclusters).
+    fast:     [mylpfa, tnnt3a, acta1b]
+    slow:     [smyhc1, tnnc1a]          # smyhc1: slow myosin heavy chain 1
+    cardiac:  [myh6, vmhc]              # myh6: alpha-MHC; vmhc: ventricular MHC
+    myoblast: [myod1, myog, myf5]
+
+blood_erythroid:
+  germ_layer: mesoderm
+  tissue: blood
+  lineage: erythroid
+  kind: identity
+  cite: "playbook §7; ZFIN wt-expr (gata1a, hbae1.1, hbbe1.1); literature"
+  markers:
+    - gata1a   # GATA binding protein 1a; erythroid master TF
+    - hbae1.1  # hemoglobin alpha embryonic 1.1; embryonic hemoglobin
+    - hbbe1.1  # hemoglobin beta embryonic 1.1; embryonic hemoglobin
+    - alas2    # 5-aminolevulinate synthase 2; heme biosynthesis rate-limiting enzyme
+    - klf1a    # Kruppel-like factor 1a; erythroid differentiation TF
+    - hemgn    # hemogen; erythroid-specific nuclear protein
+
+immune_myeloid:
+  germ_layer: mesoderm
+  tissue: immune system
+  lineage: myeloid/macrophage
+  kind: identity
+  cite: "playbook §7; ZFIN wt-expr (mpeg1.1, lcp1, csf1ra); literature"
+  markers:
+    - lcp1     # lymphocyte cytosolic protein 1 (L-plastin); pan-leukocyte
+    - mpeg1.1  # macrophage-expressed gene 1.1; macrophage-specific in zebrafish
+    - coro1a   # coronin actin binding protein 1a; leukocytes and macrophages
+    - spi1b    # Spi1 proto-oncogene b (PU.1); myeloid master TF
+    - mfap4    # microfibril-associated protein 4; macrophage marker in zebrafish
+    - lyz      # lysozyme; innate immune effector in macrophages/neutrophils
+    - csf1ra   # CSF1 receptor a; macrophage colony-stimulating factor receptor
+
+endothelium:
+  germ_layer: mesoderm
+  tissue: vasculature
+  lineage: endothelium
+  kind: identity
+  cite: "playbook §7; ZFIN wt-expr (kdrl, fli1a, cdh5); literature"
+  markers:
+    - kdrl     # kinase insert domain receptor like (VEGFR2); vascular endothelium
+    - fli1a    # Friend leukemia integration 1a; pan-endothelial ETS factor
+    - etv2     # ETS variant TF 2; hemato-vascular progenitor and early endothelium
+    - cdh5     # cadherin 5 (VE-cadherin); endothelial cell-cell junction
+    - pecam1   # platelet endothelial cell adhesion molecule 1; pan-endothelial
+    - flt1     # fms related receptor tyrosine kinase 1 (VEGFR1); venous/tip cells
+
+endoderm_gut:
+  germ_layer: endoderm
+  tissue: gut/liver/pancreas
+  lineage: endoderm
+  kind: identity
+  cite: "playbook §7; ZFIN wt-expr (sox32, foxa2, sox17); literature"
+  markers:
+    - sox32    # SRY-box TF 32 (casanova); zebrafish endoderm master regulator
+    - sox17    # SRY-box TF 17; definitive endoderm specification
+    - foxa2    # forkhead box A2 (HNF3b); endoderm, liver, floor plate
+    - gata5    # GATA binding protein 5; early endoderm
+    - gata6    # GATA binding protein 6; endoderm and cardiac
+    - hhex     # hematopoietically expressed homeobox; liver and thyroid endoderm
+
+mesenchyme:
+  germ_layer: mesoderm
+  tissue: mesenchyme/connective tissue
+  lineage: mesenchyme/fibroblast
+  kind: identity
+  cite: "playbook §7; ZFIN wt-expr (col1a1a, dcn); literature"
+  markers:
+    - col1a1a  # collagen type I alpha 1a; primary ECM component of mesenchyme
+    - col1a2   # collagen type I alpha 2; ECM
+    - dcn      # decorin; small leucine-rich proteoglycan; mesenchymal ECM
+    - twist1a  # twist family bHLH TF 1a; mesenchymal/EMT TF
+    - prrx1a   # paired related homeobox 1a; limb/craniofacial mesenchyme TF
+    - osr2     # odd-skipped related TF 2; lateral plate and craniofacial mesenchyme
+    - fn1a     # fibronectin 1a; ECM glycoprotein; mesenchymal and migratory cells
+
+cartilage:
+  germ_layer: neural crest  # craniofacial cartilage is neural-crest-derived (some trunk cartilage is lateral-plate mesoderm)
+  tissue: cartilage/skeleton
+  lineage: chondrogenic
+  kind: identity
+  cite: "playbook §7; ZFIN wt-expr (col2a1a, sox9a); literature"
+  markers:
+    - sox9a    # SRY-box TF 9a; master chondrogenic TF
+    - sox9b    # SRY-box TF 9b; paralog; also expressed in chondrocytes
+    - col2a1a  # collagen type II alpha 1a; hyaline cartilage ECM
+    - acana    # aggrecan a; large aggregating proteoglycan of cartilage matrix
+    - matn1    # matrilin 1; cartilage ECM glycoprotein
+    - runx2b   # runt-related TF 2b; osteochondrogenic TF; late chondrocyte
+
+notochord:
+  germ_layer: mesoderm
+  tissue: notochord
+  lineage: axial mesoderm
+  kind: identity
+  cite: "playbook §7; ZFIN wt-expr (tbxta, shha, col8a1a); literature"
+  markers:
+    - tbxta    # T-box TF a (was ntl/no tail); notochord master TF
+    - shha     # sonic hedgehog signaling molecule a; notochord signaling center
+    - col2a1a  # collagen type II alpha 1a; notochord sheath ECM
+    - col8a1a  # collagen type VIII alpha 1a; notochord sheath ECM
+    - noto     # notochord homeobox; notochord-specific TF
+
+pigment:
+  germ_layer: neural crest
+  tissue: pigment cells
+  lineage: neural crest pigment derivatives
+  kind: identity
+  cite: "playbook §7; ZFIN wt-expr (mitfa, dct, tyrp1b); literature"
+  markers:
+    - mitfa    # microphthalmia-associated TF a; melanocyte master TF
+    - dct      # dopachrome tautomerase; melanin synthesis enzyme
+    - tyrp1b   # tyrosinase related protein 1b; melanin synthesis
+    - xdh      # xanthine dehydrogenase; xanthophore marker
+    - gch2     # GTP cyclohydrolase 2; pteridine synthesis; xanthophores/iridophores
+    - slc45a2  # solute carrier family 45 member 2 (matp); melanocyte transporter
+
+germline:
+  germ_layer: germline
+  tissue: germline
+  lineage: germ cells
+  kind: identity
+  cite: "playbook §7; ZFIN wt-expr (ddx4, nanos3, dazl); literature"
+  markers:
+    - ddx4     # DEAD-box helicase 4 (was vasa; vasa is a ZFIN previous name)
+    - nanos3   # nanos C2HC-type zinc finger 3; germline maintenance
+    - dazl     # deleted in azoospermia-like; germ-cell-specific RNA-binding protein
+    - piwil1   # piwi-like RNA-mediated gene silencing 1; piRNA pathway; germline
+
+# --- state panels -------------------------------------------------------------
+# State panels detect transcriptional programs orthogonal to cell identity.
+# A cycling muscle cell is still muscle; the state is stored separately.
+# germ_layer/tissue/lineage are empty for state panels (not applicable).
+
+cycling:
+  germ_layer: ""
+  tissue: ""
+  lineage: ""
+  kind: state
+  cite: "playbook §7; GO cell-cycle terms; literature"
+  markers:
+    - mki67    # marker of proliferation Ki-67; S/G2/M phase
+    - pcna     # proliferating cell nuclear antigen; DNA replication clamp
+    - top2a    # topoisomerase II alpha; G2/M decatenation
+    - hmgb2a   # high mobility group box 2a; chromatin remodeling in proliferating cells
+    - stmn1a   # stathmin 1a; microtubule destabilizer; mitotic spindle
+
+stress_response:
+  germ_layer: ""
+  tissue: ""
+  lineage: ""
+  kind: state
+  cite: "playbook §7; GO stress-response terms; literature"
+  # hsp70l/hspa5/dnajb1b are canonical heat-shock proteins; fosab and atf3 are
+  # immediate-early genes (IEGs) induced broadly by stress. IEGs co-occur reliably
+  # with HSP markers in heat-shocked zebrafish clusters, making them useful ensemble
+  # members even though they are not heat-shock specific.
+  markers:
+    - hsp70l   # heat shock cognate 70 kDa protein, like; canonical HSP70 family member
+    - hspa5    # heat shock protein family A member 5 (BiP/GRP78); ER stress sentinel
+    - dnajb1b  # DnaJ heat shock protein family member B1b; HSP40 co-chaperone
+    - fosab    # fos proto-oncogene b; IEG; stress/activity-induced
+    - atf3     # activating transcription factor 3; IEG; integrated stress response TF
