@@ -2,10 +2,11 @@
 
 Converts raw marker gene symbols to their official current ZFIN symbols using
 the synonym map produced by data.load_gene_synonym_map. The three possible
-outcomes for any one symbol are resolved (exactly one current symbol found),
-ambiguous (one previous name maps to several current paralogs), and unresolved
-(not found). Ambiguous and unresolved markers are surfaced for the caller to
-inspect; they are excluded from panel scoring so the labeler never guesses.
+outcomes for any one symbol are resolved (the input is itself a current symbol,
+or an alias of exactly one), ambiguous (a previous name that fans out to several
+current paralogs), and unresolved (not found). Ambiguous and unresolved markers
+are surfaced for the caller to inspect; they are excluded from panel scoring so
+the labeler never guesses.
 
 Phase 2 uses the synonym information already available from the downloaded GAF.
 This is intentionally a minimal alias source. It is not treated as a complete
@@ -56,10 +57,12 @@ def normalize_symbol(symbol: str, synonym_map: dict[str, set[str]]) -> Normalize
     """Normalize one gene symbol to its current ZFIN symbol(s).
 
     Strips and lowercases the input, looks it up in synonym_map, and returns a
-    NormalizedSymbol recording the outcome. A previous name that fans out to
-    multiple current paralogs is ambiguous; all candidates are kept in symbols
-    and the result is never collapsed. A miss is unresolved with an empty
-    symbols set, never a pass-through of the raw input.
+    NormalizedSymbol recording the outcome. An input that is itself a current
+    symbol resolves to that symbol, even when it is also a paralog's legacy
+    alias — its own identity wins. A previous name that fans out to multiple
+    current paralogs is ambiguous; all candidates are kept in symbols and the
+    result is never collapsed. A miss is unresolved with an empty symbols set,
+    never a pass-through of the raw input.
 
     Args:
         symbol (str): Raw marker symbol from the caller (any case).
@@ -80,6 +83,16 @@ def normalize_symbol(symbol: str, synonym_map: dict[str, set[str]]) -> Normalize
             symbols=frozenset(),
             note="not found in GAF synonym map",
         )
+    # An input that is itself a current symbol resolves to that symbol, even when
+    # it is also listed as a paralog's legacy alias (kdr is a current gene and an
+    # old alias of kdrl). Its own identity wins, so it is never called ambiguous.
+    if key in candidates:
+        return NormalizedSymbol(
+            input=symbol,
+            status=STATUS_RESOLVED,
+            symbols=frozenset({key}),
+            note=None,
+        )
     if len(candidates) == 1:
         return NormalizedSymbol(
             input=symbol,
@@ -87,12 +100,13 @@ def normalize_symbol(symbol: str, synonym_map: dict[str, set[str]]) -> Normalize
             symbols=frozenset(candidates),
             note=None,
         )
-    # One previous name maps to several current paralogs — keep all of them.
+    # A previous name (not itself a current symbol) that fans out to several
+    # current paralogs is genuinely ambiguous — keep them all, never collapse.
     return NormalizedSymbol(
         input=symbol,
         status=STATUS_AMBIGUOUS,
         symbols=frozenset(candidates),
-        note=f"maps to {len(candidates)} current paralogs: {', '.join(sorted(candidates))}",
+        note=f"previous name maps to {len(candidates)} current paralogs: {', '.join(sorted(candidates))}",
     )
 
 

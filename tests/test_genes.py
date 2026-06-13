@@ -82,6 +82,17 @@ def test_normalize_symbol_paralog_fanout_is_ambiguous(gaf_row, write_gaf):
     assert "2" in result.note  # note mentions the count of paralogs
 
 
+def test_normalize_symbol_current_symbol_wins_over_paralog_alias():
+    # kdr is a current symbol that ZFIN also lists as a legacy alias of kdrl, so
+    # the synonym map carries kdr -> {kdr, kdrl}. The exact current-symbol match
+    # must win: kdr resolves to itself, never flagged ambiguous and dropped.
+    syn = {"kdr": {"kdr", "kdrl"}, "kdrl": {"kdrl"}}
+    result = normalize_symbol("kdr", syn)
+    assert result.status == STATUS_RESOLVED
+    assert result.symbols == frozenset({"kdr"})
+    assert result.note is None
+
+
 # --- normalize_symbol: miss (unresolved) -------------------------------------
 
 
