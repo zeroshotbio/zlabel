@@ -109,11 +109,9 @@ def _stage_to_hpf(stage: str) -> tuple[float, float] | None:
         tuple[float, float] | None: The [begin, end) window in hpf, or None
         when the name is not a known ZFS stage.
     """
+    # Prefixed name (Hatching:Long-pec) first, else the bare substage (Long-pec).
     s = stage.strip()
-    window = _STAGE_WINDOW.get(s)
-    if window is not None:
-        return window
-    return _BARE_STAGE_WINDOW.get(s.split(":", 1)[-1])
+    return _STAGE_WINDOW.get(s) or _BARE_STAGE_WINDOW.get(s.split(":", 1)[-1])
 
 
 # ---------------------------------------------------------------------------
@@ -221,4 +219,4 @@ def stage_plausibility(
         rec_hi = max(start_w[1], end_w[1])
         if rec_lo <= stage_hpf + window and rec_hi >= stage_hpf - window:
             return True  # any datable record on-stage -> plausible
-    return None if not found_datable else False
+    return False if found_datable else None  # datable but none on-stage -> False; nothing datable -> None
