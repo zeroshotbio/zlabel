@@ -35,7 +35,7 @@ evidence, not one gene**:
 2. **Score markers against curated tissue panels** → a ranked bucket table (negative evidence falls out for free).
 3. **Ground / corroborate** → where do the top markers express in vivo (ZFIN → ZFA anatomy)? Is the bucket plausible for the sample's stage (ZFS)?
 4. **Decide** → coherent markers + one dominant, corroborated bucket → assign with confidence; otherwise `mixed/unresolved` (honest abstention) or a coarser tier.
-5. **Emit a `Label` evidence packet** → bucket, levels, confidence, positive markers, panel scores, expression evidence, ZFA/ZFS/optional CL ids, rationale, `next_step: subcluster`.
+5. **Emit a `Label` evidence packet** → bucket, levels, confidence, positive markers, panel scores, expression evidence, the bucket's ZFA anchor id, rationale, `next_step: subcluster`.
 
 > [!WARNING]
 > The LLM is **not** in this loop for v1 (see §LLM).
