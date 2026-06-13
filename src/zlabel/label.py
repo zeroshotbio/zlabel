@@ -202,16 +202,16 @@ def _grade_confidence(
     *,
     rollup: bool,
 ) -> tuple[float, Confidence, dict[str, float]]:
-    """Grade an assigned bucket: weighted score -> tier, with the caps and floor.
+    """Grade an assigned bucket: weighted score -> tier, with the high-confidence caps.
 
     The 0-1 score is W_COHERENCE*coherence + W_MARGIN*margin + W_GROUNDING*grounding
     + W_STAGE*stage, each component in [0, 1] (absent grounding/stage use NEUTRAL).
-    All confidence policy lives here, in one place:
+    Only a high call is ever capped down to medium:
       convergence cap -- a single-bucket high needs real corroboration (see
         _supports_high); strong panels alone top out at medium.
       rollup cap -- a germ-layer rollup never exceeds medium (it makes no single-
         anatomy high claim).
-      floor -- any assigned label is at least low.
+    low is _tier's natural minimum, so no separate floor step is needed.
 
     Args:
         top (BucketScore): The winning bucket (the top contender for a rollup).
@@ -234,14 +234,11 @@ def _grade_confidence(
     score = W_COHERENCE * coherence + W_MARGIN * margin + W_GROUNDING * g + W_STAGE * s
     components = {"coherence": coherence, "margin": margin, "grounding": g, "stage": s}
 
+    # Cap a high call down to medium: a rollup makes no single-bucket high claim, and
+    # a single-bucket high needs real grounding/stage corroboration (convergence cap).
     tier = _tier(score)
-    if rollup:
-        if tier == TIER_HIGH_NAME:
-            tier = TIER_MEDIUM_NAME
-    elif tier == TIER_HIGH_NAME and not _supports_high(grounding, stage):
+    if tier == TIER_HIGH_NAME and (rollup or not _supports_high(grounding, stage)):
         tier = TIER_MEDIUM_NAME
-    if tier not in (TIER_HIGH_NAME, TIER_MEDIUM_NAME):
-        tier = TIER_LOW_NAME
     return score, tier, components
 
 
