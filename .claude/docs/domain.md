@@ -44,11 +44,16 @@ parsing is a separate, swappable choice.
 
 ## Converging evidence
 
-zlabel combines three signals: (1) curated tissue **panel** scores (the primary
-first-pass discriminator), (2) **ZFIN in-vivo expression** of the top markers → ZFA
-anatomy, and (3) **stage** plausibility. When they agree on one bucket, confidence
-is high; when they conflict, zlabel abstains (`mixed/unresolved`) or rolls up to a
-coarser tier — it never overcalls.
+zlabel combines four signals into a weighted confidence score:
+
+1. **Coherence (0.40)** — rank-weighted strength of the top bucket's matched markers.
+2. **Margin (0.30)** — separation from the runner-up bucket (how dominant the winner is).
+3. **Grounding (0.20)** — fraction of the winner's markers with ZFIN expression records that land under the bucket's ZFA anatomy anchor (e.g. ZFA:0000548 musculature system for muscle). Soft: markers with no record are omitted from the denominator, not penalised.
+4. **Stage (0.10)** — fraction of gradable markers whose ZFS [start, end] stage window overlaps the sample's developmental stage (`stage_hpf ± 12 h`).
+
+When all four signals agree (strong panels + in-vivo grounding + stage match), confidence is `high`. Strong panels alone (no expression data) top out at `medium` due to the **convergence cap**: `high` requires at least one of grounding/stage to be gradable and supportive.
+
+When no single bucket dominates but the top contenders share a germ layer, zlabel rolls up to that tier (`underclustered`). Contradictory germ layers → `mixed/unresolved`. It never overcalls.
 
 ## Additional Information
 

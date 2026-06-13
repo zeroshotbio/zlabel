@@ -4,15 +4,20 @@
 # load and score it. Each bucket maps to one broad tissue/lineage/state call.
 #
 # Schema per entry:
-#   germ_layer: broad germ-layer origin; empty string for state panels
-#   tissue:     tissue or organ system; empty string for state panels
-#   lineage:    lineage or cell-type category; empty string for state panels
-#   kind:       identity | state  (state panels are scored but labeled separately)
-#   cite:       provenance -- NEVER Daniocell cluster markers (that is the Phase-4
-#               benchmark; citing it here would make the eval circular)
-#   markers:    current lowercase ZFIN symbols only; one previous name -> current
-#               symbol was resolved before committing (see curation notes below)
-#   subpanels:  (optional) named sub-panels; loaded in Phase 2, scored in Phase 3+
+#   germ_layer:       broad germ-layer origin; empty string for state panels
+#   tissue:           tissue or organ system; empty string for state panels
+#   lineage:          lineage or cell-type category; empty string for state panels
+#   kind:             identity | state  (state panels are scored but labeled separately)
+#   cite:             provenance -- NEVER Daniocell cluster markers (that is the Phase-4
+#                     benchmark; citing it here would make the eval circular)
+#   markers:          current lowercase ZFIN symbols only; one previous name -> current
+#                     symbol was resolved before committing (see curation notes below)
+#   ontology_anchor:  (identity panels only) ZFA ids the bucket's markers should
+#                     express under. Used by Phase 3 grounding to compute the grounding
+#                     confidence component. Coarse terms are preferred so markers that
+#                     express anywhere in the tissue still ground. State panels carry no
+#                     anchor. All ids verified against data/ontologies/zfa.obo.
+#   subpanels:        (optional) named sub-panels; loaded in Phase 2, scored in Phase 3+
 #
 # Curation rules applied:
 #   - All symbols are lowercased current ZFIN symbols (verified against ZFIN).
@@ -37,6 +42,8 @@ neural:
   lineage: neural/neuroectoderm
   kind: identity
   cite: "playbook §7; ZFIN wt-expr (elavl3, neurod1, sox3); literature"
+  ontology_anchor:
+    - ZFA:0000396  # nervous system
   markers:
     - elavl3   # pan-neuronal RNA-binding protein (HuC/HuD); the most reliable neural marker
     - neurod1  # bHLH TF; proneural differentiation
@@ -53,6 +60,9 @@ epidermis:
   lineage: epidermis/periderm
   kind: identity
   cite: "playbook §7; ZFIN wt-expr (krt4, tp63); literature"
+  ontology_anchor:
+    - ZFA:0000105  # epidermis
+    - ZFA:0000368  # integument
   markers:
     - krt4     # keratin 4; suprabasal/periderm
     - krt5     # keratin 5; basal epidermis
@@ -66,6 +76,8 @@ muscle:
   lineage: skeletal muscle
   kind: identity
   cite: "playbook §7; ZFIN wt-expr (myod1, mylpfa, acta1b); literature"
+  ontology_anchor:
+    - ZFA:0000548  # musculature system
   markers:
     - myod1    # myogenic regulatory factor; master TF for myoblast commitment
     - myog     # myogenin; terminal myogenic differentiation
@@ -88,6 +100,9 @@ blood_erythroid:
   lineage: erythroid
   kind: identity
   cite: "playbook §7; ZFIN wt-expr (gata1a, hbae1.1, hbbe1.1); literature"
+  ontology_anchor:
+    - ZFA:0000007  # blood
+    - ZFA:0005023  # hematopoietic system
   markers:
     - gata1a   # GATA binding protein 1a; erythroid master TF
     - hbae1.1  # hemoglobin alpha embryonic 1.1; embryonic hemoglobin
@@ -102,6 +117,9 @@ immune_myeloid:
   lineage: myeloid/macrophage
   kind: identity
   cite: "playbook §7; ZFIN wt-expr (mpeg1.1, lcp1, csf1ra); literature"
+  ontology_anchor:
+    - ZFA:0001159  # immune system
+    - ZFA:0005023  # hematopoietic system
   markers:
     - lcp1     # lymphocyte cytosolic protein 1 (L-plastin); pan-leukocyte
     - mpeg1.1  # macrophage-expressed gene 1.1; macrophage-specific in zebrafish
@@ -117,6 +135,9 @@ endothelium:
   lineage: endothelium
   kind: identity
   cite: "playbook §7; ZFIN wt-expr (kdrl, fli1a, cdh5); literature"
+  ontology_anchor:
+    - ZFA:0005249  # vasculature
+    - ZFA:0009065  # endothelial cell
   markers:
     - kdrl     # kinase insert domain receptor like (VEGFR2); vascular endothelium
     - fli1a    # Friend leukemia integration 1a; pan-endothelial ETS factor
@@ -131,6 +152,9 @@ endoderm_gut:
   lineage: endoderm
   kind: identity
   cite: "playbook §7; ZFIN wt-expr (sox32, foxa2, sox17); literature"
+  ontology_anchor:
+    - ZFA:0000339  # digestive system
+    - ZFA:0000416  # presumptive endoderm
   markers:
     - sox32    # SRY-box TF 32 (casanova); zebrafish endoderm master regulator
     - sox17    # SRY-box TF 17; definitive endoderm specification
@@ -145,6 +169,8 @@ mesenchyme:
   lineage: mesenchyme/fibroblast
   kind: identity
   cite: "playbook §7; ZFIN wt-expr (col1a1a, dcn); literature"
+  ontology_anchor:
+    - ZFA:0000393  # mesenchyme
   markers:
     - col1a1a  # collagen type I alpha 1a; primary ECM component of mesenchyme
     - col1a2   # collagen type I alpha 2; ECM
@@ -160,6 +186,9 @@ cartilage:
   lineage: chondrogenic
   kind: identity
   cite: "playbook §7; ZFIN wt-expr (col2a1a, sox9a); literature"
+  ontology_anchor:
+    - ZFA:0001501  # cartilage element
+    - ZFA:0000434  # skeletal system
   markers:
     - sox9a    # SRY-box TF 9a; master chondrogenic TF
     - sox9b    # SRY-box TF 9b; paralog; also expressed in chondrocytes
@@ -174,6 +203,8 @@ notochord:
   lineage: axial mesoderm
   kind: identity
   cite: "playbook §7; ZFIN wt-expr (tbxta, shha, col8a1a); literature"
+  ontology_anchor:
+    - ZFA:0000135  # notochord
   markers:
     - tbxta    # T-box TF a (was ntl/no tail); notochord master TF
     - shha     # sonic hedgehog signaling molecule a; notochord signaling center
@@ -187,6 +218,8 @@ pigment:
   lineage: neural crest pigment derivatives
   kind: identity
   cite: "playbook §7; ZFIN wt-expr (mitfa, dct, tyrp1b); literature"
+  ontology_anchor:
+    - ZFA:0009090  # pigment cell
   markers:
     - mitfa    # microphthalmia-associated TF a; melanocyte master TF
     - dct      # dopachrome tautomerase; melanin synthesis enzyme
@@ -201,6 +234,8 @@ germline:
   lineage: germ cells
   kind: identity
   cite: "playbook §7; ZFIN wt-expr (ddx4, nanos3, dazl); literature"
+  ontology_anchor:
+    - ZFA:0009016  # germ line cell
   markers:
     - ddx4     # DEAD-box helicase 4 (was vasa; vasa is a ZFIN previous name)
     - nanos3   # nanos C2HC-type zinc finger 3; germline maintenance

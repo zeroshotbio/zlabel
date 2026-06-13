@@ -53,6 +53,9 @@ class Panel:
             case-insensitive.
         cite (str): Citation or provenance of this panel's marker list.
         kind (str): identity or state.
+        ontology_anchor (frozenset[str]): ZFA ids the bucket's markers should
+            express under. Used by Phase 3 grounding to compute the grounding
+            confidence component. Empty for state panels.
         subpanels (Mapping[str, frozenset[str]]): Optional named sub-panels
             (e.g. muscle.fast, muscle.slow). Loaded in Phase 2 but not scored
             here; Phase 3 uses them for finer resolution on subclusters.
@@ -67,7 +70,8 @@ class Panel:
     markers: frozenset[str]
     cite: str
     kind: str
-    subpanels: Mapping[str, frozenset[str]] = field(hash=False)
+    ontology_anchor: frozenset[str] = field(default_factory=frozenset)
+    subpanels: Mapping[str, frozenset[str]] = field(hash=False, default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -110,6 +114,10 @@ class BucketScore:
         kind (str): Propagated from Panel.kind.
         matched_markers (tuple[MatchedMarker, ...]): Markers that hit this
             bucket, in input-rank order (highest-weight first).
+        total_weight (float): The shared denominator used when computing score
+            (sum of all resolved-marker weights, before any identity-only
+            adjustment). Carried here so label.decide() can recompute adjusted
+            scores without re-running the scorer.
     """
 
     bucket: str
@@ -119,6 +127,7 @@ class BucketScore:
     lineage: str
     kind: str
     matched_markers: tuple[MatchedMarker, ...]
+    total_weight: float = 0.0
 
 
 # --- loaders and scorer -------------------------------------------------------
@@ -174,6 +183,9 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
             name: frozenset(m.lower() for m in sub_markers) for name, sub_markers in subpanels_raw.items()
         }
 
+        anchor_raw: list[str] = entry.get("ontology_anchor", [])  # type: ignore[assignment]
+        ontology_anchor = frozenset(anchor_raw)
+
         panels.append(
             Panel(
                 bucket=bucket,
@@ -183,6 +195,7 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
                 markers=markers,
                 cite=str(entry.get("cite", "")),
                 kind=kind,
+                ontology_anchor=ontology_anchor,
                 subpanels=subpanels,
             )
         )
@@ -248,6 +261,7 @@ def score_markers(
                 lineage=panel.lineage,
                 kind=panel.kind,
                 matched_markers=matched,
+                total_weight=total_weight,
             )
         )
 

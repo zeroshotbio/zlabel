@@ -42,8 +42,8 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   (a-kind-of), `part_of`, and `develops_from`. zlabel's vocabulary for tissue labels
   and the "where does this express?" grounding. File: `zfa.obo`.
 - **ZFS** — Zebrafish developmental Stages (e.g. `Long-pec` ≈ 48 hours). Used to
-  sanity-check that a label makes sense for the sample's age. (Wired up in a later
-  phase.)
+  sanity-check that a label makes sense for the sample's age. Wired up in Phase 3
+  (`ground.stage_plausibility`).
 - **GO / GAF** — Gene Ontology Annotation File. zlabel uses it only for its synonym
   column (gene aliases → current symbols). File: `zfin.gaf`.
 - **Daniocell / Zebrahub / ZCL** — published zebrafish atlases used as ground truth
@@ -87,5 +87,6 @@ src/zlabel/genes.py     ->  normalize_symbol() · normalize_markers()           
 src/zlabel/panels.py    ->  load_panels() · score_markers() -> list[BucketScore] (Phase 2)
                                         |
                                         v
-ground · label          ->  ground in ZFA/ZFIN, decide a Label                   (Phase 3+)
+src/zlabel/ground.py    ->  expression_lookup() · grounds_under() · stage_plausibility() (Phase 3)
+src/zlabel/label.py     ->  decide() · Labeler.label() -> Label                         (Phase 3)
 ```

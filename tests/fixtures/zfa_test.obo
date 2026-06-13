@@ -45,6 +45,19 @@ namespace: zebrafish_anatomy
 is_a: ZFA:0005307 ! endothelial cell
 relationship: develops_from ZFA:0005307 ! endothelial cell
 
+[Term]
+id: ZFA:0000548
+name: musculature system
+namespace: zebrafish_anatomy
+is_a: ZFA:0001094 ! whole organism
+
+[Term]
+id: ZFA:0009234
+name: muscle cell
+namespace: zebrafish_anatomy
+is_a: ZFA:0009000 ! cell
+relationship: part_of ZFA:0000548 ! musculature system
+
 [Typedef]
 id: part_of
 name: part_of

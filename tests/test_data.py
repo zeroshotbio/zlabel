@@ -7,6 +7,7 @@ rows are built inline (the 15-col format is self-documenting in _expr_row).
 from pathlib import Path
 
 import pytest
+from helpers import expr_row, write_expr
 
 from zlabel import (
     ALL_RELATION_EDGE_TYPES,
@@ -105,62 +106,34 @@ def test_edge_type_constants():
 # --- ZFIN wildtype expression ------------------------------------------------
 
 
-def _expr_row(symbol, super_id, super_name, sub_id, sub_name, start, end):
-    """Build one real-format ZFIN expression row (15 tab cols, no header)."""
-    return "\t".join(
-        [
-            "ZDB-GENE-x",
-            symbol,
-            "WT",
-            super_id,
-            super_name,
-            sub_id,
-            sub_name,
-            start,
-            end,
-            "ISH",
-            "MMO:1",
-            "ZDB-PUB",
-            "",
-            "",
-            "ZDB-FISH",
-        ]
-    )
-
-
-def _write_expr(tmp_path, rows):
-    path = tmp_path / "wt_expr.txt"
-    path.write_text("\n".join(rows) + "\n", encoding="utf-8")
-    return path
-
 
 def test_expression_keys_are_lowercased_symbols(tmp_path):
     rows = [
-        _expr_row("Kdrl", "ZFA:0000009", "blood vessel", "", "", "Long-pec", "Day 5"),
-        _expr_row("hbbe1.1", "ZFA:0000007", "blood", "", "", "Gastrula:Bud", "Larval:Day 4"),
+        expr_row("Kdrl", "ZFA:0000009", "blood vessel", "", "", "Long-pec", "Day 5"),
+        expr_row("hbbe1.1", "ZFA:0000007", "blood", "", "", "Gastrula:Bud", "Larval:Day 4"),
     ]
-    assert set(load_zfin_expression(_write_expr(tmp_path, rows))) == {"kdrl", "hbbe1.1"}
+    assert set(load_zfin_expression(write_expr(tmp_path, rows))) == {"kdrl", "hbbe1.1"}
 
 
 def test_expression_record_carries_anatomy_and_stage(tmp_path):
-    rows = [_expr_row("hbbe1.1", "ZFA:0000007", "blood", "", "", "Gastrula:Bud", "Larval:Day 4")]
-    rec = load_zfin_expression(_write_expr(tmp_path, rows))["hbbe1.1"][0]
+    rows = [expr_row("hbbe1.1", "ZFA:0000007", "blood", "", "", "Gastrula:Bud", "Larval:Day 4")]
+    rec = load_zfin_expression(write_expr(tmp_path, rows))["hbbe1.1"][0]
     assert (rec.zfa_id, rec.zfa_name) == ("ZFA:0000007", "blood")
     assert (rec.start_stage, rec.end_stage) == ("Gastrula:Bud", "Larval:Day 4")
 
 
 def test_expression_sub_structure_wins_over_super(tmp_path):
     rows = [
-        _expr_row("kdrl", "ZFA:0000009", "blood vessel", "", "", "Long-pec", "Long-pec"),
-        _expr_row("kdrl", "ZFA:0000009", "blood vessel", "ZFA:0000010", "dorsal aorta", "Long-pec", "Long-pec"),
+        expr_row("kdrl", "ZFA:0000009", "blood vessel", "", "", "Long-pec", "Long-pec"),
+        expr_row("kdrl", "ZFA:0000009", "blood vessel", "ZFA:0000010", "dorsal aorta", "Long-pec", "Long-pec"),
     ]
-    structures = {(r.zfa_id, r.zfa_name) for r in load_zfin_expression(_write_expr(tmp_path, rows))["kdrl"]}
+    structures = {(r.zfa_id, r.zfa_name) for r in load_zfin_expression(write_expr(tmp_path, rows))["kdrl"]}
     assert structures == {("ZFA:0000009", "blood vessel"), ("ZFA:0000010", "dorsal aorta")}
 
 
 def test_expression_short_row_is_skipped(tmp_path):
-    rows = ["too\tfew\tcolumns", _expr_row("kdrl", "ZFA:0000009", "blood vessel", "", "", "Long-pec", "Long-pec")]
-    assert set(load_zfin_expression(_write_expr(tmp_path, rows))) == {"kdrl"}
+    rows = ["too\tfew\tcolumns", expr_row("kdrl", "ZFA:0000009", "blood vessel", "", "", "Long-pec", "Long-pec")]
+    assert set(load_zfin_expression(write_expr(tmp_path, rows))) == {"kdrl"}
 
 
 def test_expression_missing_file_returns_empty(tmp_path):

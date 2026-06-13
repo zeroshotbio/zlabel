@@ -43,3 +43,15 @@ def write_gaf(tmp_path: Path):
         return path
 
     return _write
+
+
+@pytest.fixture
+def write_zfin_expr(tmp_path: Path):
+    """Return a writer that saves ZFIN expression rows to a temp file."""
+
+    def _write(rows: list[str]) -> Path:
+        path = tmp_path / "wt_expr.txt"
+        path.write_text("\n".join(rows) + "\n", encoding="utf-8")
+        return path
+
+    return _write
