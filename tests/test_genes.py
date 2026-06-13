@@ -57,6 +57,15 @@ def test_normalize_symbol_input_preserved_before_lowercasing(syn_fixture):
     assert result.status == STATUS_RESOLVED
 
 
+def test_normalize_symbol_strips_surrounding_whitespace(syn_fixture):
+    # A marker copied from a CSV/TSV may carry stray whitespace; it should still
+    # resolve, with the original string preserved verbatim in input.
+    result = normalize_symbol(" kdrl ", syn_fixture)
+    assert result.status == STATUS_RESOLVED
+    assert result.symbols == frozenset({"kdrl"})
+    assert result.input == " kdrl "
+
+
 # --- normalize_symbol: paralog fan-out (ambiguous) ---------------------------
 
 

@@ -123,7 +123,7 @@ zlabel/
   notebooks/
     build-demos/
       phase_01.ipynb           # data-layer walkthrough (Phase 1)                   [P1 shipped]
-      phase_02.ipynb           # genes + panels walkthrough (Phase 2)               [P2, upcoming]
+      phase_02.ipynb           # genes + panels walkthrough (Phase 2)               [P2 shipped]
     demo/
       01_label_one_cluster.ipynb    # the muscle-cluster walkthrough                [P5]
       02_cluster_with_scanpy.ipynb  # layer-2: adata -> leiden -> rank_genes -> zlabel [P6]

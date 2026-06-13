@@ -15,6 +15,7 @@ from pathlib import Path
 
 import pytest
 
+import zlabel
 from zlabel import (
     KIND_IDENTITY,
     KIND_STATE,
@@ -24,6 +25,8 @@ from zlabel import (
 )
 
 FIXTURES = Path(__file__).parent / "fixtures"
+# The shipped model-as-data file, located the same way the Phase 2 notebook does.
+PANELS_YAML = Path(zlabel.__file__).parent / "panels.yaml"
 
 
 # --- helpers -----------------------------------------------------------------
@@ -103,6 +106,33 @@ def test_load_panels_empty_markers_raises(tmp_path):
     )
     with pytest.raises(ValueError, match="no markers"):
         load_panels(path)
+
+
+@pytest.mark.parametrize(
+    "content",
+    ["", "- muscle\n- neural\n", "42\n"],
+    ids=["empty", "sequence", "scalar"],
+)
+def test_load_panels_rejects_empty_or_non_mapping(tmp_path, content):
+    # An empty file (None), a sequence, or a scalar is not a bucket -> panel map;
+    # each must fail cleanly rather than crash on .items().
+    path = tmp_path / "bad.yaml"
+    path.write_text(content, encoding="utf-8")
+    with pytest.raises(ValueError, match="non-empty mapping"):
+        load_panels(path)
+
+
+def test_production_panels_yaml_loads_and_is_well_formed():
+    # Exercise the shipped model-as-data file, not just the fixture. load_panels
+    # already raises on a bad kind or empty markers, so loading is most of the
+    # check; assert a few invariants on top to catch typos or schema drift.
+    panels = load_panels(PANELS_YAML)
+    assert panels
+    buckets = [p.bucket for p in panels]
+    assert len(buckets) == len(set(buckets))  # no duplicate bucket names
+    assert {p.kind for p in panels} == {KIND_IDENTITY, KIND_STATE}
+    for p in panels:
+        assert all(m == m.lower() for m in p.markers)
 
 
 # --- score_markers: keystone trace -------------------------------------------

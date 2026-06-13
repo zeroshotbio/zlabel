@@ -55,7 +55,7 @@ class NormalizedSymbol:
 def normalize_symbol(symbol: str, synonym_map: dict[str, set[str]]) -> NormalizedSymbol:
     """Normalize one gene symbol to its current ZFIN symbol(s).
 
-    Lowercases the input, looks it up in synonym_map, and returns a
+    Strips and lowercases the input, looks it up in synonym_map, and returns a
     NormalizedSymbol recording the outcome. A previous name that fans out to
     multiple current paralogs is ambiguous; all candidates are kept in symbols
     and the result is never collapsed. A miss is unresolved with an empty
@@ -69,7 +69,9 @@ def normalize_symbol(symbol: str, synonym_map: dict[str, set[str]]) -> Normalize
     Returns:
         NormalizedSymbol: Resolution result with status, symbols, and note.
     """
-    key = symbol.lower()
+    # Strip before folding so a marker carrying stray whitespace from a CSV/TSV
+    # (" kdrl", "kdrl\n") still matches; synonym_map keys are stripped at build time.
+    key = symbol.strip().lower()
     candidates = synonym_map.get(key)
     if candidates is None:
         return NormalizedSymbol(

@@ -140,12 +140,17 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
         list[Panel]: One Panel per top-level yaml entry, in file order.
 
     Raises:
-        ValueError: If any entry is missing kind, has an unrecognized kind,
-            or has an empty marker list.
+        ValueError: If the file is empty or not a top-level mapping, or if any
+            entry is missing kind, has an unrecognized kind, or has an empty
+            marker list.
         FileNotFoundError: If path does not exist.
     """
     with Path(path).open(encoding="utf-8") as handle:
         raw: dict[str, dict[str, object]] = yaml.safe_load(handle)
+    # safe_load yields None for an empty file and a list for a sequence-topped one;
+    # both would crash on .items() below. Fail the same way the per-entry checks do.
+    if not isinstance(raw, dict) or not raw:
+        raise ValueError(f"panel file {Path(path)} must be a non-empty mapping of bucket -> panel")
 
     panels: list[Panel] = []
     for bucket, entry in raw.items():
@@ -206,8 +211,8 @@ def score_markers(
 
     Args:
         markers (Iterable[str]): Raw marker symbols ordered by significance
-            (rank 1 = most significant = index 0). The order determines the
-            rank weights.
+            (rank 1 = most significant = index 0); assumed unique, as scanpy
+            marker lists are. The order determines the rank weights.
         panels (list[Panel]): Panels to score against, as returned by
             load_panels.
         synonym_map (dict[str, set[str]]): From data.load_gene_synonym_map;
