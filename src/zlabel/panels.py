@@ -27,8 +27,8 @@ from zlabel.genes import STATUS_RESOLVED, normalize_symbol
 
 # --- panel kinds --------------------------------------------------------------
 
-KIND_IDENTITY = "identity"   # a cell-type lineage bucket
-KIND_STATE = "state"         # a transcriptional program, not a lineage
+KIND_IDENTITY = "identity"  # a cell-type lineage bucket
+KIND_STATE = "state"  # a transcriptional program, not a lineage
 
 
 # --- value types --------------------------------------------------------------
@@ -161,8 +161,7 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
             raise ValueError(f"panel {bucket!r} is missing required field 'kind'")
         if kind not in (KIND_IDENTITY, KIND_STATE):
             raise ValueError(
-                f"panel {bucket!r} has invalid kind {kind!r}; "
-                f"expected {KIND_IDENTITY!r} or {KIND_STATE!r}"
+                f"panel {bucket!r} has invalid kind {kind!r}; expected {KIND_IDENTITY!r} or {KIND_STATE!r}"
             )
         markers_raw: list[str] = entry.get("markers", [])  # type: ignore[assignment]
         if not markers_raw:
@@ -172,8 +171,7 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
         # Subpanels load into the same frozenset convention; not scored here.
         subpanels_raw: dict[str, list[str]] = entry.get("subpanels", {})  # type: ignore[assignment]
         subpanels: dict[str, frozenset[str]] = {
-            name: frozenset(m.lower() for m in sub_markers)
-            for name, sub_markers in subpanels_raw.items()
+            name: frozenset(m.lower() for m in sub_markers) for name, sub_markers in subpanels_raw.items()
         }
 
         panels.append(

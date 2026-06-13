@@ -70,7 +70,7 @@ result = zlabel.normalize_symbol("flk1", synonyms)
 panels = zlabel.load_panels("src/zlabel/panels.yaml")
 # 14 panels (12 identity + 2 state): neural, epidermis, muscle, blood_erythroid,
 # immune_myeloid, endothelium, endoderm_gut, mesenchyme, cartilage, notochord,
-# pigment, germline, cycling, stress_heatshock
+# pigment, germline, cycling, stress_response
 
 markers = ["mylz2", "acta1b", "tnnt3a", "myod1", "myog", "hbae1.1", "kdrl"]
 scores = zlabel.score_markers(markers, panels, synonyms)

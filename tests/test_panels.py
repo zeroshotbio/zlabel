@@ -78,8 +78,7 @@ def test_load_panels_subpanels_loaded(test_panels):
 def test_load_panels_invalid_kind_raises(tmp_path):
     path = tmp_path / "bad.yaml"
     path.write_text(
-        "bucket_x:\n  kind: invalid\n  cite: test\n  markers: [abc]\n"
-        "  germ_layer: ''\n  tissue: ''\n  lineage: ''\n",
+        "bucket_x:\n  kind: invalid\n  cite: test\n  markers: [abc]\n  germ_layer: ''\n  tissue: ''\n  lineage: ''\n",
         encoding="utf-8",
     )
     with pytest.raises(ValueError, match="invalid kind"):
@@ -89,8 +88,7 @@ def test_load_panels_invalid_kind_raises(tmp_path):
 def test_load_panels_missing_kind_raises(tmp_path):
     path = tmp_path / "bad.yaml"
     path.write_text(
-        "bucket_x:\n  cite: test\n  markers: [abc]\n"
-        "  germ_layer: ''\n  tissue: ''\n  lineage: ''\n",
+        "bucket_x:\n  cite: test\n  markers: [abc]\n  germ_layer: ''\n  tissue: ''\n  lineage: ''\n",
         encoding="utf-8",
     )
     with pytest.raises(ValueError, match="missing required field 'kind'"):
@@ -100,8 +98,7 @@ def test_load_panels_missing_kind_raises(tmp_path):
 def test_load_panels_empty_markers_raises(tmp_path):
     path = tmp_path / "bad.yaml"
     path.write_text(
-        "bucket_x:\n  kind: identity\n  cite: test\n  markers: []\n"
-        "  germ_layer: ''\n  tissue: ''\n  lineage: ''\n",
+        "bucket_x:\n  kind: identity\n  cite: test\n  markers: []\n  germ_layer: ''\n  tissue: ''\n  lineage: ''\n",
         encoding="utf-8",
     )
     with pytest.raises(ValueError, match="no markers"):
@@ -187,7 +184,7 @@ def test_score_markers_ambiguous_excluded_from_denominator(test_panels):
     # mylz2 is in muscle: muscle score should be 1.0 exactly.
     syn: dict[str, set[str]] = {
         "hbae1": {"hbae1.1", "hbae1.2"},  # ambiguous
-        "mylz2": {"mylz2"},               # resolved
+        "mylz2": {"mylz2"},  # resolved
     }
     scores = score_markers(["mylz2", "hbae1"], test_panels, syn)
     muscle = next(s for s in scores if s.bucket == "muscle")

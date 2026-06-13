@@ -22,8 +22,8 @@ from dataclasses import dataclass
 # --- status constants ---------------------------------------------------------
 # Callers filter by STATUS_RESOLVED; ambiguous and unresolved are excluded from scoring.
 
-STATUS_RESOLVED = "resolved"      # exactly one current symbol
-STATUS_AMBIGUOUS = "ambiguous"    # one previous name -> several current paralogs
+STATUS_RESOLVED = "resolved"  # exactly one current symbol
+STATUS_AMBIGUOUS = "ambiguous"  # one previous name -> several current paralogs
 STATUS_UNRESOLVED = "unresolved"  # not found in the synonym map
 
 
