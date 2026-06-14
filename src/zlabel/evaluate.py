@@ -6,8 +6,8 @@ fail-closed tissue-to-ZFA crosswalk. Reports coverage, the named/fallback/rollup
 split, confidence-by-correctness, and a structural parent-child overcall audit -- the
 signal for whether IC-first naming overcalls on real clusters.
 
-This module is read-only over the engine: it reuses the public loaders and decide(), and
-changes no decision logic. It loads the ontologies once and calls decide() with each row's
+This module is read-only over the engine: it reuses the public loaders, normalize_markers,
+score_markers, and decide() unchanged. It loads the ontologies once and labels each row at its
 own stage (equivalent to Labeler.label() at that stage) so stage varies per cluster without
 reloading; the same loaded resources feed the audit. Run it as a script
 (python -m zlabel.evaluate <csv>); it is not part of the labeling API.
@@ -226,7 +226,16 @@ def load_resources(
 
 
 def _label_row(row: BenchmarkRow, resources: Resources) -> tuple[Label, list[str]]:
-    """Label one cluster at its own stage; also return its normalized symbols for the audit."""
+    """Label one cluster at its own stage; also return its normalized symbols for the audit.
+
+    Args:
+        row (BenchmarkRow): The cluster's markers and developmental stage.
+        resources (Resources): Loaded engine resources.
+
+    Returns:
+        tuple[Label, list[str]]: The label decision and the cluster's already-normalized
+        current ZFIN symbols (passed to decide() and reused by the audit to replay the tally).
+    """
     normalized_markers = normalize_markers(row.markers, resources.synonyms)
     symbols = [
         next(iter(normalized_marker.symbols))
@@ -300,7 +309,7 @@ def _replay_tally(
     """
     ancestor_cache: dict[str, frozenset[str]] = {}
 
-    def credited(zfa_id: str) -> frozenset[str]:
+    def _credited(zfa_id: str) -> frozenset[str]:
         if zfa_id in ancestor_cache:
             return ancestor_cache[zfa_id]
         if zfa_id not in zfa_ontology:
@@ -312,18 +321,18 @@ def _replay_tally(
 
     tally: dict[str, set[str]] = {}
     seen: set[str] = set()
-    for sym in symbols:
-        if sym in seen:
+    for symbol in symbols:
+        if symbol in seen:
             continue
-        seen.add(sym)
-        records = expression_lookup(expression_map, sym)
+        seen.add(symbol)
+        records = expression_lookup(expression_map, symbol)
         if not records:
             continue
         credited_terms: set[str] = set()
         for record in records:
-            credited_terms |= credited(record.zfa_id)
+            credited_terms |= _credited(record.zfa_id)
         for term_id in credited_terms:
-            tally.setdefault(term_id, set()).add(sym)
+            tally.setdefault(term_id, set()).add(symbol)
     return tally
 
 
@@ -479,8 +488,11 @@ def evaluate(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resources: Res
             report.not_scored += 1
             continue
         report.counts[outcome.kind] += 1
-        # rollup / abstain, or a named/fallback call with no scoreable anchor (agrees is None):
-        # counted for coverage above, but out of the agreement numerator and denominator.
+        if outcome.audit is not None:
+            report.audits.append(outcome.audit)  # the overcall audit covers every scored named call
+        # rollup / abstain carry no agreement (agrees is None by construction). A named/fallback call
+        # reaches agrees is None only with no scoreable anchor -- impossible with valid panels (every
+        # identity panel has an ontology_anchor), so on real data this gate only skips rollup/abstain.
         if outcome.agrees is None:
             continue
         tier = outcome.confidence or "none"
@@ -490,8 +502,6 @@ def evaluate(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resources: Res
             report.conf_correct[tier] += 1
         else:
             report.failures.append((outcome.cluster_id, outcome.gold_tissue, outcome.bucket, outcome.kind))
-        if outcome.audit is not None:
-            report.audits.append(outcome.audit)
     return report
 
 
