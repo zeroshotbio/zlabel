@@ -115,7 +115,7 @@ zlabel/
   Makefile                # setup / format / lint / lint-docstrings / type / test / verify [P1]
   scripts/
     setup_data.sh         # curl zfa.obo, zfin.gaf, zfin_wildtype_expression.txt -> data/ontologies/  [P1]
-    build_daniocell_eval.py  # Daniocell 19 broad tissues + cluster markers -> benchmarks/ csv  [P4]
+    build_daniocell_eval.py  # Daniocell clust markers + parent tissue -> benchmarks/ csv  [P4b shipped]
   src/zlabel/
     data.py     # LIFT (pure): load ZFA via obonet; parse ZFIN-expr TSV; load GAF synonym map  [P1]
     genes.py    # normalize_symbol() via GAF alias/paralog resolution                           [P2]
@@ -125,10 +125,10 @@ zlabel/
     label.py    # converging-evidence decision -> Label  (the heart)                           [P3+4a shipped]
     models.py   # Label evidence packet (pydantic) + to_yaml()                                 [P3+4a shipped]
     resolve.py  # IC-weighted ZFA convergence namer (build_ic + resolve_label)                 [P4a shipped]
-    evaluate.py # run on labeled clusters -> agreement + coverage + calibration                [P4b]
+    evaluate.py # run on Daniocell clusters -> agreement + coverage + overcall audit            [P4b shipped]
     explain.py  # OPTIONAL [llm] extra: thin narrator over a finished Label                    [P7]
     cli.py      # typer: zlabel label --markers ... --stage 48 ; zlabel eval <csv>            [P5]
-  benchmarks/   # committed eval substrate (data/ is gitignored, so eval data lives here)     [P4]
+  benchmarks/   # committed eval substrate: daniocell_eval.csv + crosswalk + baseline report  [P4b shipped]
   data/         # gitignored: downloaded ontologies
   tests/        # genes, panel scoring, ground lookups, label decision, eval — real unit tests, no LLM
   notebooks/
@@ -162,14 +162,19 @@ in, hands an evidence packet out.
 
 ## Validation (built in from day one)
 
-`build_daniocell_eval.py` produces a small CSV (`cluster_id, markers, broad_tissue`)
-from **Daniocell's 19 broad tissue assignments** (ground truth) + its per-cluster
-markers, committed under `benchmarks/`. `evaluate.py` runs zlabel on it and reports
-three numbers: **broad-bucket agreement**, **coverage** (non-abstain rate), and
-**abstention calibration** (accuracy on confident calls vs. abstain rate). Optional
-comparison points: a bare-LLM baseline (GPTCellType-style) and a panels-only-no-
-ontology score, to see what each layer earns. Daniocell's broad-tissue labels make
-this a clean benchmark — no fine-naming ambiguity, no platform-gap confound.
+`build_daniocell_eval.py` derives a small benchmark CSV (`cluster_id, markers, broad_tissue,
+tissue_name, stage_hpf`) from the public Daniocell release (GEO GSE223922): one row per fine
+`clust`, with its parent `tissue` as the gold broad label and top-25 computed markers. Only the
+derived CSV plus a reviewed, fail-closed `{tissue -> broad ZFA anchor}` crosswalk are committed
+under `benchmarks/` (the ~2.5 GB source is not). `evaluate.py` runs the engine over it and scores
+**broad agreement** in ZFA-ancestry space (`grounds_under`), reporting **coverage**, the
+**named/fallback/rollup/abstain** split, **confidence-by-correctness**, and a structural
+**parent-child overcall audit** — the signal for whether the IC-first sort overcalls (a specific
+term winning on the bare `CONVERGENCE_MIN` while a broader parent had more support). The engine is
+untouched; the audit replays the vote tally privately. Daniocell's broad labels cannot validate
+within-bucket fine-naming, so depth correctness there is reported by the structural audit, not
+checked against truth — finer-reference depth validation (ZSCAPE/Zebrahub) and bare-LLM /
+panels-only baselines are deferred to a later 4c.
 
 ## Build order (7 phases, one PR each)
 
@@ -181,7 +186,7 @@ discipline and the review bar.
 3. **Ground + label** — grounding lookups, then the decision in `label.py` → `Label`; unit-test the worked examples.
 4. **Resolution engine + eval** — split into two PRs:
    - **4a (engine)** — `resolve.py` IC-weighted ZFA convergence namer; `label.py`/`models.py` wired to name from ZFA; panels demote to coarse prior + guardrail.
-   - **4b (eval)** — `build_daniocell_eval.py` + `evaluate.py`; first broad-agreement + depth numbers. *The proof it works.*
+   - **4b (eval, shipped)** — `build_daniocell_eval.py` + `evaluate.py` + the Daniocell crosswalk; broad agreement, coverage, the named/fallback/abstain split, and the parent-child overcall audit. *The proof it works.*
 5. **CLI + notebook 01** — `zlabel label/eval`; the one-cluster walkthrough.
 6. **Notebooks 02/03** — scanpy clustering → markers → zlabel, then end-to-end.
 7. **LLM (optional)** — `explain.py`, behind the `[llm]` extra.
