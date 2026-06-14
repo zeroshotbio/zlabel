@@ -1,9 +1,12 @@
-# Minimal panel fixture for tests/test_panels.py.
+# Minimal panel fixture for tests/test_panels.py and the Phase 3 Labeler smoke test.
 #
 # Hand-written subset of the real panels.yaml: three identity panels and one
 # state panel, chosen to drive the keystone score_markers trace without
-# downloading any data. Markers are the real ZFIN symbols used in the trace;
-# see tests/test_panels.py for the expected score calculations.
+# downloading any data. Markers are the real ZFIN symbols; see test_panels.py
+# for the expected score calculations.
+#
+# ontology_anchor ids match the muscle sub-DAG added to tests/fixtures/zfa_test.obo
+# (ZFA:0000548 musculature system) so the Phase 3 smoke test can do real grounding.
 
 muscle:
   germ_layer: mesoderm
@@ -11,10 +14,12 @@ muscle:
   lineage: skeletal muscle
   kind: identity
   cite: "panels_test fixture; see docs/reference/cell_labelling_playbook.md §7"
-  markers: [mylz2, acta1b, tnnt3a, myod1, myog]
+  ontology_anchor:
+    - ZFA:0000548  # musculature system (verified in zfa_test.obo)
+  markers: [mylpfa, acta1b, tnnt3a, myod1, myog]
   subpanels:
     myoblast: [myod1, myog]
-    fast: [mylz2, tnnt3a]
+    fast: [mylpfa, tnnt3a]
 
 blood_erythroid:
   germ_layer: mesoderm

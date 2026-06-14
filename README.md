@@ -41,7 +41,7 @@ Built in [7 phases, one PR each](.claude/docs/workflow.md):
 
 - [x] **Phase 1** — Skeleton + data (`zlabel.data` loaders for ZFA, ZFIN expression, GAF synonyms; fixture tests)
 - [x] **Phase 2** — Genes + panels (`normalize_symbol`, `panels.yaml` with 14 curated buckets, `score_markers`)
-- [ ] **Phase 3** — Ground + label (`ground.py` lookups → converging-evidence decision → `Label`)
+- [x] **Phase 3** — Ground + label (`ground.py` lookups → converging-evidence decision → `Label`)
 - [ ] **Phase 4** — Eval (`build_daniocell_eval.py` + `evaluate.py`; agreement / coverage / calibration)
 - [ ] **Phase 5** — CLI + notebook 01 (`zlabel label/eval`; the one-cluster walkthrough)
 - [ ] **Phase 6** — Notebooks 02/03 (scanpy clustering → markers → zlabel; end-to-end 48 hpf)
@@ -49,8 +49,16 @@ Built in [7 phases, one PR each](.claude/docs/workflow.md):
 
 ## Usage
 
-Both loaders run offline (no network after `setup_data.sh`). Phases 1 and 2 already
-ship; `Labeler.label()` arrives in Phase 3.
+Phases 1–3 ship. All loaders run offline (no network after `setup_data.sh`).
+
+```python
+# --- Phase 3: label a cluster end-to-end ---
+from zlabel import Labeler
+
+lab = Labeler(stage_hpf=48)   # loads ZFA + ZFIN-expr + GAF + panels once
+label = lab.label(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"])
+print(label.to_yaml())        # bucket, confidence, evidence packet, or abstention
+```
 
 ```python
 import zlabel

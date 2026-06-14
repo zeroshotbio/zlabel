@@ -4,7 +4,7 @@ No network: the happy-path tests use tests/fixtures/panels_test.yaml (a minimal
 four-bucket subset). Validation failures use inline YAML written to tmp_path.
 
 Keystone test: the muscle-cluster trace with markers
-["mylz2","acta1b","tnnt3a","myod1","myog","hbae1.1","kdrl"] asserts that
+["mylpfa","acta1b","tnnt3a","myod1","myog","hbae1.1","kdrl"] asserts that
 muscle tops the chart (score > 0.8) and dominates every other bucket (> 5x
 the second-highest identity bucket). The exact scores are computed from the
 rank-weight formula w(r) = 1/log2(r+1), not hardcoded.
@@ -52,7 +52,7 @@ def test_load_panels_returns_expected_buckets(test_panels):
 
 def test_load_panels_markers_are_lowercased(test_panels):
     muscle = next(p for p in test_panels if p.bucket == "muscle")
-    assert "mylz2" in muscle.markers
+    assert "mylpfa" in muscle.markers
     assert all(m == m.lower() for m in muscle.markers)
 
 
@@ -73,6 +73,27 @@ def test_load_panels_subpanels_loaded(test_panels):
     assert "myoblast" in muscle.subpanels
     assert isinstance(muscle.subpanels["myoblast"], frozenset)
     assert "myod1" in muscle.subpanels["myoblast"]
+
+
+def test_load_panels_ontology_anchor_loaded(test_panels):
+    # The muscle fixture carries an anchor; a panel with no anchor key defaults
+    # to an empty frozenset (load_panels does not require one).
+    muscle = next(p for p in test_panels if p.bucket == "muscle")
+    assert muscle.ontology_anchor == frozenset({"ZFA:0000548"})
+    endothelium = next(p for p in test_panels if p.bucket == "endothelium")
+    assert endothelium.ontology_anchor == frozenset()
+
+
+def test_load_panels_scalar_ontology_anchor_raises(tmp_path):
+    # A bare scalar would silently become a frozenset of characters; reject it.
+    path = tmp_path / "bad.yaml"
+    path.write_text(
+        "bucket_x:\n  kind: identity\n  markers: [abc]\n  germ_layer: ''\n  tissue: ''\n"
+        "  lineage: ''\n  ontology_anchor: ZFA:0000548\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="ontology_anchor must be a list"):
+        load_panels(path)
 
 
 def test_load_panels_invalid_kind_raises(tmp_path):
@@ -130,6 +151,12 @@ def test_production_panels_yaml_loads_and_is_well_formed():
     assert {p.kind for p in panels} == {KIND_IDENTITY, KIND_STATE}
     for p in panels:
         assert all(m == m.lower() for m in p.markers)
+        # The shipped model's anchor invariant: identity panels ground somewhere,
+        # state panels (a transcriptional program) carry no anatomy anchor.
+        if p.kind == KIND_IDENTITY:
+            assert p.ontology_anchor, f"identity panel {p.bucket!r} must have an ontology_anchor"
+        else:
+            assert not p.ontology_anchor, f"state panel {p.bucket!r} must not have an ontology_anchor"
 
 
 # --- score_markers: keystone trace -------------------------------------------
@@ -138,7 +165,7 @@ def test_production_panels_yaml_loads_and_is_well_formed():
 def test_score_markers_muscle_keystone_trace(test_panels):
     # Canonical 7-marker muscle cluster from the plan's worked example.
     # All are current ZFIN symbols and resolve cleanly.
-    all_markers = ["mylz2", "acta1b", "tnnt3a", "myod1", "myog", "hbae1.1", "kdrl"]
+    all_markers = ["mylpfa", "acta1b", "tnnt3a", "myod1", "myog", "hbae1.1", "kdrl"]
     syn = _make_synonym_map(*all_markers)
 
     scores = score_markers(all_markers, test_panels, syn)
@@ -158,8 +185,8 @@ def test_score_markers_muscle_keystone_trace(test_panels):
 
 
 def test_score_markers_sorted_descending_by_score(test_panels):
-    syn = _make_synonym_map("mylz2", "acta1b", "myod1")
-    scores = score_markers(["mylz2", "acta1b", "myod1"], test_panels, syn)
+    syn = _make_synonym_map("mylpfa", "acta1b", "myod1")
+    scores = score_markers(["mylpfa", "acta1b", "myod1"], test_panels, syn)
     for a, b in zip(scores, scores[1:], strict=False):
         assert a.score >= b.score
 
@@ -180,24 +207,24 @@ def test_score_markers_empty_input_gives_zero_scores(test_panels):
 
 def test_score_markers_ambiguous_excluded_from_denominator(test_panels):
     # hbae1 maps to two paralogs -> ambiguous -> excluded from denominator.
-    # Only mylz2 (resolved, rank 1) contributes weight 1.0.
-    # mylz2 is in muscle: muscle score should be 1.0 exactly.
+    # Only mylpfa (resolved, rank 1) contributes weight 1.0.
+    # mylpfa is in muscle: muscle score should be 1.0 exactly.
     syn: dict[str, set[str]] = {
         "hbae1": {"hbae1.1", "hbae1.2"},  # ambiguous
-        "mylz2": {"mylz2"},  # resolved
+        "mylpfa": {"mylpfa"},  # resolved
     }
-    scores = score_markers(["mylz2", "hbae1"], test_panels, syn)
+    scores = score_markers(["mylpfa", "hbae1"], test_panels, syn)
     muscle = next(s for s in scores if s.bucket == "muscle")
     assert math.isclose(muscle.score, 1.0, rel_tol=1e-9)
 
 
 def test_score_markers_matched_markers_recorded_in_rank_order(test_panels):
-    syn = _make_synonym_map("mylz2", "acta1b")
-    scores = score_markers(["mylz2", "acta1b"], test_panels, syn)
+    syn = _make_synonym_map("mylpfa", "acta1b")
+    scores = score_markers(["mylpfa", "acta1b"], test_panels, syn)
     muscle = next(s for s in scores if s.bucket == "muscle")
     assert len(muscle.matched_markers) == 2
     assert muscle.matched_markers[0].rank == 1
-    assert muscle.matched_markers[0].symbol == "mylz2"
+    assert muscle.matched_markers[0].symbol == "mylpfa"
     assert muscle.matched_markers[1].rank == 2
     assert muscle.matched_markers[1].symbol == "acta1b"
     # Verify the weight formula w(r) = 1/log2(r+1) for each recorded match.

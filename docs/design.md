@@ -35,7 +35,7 @@ evidence, not one gene**:
 2. **Score markers against curated tissue panels** → a ranked bucket table (negative evidence falls out for free).
 3. **Ground / corroborate** → where do the top markers express in vivo (ZFIN → ZFA anatomy)? Is the bucket plausible for the sample's stage (ZFS)?
 4. **Decide** → coherent markers + one dominant, corroborated bucket → assign with confidence; otherwise `mixed/unresolved` (honest abstention) or a coarser tier.
-5. **Emit a `Label` evidence packet** → bucket, levels, confidence, positive markers, panel scores, expression evidence, ZFA/ZFS/optional CL ids, rationale, `next_step: subcluster`.
+5. **Emit a `Label` evidence packet** → bucket, levels, confidence, positive markers, panel scores, expression evidence, the bucket's ZFA anchor id, rationale, `next_step: subcluster`.
 
 > [!WARNING]
 > The LLM is **not** in this loop for v1 (see §LLM).
@@ -56,14 +56,14 @@ changes:
    finer; adding resolution = adding YAML, not code.
 3. **The recursive loop** (notebooks) — cluster → label broad → subcluster each
    bucket → re-label. `Label.levels` grows deeper (`germ_layer → tissue → lineage →
-   cell_type → subtype`); a `granularity` field reports how deep it got.
+   cell_type → subtype`); `len(levels)` is the sole depth signal.
 
 What v1 deterministic *won't* do: **open-ended fine de-novo naming of types with no
 curated panel.** That is the LLM's job (§LLM).
 
 ## Public surface (the whole API)
 
-### Phase 2 (ships now)
+### Phase 2 primitives (lower-level API)
 
 Gene normalization and panel scoring are live:
 
@@ -79,22 +79,33 @@ scores = zlabel.score_markers(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"], pa
 scores[0]   # BucketScore(bucket='muscle', score=0.8105, kind='identity', ...)
 ```
 
-### Phase 3 target (the final single entry point)
+### Phase 3 (ships now — the final single entry point)
 
 ```python
 from zlabel import Labeler
 
 labeler = Labeler(stage_hpf=48)                  # loads ZFA + ZFIN-expr + GAF + panels once
 label = labeler.label(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"])
-# Label(bucket="muscle", levels=("mesoderm", "muscle", "skeletal muscle lineage"),
-#       confidence="high", zfa_id="ZFA:0001056", panel_scores={...},
+# Label(bucket="muscle", levels=("mesoderm", "muscle", "skeletal muscle"),
+#       confidence="high", zfa_id="ZFA:0000548", panel_scores={...},
 #       expression_evidence=[...], abstained=False, next_step="subcluster")
 print(label.to_yaml())                           # the evidence packet
 ```
 
-One entry point. Everything below it is short and inspectable.
+One entry point. The public surface is small — `Labeler`, `Label`, and the Phase 1/2
+primitives — while the decision code beneath it stays readable and unit-tested.
 
-## Repo structure (~7 core files, ≤~700 LOC core)
+### Confidence rubric (provisional — calibrated in Phase 4)
+
+`Labeler` grades an assigned call on a weighted 0–1 score: **coherence** 0.40 (rank-weighted
+strength of the winner's markers) + **margin** 0.30 (lead over the runner-up) + **grounding**
+0.20 (fraction of markers expressing under the bucket's ZFA anchor) + **stage** 0.10 (fraction
+on-stage for the sample). Tiers: ≥ 0.80 `high`, ≥ 0.60 `medium`, else `low`. Two caps keep it
+honest — a germ-layer rollup never exceeds `medium`, and `high` requires real grounding/stage
+corroboration (gradable anatomy that contradicts the call blocks `high`, regardless of stage).
+The weights are a first cut; Phase 4 eval calibrates them.
+
+## Repo structure (~7 core files, ~1,800 LOC core)
 
 Files marked [P1] / [P2] shipped; later phases show their planned target.
 
@@ -111,9 +122,9 @@ zlabel/
     genes.py    # normalize_symbol() via GAF alias/paralog resolution                           [P2]
     panels.yaml # THE MODEL: curated buckets -> {germ_layer, tissue, lineage, kind, markers[], cite, subpanels?}  [P2]
     panels.py   # load panels + rank-weighted overlap score (readable, no heavy dep)            [P2]
-    ground.py   # pure fns: expression_lookup / anatomy_search / anatomy_lineage / stage_ok    [P3]
-    label.py    # converging-evidence decision -> Label  (the heart)                           [P3]
-    models.py   # Label evidence packet (pydantic) + to_yaml()                                 [P3]
+    ground.py   # pure fns: expression_lookup / grounds_under / stage_plausibility              [P3 shipped]
+    label.py    # converging-evidence decision -> Label  (the heart)                           [P3 shipped]
+    models.py   # Label evidence packet (pydantic) + to_yaml()                                 [P3 shipped]
     evaluate.py # run on labeled clusters -> agreement + coverage + calibration                [P4]
     explain.py  # OPTIONAL [llm] extra: thin narrator over a finished Label                    [P7]
     cli.py      # typer: zlabel label --markers ... --stage 48 ; zlabel eval <csv>            [P5]

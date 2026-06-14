@@ -12,13 +12,13 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 
-# Per-phase deps: declare only what the shipped code imports. Phase 1's data.py
-# needs obonet (OBO parsing) + networkx (the ontology graph). Later phases add
-# pyyaml (panels), pydantic (the Label packet), and pandas/numpy (eval).
+# Per-phase deps: declare only what the shipped code imports. Phase 1: obonet + networkx.
+# Phase 2 adds pyyaml (panels). Phase 3 adds pydantic (Label packet). Phase 4 adds pandas + numpy (eval).
 dependencies = [
   "obonet>=1.3.0", # read_obo -> networkx.MultiDiGraph keyed by relation type
   "networkx>=3.6.1",
   "pyyaml>=6.0",
+  "pydantic>=2.13.4",
 ]
 
 [dependency-groups]
@@ -78,3 +78,4 @@ typeCheckingMode = "basic"
 testpaths = ["tests"]
 addopts = "--import-mode=importlib -q"
 python_files = "test_*.py"
+pythonpath = ["tests"]

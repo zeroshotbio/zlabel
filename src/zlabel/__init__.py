@@ -19,6 +19,8 @@ from zlabel.genes import (
     normalize_markers,
     normalize_symbol,
 )
+from zlabel.label import Labeler
+from zlabel.models import Confidence, Label
 from zlabel.panels import (
     KIND_IDENTITY,
     KIND_STATE,
@@ -50,6 +52,11 @@ __all__ = [
     "NormalizedSymbol",
     "normalize_markers",
     "normalize_symbol",
+    # label (the entry point; decide() + grounding helpers stay on submodules)
+    "Labeler",
+    # models (the return packet + its tier type; ExprHit/tier names on zlabel.models)
+    "Confidence",
+    "Label",
     # panels
     "KIND_IDENTITY",
     "KIND_STATE",
