@@ -24,7 +24,7 @@ End-to-end scientific workflow and agentic automation blueprint
 * **Let depth come from evidence.** A fixed hierarchy is an output schema and review scaffold, not the source of truth for the final name. If markers converge on a specific ZFA term, use it; if they converge only on a parent, keep the parent; if they conflict, abstain or mark mixed.
 * **Make uncertainty machine-readable.** Use labels such as provisional\_neural, mixed\_endoderm\_epithelial, or cycling\_mesoderm when evidence does not support a sharper label.
 
-For a deeper split of deterministic steps, agentic judgment, and human review checkpoints, see [Human and Agentic Cluster Annotation](human_agentic_cluster_annotation.md).
+For a deeper split of deterministic steps, agentic judgment, and human review checkpoints, see [Human and Agentic Cluster Annotation](human_agentic_cluster_annotation.md). For future adaptive recursion and split/stop criteria above zlabel, see [Recursive Subclustering Controller](recursive_subclustering_controller.md).
 
 # **2\. Resource stack: what each system contributes**
 
