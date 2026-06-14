@@ -140,8 +140,10 @@ zlabel/
   tests/        # genes, panel scoring, ground lookups, label decision, eval — real unit tests, no LLM
   notebooks/
     build-demos/
-      phase_01.ipynb           # data-layer walkthrough (Phase 1)                   [P1 shipped]
-      phase_02.ipynb           # genes + panels walkthrough (Phase 2)               [P2 shipped]
+      phase_01.ipynb           # data-layer walkthrough + explorer (Phase 1)        [P1 shipped]
+      phase_02.ipynb           # genes + panels walkthrough + explorer (Phase 2)    [P2 shipped]
+      phase_03.ipynb           # grounding + the decision, unfolded (Phase 3)       [P3+4a shipped]
+      phase_04.ipynb           # Daniocell eval diagnostic workbench (Phase 4b)     [P4b shipped]
     demo/
       01_label_one_cluster.ipynb    # the muscle-cluster walkthrough                [P5]
       02_cluster_with_scanpy.ipynb  # layer-2: adata -> leiden -> rank_genes -> zlabel [P6]
