@@ -70,8 +70,8 @@ synonyms = zlabel.load_gene_synonym_map("data/ontologies/zfin.gaf")
 synonyms["flk1"]   # -> {'kdrl'}    alias resolved to current ZFIN symbol
 synonyms["kdrl"]   # -> {'kdrl'}    current symbol is its own identity
 
-zfa = zlabel.load_zfa("data/ontologies/zfa.obo")
-zlabel.term_name(zfa, "ZFA:0005307")   # -> 'endothelial cell'
+zfa_ontology = zlabel.load_zfa("data/ontologies/zfa.obo")
+zlabel.term_name(zfa_ontology, "ZFA:0005307")   # -> 'endothelial cell'
 
 # --- Phase 2: normalize markers and score panels ---
 result = zlabel.normalize_symbol("flk1", synonyms)
@@ -83,7 +83,8 @@ panels = zlabel.load_panels("src/zlabel/panels.yaml")
 # pigment, germline, cycling, stress_response
 
 markers = ["mylz2", "acta1b", "tnnt3a", "myod1", "myog", "hbae1.1", "kdrl"]
-scores = zlabel.score_markers(markers, panels, synonyms)
+normalized = zlabel.normalize_markers(markers, synonyms)   # normalize once, then score
+scores = zlabel.score_markers(normalized, panels)
 scores[0]   # BucketScore(bucket='muscle', score=0.8105, kind='identity', ...)
 scores[1]   # BucketScore(bucket='blood_erythroid', score=0.0979, ...)
 ```

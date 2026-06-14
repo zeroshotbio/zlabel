@@ -84,7 +84,7 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   selector — the highest-IC term that clears the gates wins.
 - **The three gates** — a term must clear all three to be a candidate: `CONVERGENCE_MIN`
   (at least 3 distinct genes vote for it), `STOPLIST` (a few content-free attractors like
-  "whole organism" are never labels), and `IC_MIN` (at least 1.0 bits — screens near-root
+  "whole organism" are never labels), and `INFORMATION_CONTENT_MIN` (at least 1.0 bits — screens near-root
   terms). All three are provisional, calibrated by the Phase 4b eval.
 - **TermVote** — the internal candidate object `resolve.resolve_label` returns, one per
   surviving term (its ZFA id, name, the genes that voted for it, IC, and ancestor depth). Not
@@ -152,7 +152,7 @@ src/zlabel/panels.py    ->  load_panels() · score_markers() -> list[BucketScore
                                         |
                                         v
 src/zlabel/ground.py    ->  expression_lookup() · grounds_under() · stage_plausibility() (Phase 3)
-src/zlabel/resolve.py   ->  build_ic() · resolve_label() -> list[TermVote]               (Phase 4a)
+src/zlabel/resolve.py   ->  build_information_content() · resolve_label() -> list[TermVote] (Phase 4a)
 src/zlabel/label.py     ->  decide() · Labeler.label() -> Label                         (Phase 3+4a)
 src/zlabel/evaluate.py  ->  evaluate() over the Daniocell benchmark -> baseline report  (Phase 4b)
 ```

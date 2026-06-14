@@ -69,7 +69,8 @@ result = zlabel.normalize_symbol("flk1", synonyms)
 # NormalizedSymbol(input='flk1', status='resolved', symbols=frozenset({'kdrl'}), note=None)
 
 panels = zlabel.load_panels("src/zlabel/panels.yaml")   # 14 curated buckets
-scores = zlabel.score_markers(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"], panels, synonyms)
+normalized = zlabel.normalize_markers(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"], synonyms)
+scores = zlabel.score_markers(normalized, panels)
 scores[0]   # BucketScore(bucket='muscle', score=0.8105, kind='identity', ...)
 ```
 
@@ -130,7 +131,7 @@ zlabel/
     ground.py   # pure fns: expression_lookup / grounds_under / stage_plausibility              [P3 shipped]
     label.py    # converging-evidence decision -> Label  (the heart)                           [P3+4a shipped]
     models.py   # Label evidence packet (pydantic) + to_yaml()                                 [P3+4a shipped]
-    resolve.py  # IC-weighted ZFA convergence namer (build_ic + resolve_label)                 [P4a shipped]
+    resolve.py  # IC-weighted ZFA convergence namer (build_information_content + resolve_label) [P4a shipped]
     evaluate.py # run on Daniocell clusters -> agreement + coverage + overcall audit            [P4b shipped]
     explain.py  # OPTIONAL [llm] extra: thin narrator over a finished Label                    [P7]
     cli.py      # typer: zlabel label --markers ... --stage 48 ; zlabel eval <csv>            [P5]
