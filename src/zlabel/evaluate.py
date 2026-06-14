@@ -33,12 +33,12 @@ from zlabel.data import (
     load_zfin_expression,
     term_name,
 )
-from zlabel.genes import STATUS_RESOLVED, normalize_markers
+from zlabel.genes import normalize_markers, resolved_symbols
 from zlabel.ground import expression_lookup, grounds_under
 from zlabel.label import decide
 from zlabel.models import Label
 from zlabel.panels import KIND_IDENTITY, Panel, load_panels, score_markers
-from zlabel.resolve import CONVERGENCE_MIN, STOPLIST, build_information_content
+from zlabel.resolve import CONVERGENCE_MIN, STOPLIST, _term_with_ancestors, build_information_content
 
 # Prediction classes (how the engine resolved a cluster).
 NAMED = "named"  # the convergence vote named a ZFA term
@@ -148,7 +148,9 @@ class Report:
     conf_total: Counter[str] = field(default_factory=Counter)
     conf_correct: Counter[str] = field(default_factory=Counter)
     audits: list[AuditRecord] = field(default_factory=list)
-    failures: list[tuple[str, str, str, str]] = field(default_factory=list)  # (cluster_id, gold_tissue, predicted_bucket, kind)
+    failures: list[tuple[str, str, str, str]] = field(
+        default_factory=list
+    )  # (cluster_id, gold_tissue, predicted_bucket, kind)
 
 
 def load_benchmark(path: str | Path) -> list[BenchmarkRow]:
@@ -237,11 +239,7 @@ def _label_row(row: BenchmarkRow, resources: Resources) -> tuple[Label, list[str
         current ZFIN symbols (passed to decide() and reused by the audit to replay the tally).
     """
     normalized_markers = normalize_markers(row.markers, resources.synonyms)
-    symbols = [
-        next(iter(normalized_marker.symbols))
-        for normalized_marker in normalized_markers
-        if normalized_marker.status == STATUS_RESOLVED
-    ]
+    symbols = resolved_symbols(normalized_markers)
     scores = score_markers(normalized_markers, resources.panels)
     label = decide(
         scores,
@@ -309,16 +307,6 @@ def _replay_tally(
     """
     ancestor_cache: dict[str, frozenset[str]] = {}
 
-    def _credited(zfa_id: str) -> frozenset[str]:
-        if zfa_id in ancestor_cache:
-            return ancestor_cache[zfa_id]
-        if zfa_id not in zfa_ontology:
-            result: frozenset[str] = frozenset({zfa_id})
-        else:
-            result = frozenset({zfa_id}) | frozenset(ancestors(zfa_ontology, zfa_id))
-        ancestor_cache[zfa_id] = result
-        return result
-
     tally: dict[str, set[str]] = {}
     seen: set[str] = set()
     for symbol in symbols:
@@ -330,7 +318,7 @@ def _replay_tally(
             continue
         credited_terms: set[str] = set()
         for record in records:
-            credited_terms |= _credited(record.zfa_id)
+            credited_terms |= _term_with_ancestors(record.zfa_id, zfa_ontology, ancestor_cache)
         for term_id in credited_terms:
             tally.setdefault(term_id, set()).add(symbol)
     return tally
@@ -489,7 +477,7 @@ def evaluate(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resources: Res
             continue
         report.counts[outcome.kind] += 1
         if outcome.audit is not None:
-            report.audits.append(outcome.audit)  # the overcall audit covers every scored named call
+            report.audits.append(outcome.audit)  # record this scored named call's overcall audit
         # rollup / abstain carry no agreement (agrees is None by construction). A named/fallback call
         # reaches agrees is None only with no scoreable anchor -- impossible with valid panels (every
         # identity panel has an ontology_anchor), so on real data this gate only skips rollup/abstain.

@@ -42,7 +42,7 @@ from zlabel.data import (
     load_zfin_expression,
     term_name,
 )
-from zlabel.genes import STATUS_RESOLVED, normalize_markers
+from zlabel.genes import normalize_markers, resolved_symbols
 from zlabel.ground import expression_lookup, grounds_under, stage_plausibility
 from zlabel.models import TIER_HIGH_NAME, TIER_LOW_NAME, TIER_MEDIUM_NAME, Confidence, ExprHit, Label
 from zlabel.panels import KIND_IDENTITY, KIND_STATE, BucketScore, MatchedMarker, Panel, load_panels, score_markers
@@ -765,11 +765,7 @@ class Labeler:
         # symbols; without this, aliases like fli1a -> fli1 (314 expression
         # records) would be missed.
         normalized_markers = normalize_markers(markers, self._synonyms)
-        symbols = [
-            next(iter(normalized_marker.symbols))
-            for normalized_marker in normalized_markers
-            if normalized_marker.status == STATUS_RESOLVED
-        ]
+        symbols = resolved_symbols(normalized_markers)
         scores = score_markers(normalized_markers, self._panels)
         return decide(
             scores,

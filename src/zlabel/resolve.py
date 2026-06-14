@@ -99,6 +99,39 @@ class TermVote:
 
 
 # ---------------------------------------------------------------------------
+# Shared ancestor credit
+# ---------------------------------------------------------------------------
+
+
+def _term_with_ancestors(
+    zfa_id: str,
+    zfa_ontology: nx.MultiDiGraph,
+    cache: dict[str, frozenset[str]],
+) -> frozenset[str]:
+    """The credited set for a gene expressing in zfa_id: the term plus all its ancestors.
+
+    The unit of DAG ancestor credit shared by the IC model, the convergence vote, and the
+    eval's tally replay. Memoized in cache so each id is walked at most once per pass; an id
+    absent from the loaded ontology (older or retired) credits only itself.
+
+    Args:
+        zfa_id (str): The ZFA term a gene directly expresses in.
+        zfa_ontology (nx.MultiDiGraph): The loaded ZFA ontology.
+        cache (dict[str, frozenset[str]]): Per-pass memo from id to its credited set.
+
+    Returns:
+        frozenset[str]: zfa_id and all its is_a+part_of ancestors (just zfa_id when the id
+        is absent from the ontology).
+    """
+    if zfa_id not in cache:
+        if zfa_id not in zfa_ontology:
+            cache[zfa_id] = frozenset({zfa_id})
+        else:
+            cache[zfa_id] = frozenset({zfa_id}) | frozenset(ancestors(zfa_ontology, zfa_id))
+    return cache[zfa_id]
+
+
+# ---------------------------------------------------------------------------
 # Background IC model
 # ---------------------------------------------------------------------------
 
@@ -131,28 +164,15 @@ def build_information_content(
     if n_genes == 0:
         return {}
 
-    # Memoize ancestor walks: each ZFA id is walked at most once per
-    # build_information_content call, covering both present and absent-from-graph ids.
+    # Memoize ancestor walks across this build (each id walked at most once).
     ancestor_cache: dict[str, frozenset[str]] = {}
-
-    def _credited(zfa_id: str) -> frozenset[str]:
-        if zfa_id in ancestor_cache:
-            return ancestor_cache[zfa_id]
-        if zfa_id not in zfa_ontology:
-            # Older or retired id not in the loaded ontology: credit only
-            # itself (no ancestors to walk).
-            result: frozenset[str] = frozenset({zfa_id})
-        else:
-            result = frozenset({zfa_id}) | frozenset(ancestors(zfa_ontology, zfa_id))
-        ancestor_cache[zfa_id] = result
-        return result
 
     gene_counts: Counter[str] = Counter()
     for records in expression_map.values():
         # Credit each term at most once per gene (distinct-gene tally).
         credited: set[str] = set()
         for record in records:
-            credited |= _credited(record.zfa_id)
+            credited |= _term_with_ancestors(record.zfa_id, zfa_ontology, ancestor_cache)
         gene_counts.update(credited)
 
     return {term_id: -math.log2(count / n_genes) for term_id, count in gene_counts.items() if count > 0}
@@ -193,21 +213,8 @@ def resolve_label(
         list[TermVote]: Candidate terms ranked most-specific first (index 0
         is the best label). Empty when no term clears all three gates.
     """
-    # Memoize ancestor walks (mirrors build_information_content): each ZFA id is walked at
-    # most once, shared between the vote tally below and the per-term depth.
+    # Memoize ancestor walks across this vote (each id walked at most once).
     ancestor_cache: dict[str, frozenset[str]] = {}
-
-    def _credited(zfa_id: str) -> frozenset[str]:
-        if zfa_id in ancestor_cache:
-            return ancestor_cache[zfa_id]
-        if zfa_id not in zfa_ontology:
-            # Older or retired id not in the loaded ontology: credit only
-            # itself (no ancestors to walk).
-            result: frozenset[str] = frozenset({zfa_id})
-        else:
-            result = frozenset({zfa_id}) | frozenset(ancestors(zfa_ontology, zfa_id))
-        ancestor_cache[zfa_id] = result
-        return result
 
     # Tally distinct genes per ZFA term (direct expression + DAG ancestors).
     term_to_genes: dict[str, set[str]] = {}
@@ -224,7 +231,7 @@ def resolve_label(
         # is_a+part_of ancestor (guarded against ids absent from the graph).
         credited: set[str] = set()
         for record in records:
-            credited |= _credited(record.zfa_id)
+            credited |= _term_with_ancestors(record.zfa_id, zfa_ontology, ancestor_cache)
         for term_id in credited:
             term_to_genes.setdefault(term_id, set()).add(symbol)
 
@@ -242,9 +249,9 @@ def resolve_label(
             name = term_name(zfa_ontology, term_id) or term_id
         else:
             name = term_id
-        # _credited(term_id) includes the term itself; ancestor_depth counts only its
-        # ancestors. Reuses the cache, so no term's ancestors are walked twice.
-        ancestor_depth = len(_credited(term_id)) - 1
+        # _term_with_ancestors(term_id) includes the term itself; ancestor_depth counts only
+        # its ancestors. Reuses the cache, so no term's ancestors are walked twice.
+        ancestor_depth = len(_term_with_ancestors(term_id, zfa_ontology, ancestor_cache)) - 1
         candidates.append(
             TermVote(
                 zfa_id=term_id,
