@@ -1,4 +1,7 @@
 ZDB-GENE-x	mylpfa	WT	ZFA:0000548	musculature system	ZFA:0009234	muscle cell	Hatching:Long-pec	Larval:Day 5	ISH	MMO:1	ZDB-PUB		 	ZDB-FISH
 ZDB-GENE-x	myod1	WT	ZFA:0000548	musculature system		 	Gastrula:Bud	Hatching:Long-pec	ISH	MMO:1	ZDB-PUB		 	ZDB-FISH
 ZDB-GENE-x	acta1b	WT	ZFA:0000548	musculature system	ZFA:0009234	muscle cell	Segmentation:10-13 somites	Larval:Day 4	ISH	MMO:1	ZDB-PUB		 	ZDB-FISH
+ZDB-GENE-x	myog	WT	ZFA:0000548	musculature system	ZFA:0009234	muscle cell	Segmentation:5-9 somites	Larval:Day 5	ISH	MMO:1	ZDB-PUB		 	ZDB-FISH
 ZDB-GENE-x	kdrl	WT	ZFA:0001262	cardiovascular system	ZFA:0005307	endothelial cell	Pharyngula:Prim-5	Larval:Day 5	ISH	MMO:1	ZDB-PUB		 	ZDB-FISH
+ZDB-GENE-x	cdh5	WT	ZFA:0001262	cardiovascular system	ZFA:0005307	endothelial cell	Pharyngula:Prim-5	Larval:Day 5	ISH	MMO:1	ZDB-PUB		 	ZDB-FISH
+ZDB-GENE-x	flt1	WT	ZFA:0001262	cardiovascular system	ZFA:0005307	endothelial cell	Pharyngula:Prim-5	Larval:Day 5	ISH	MMO:1	ZDB-PUB		 	ZDB-FISH

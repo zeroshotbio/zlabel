@@ -20,18 +20,20 @@ to its agent/schema machinery. **zlabel imports zero daniotype code.**
 
 ## Architecture (one line)
 
-Normalize gene symbols → score markers against curated high-level tissue panels →
-corroborate with ZFIN in-vivo expression + ZFA anatomy + ZFS stage → emit a
-`(label, tier, confidence, evidence)` packet, abstaining when evidence does not
-converge.
+Normalize gene symbols → score markers against curated tissue panels (a coarse prior) →
+name the cluster from an IC-weighted convergence vote over ZFIN in-vivo expression + ZFA
+anatomy (`resolve.py`), guard-railed by the winning panel's ontology anchor and checked
+against ZFS stage → emit a `(label, depth, confidence, evidence)` packet, abstaining when
+evidence does not converge.
 
 ## The annotation loop (what `label()` does)
 
 1. **Normalize** every marker to its official ZFIN symbol (aliases + `a`/`b` paralogs).
-2. **Score** markers against curated tissue/lineage panels → a ranked bucket table.
-3. **Ground**: where do the top markers express in vivo (ZFIN → ZFA)? Plausible for the stage (ZFS)?
-4. **Decide**: coherent markers + one dominant, corroborated bucket → assign with confidence; else abstain (`mixed/unresolved`) or roll up.
-5. **Emit** a `Label` evidence packet.
+2. **Score** markers against curated tissue/lineage panels → a ranked bucket table (a coarse prior, not the namer).
+3. **Converge** on ZFA anatomy: each marker's in-vivo ZFIN expression votes for the terms it (and its ancestors) cover; the most specific term enough markers share names the cluster (`resolve.py`).
+4. **Guardrail**: if the voted term contradicts the winning panel's ontology anchor, fall back to the coarse panel bucket. Plausible for the stage (ZFS)?
+5. **Decide**: assign with confidence, else abstain (`mixed/unresolved`) or roll up.
+6. **Emit** a `Label` evidence packet.
 
 Broad buckets are the honest call on a *low-resolution* cluster — **not a ceiling**.
 The same `label()` resolves finer on subclusters (specific ZFA grounding + nested
@@ -62,6 +64,9 @@ make verify   # lint + docstrings + types + tests
 - **The "model" is data.** Domain knowledge lives in `panels.yaml`, not buried in code.
 - **Deterministic core.** v1 has no LLM in the labeling decision; the LLM is a
   designed-in fast-follow (see design §LLM).
+- **Small public surface.** `Labeler` and `Label` (plus the Phase 1/2 primitives) are the
+  public API; `resolve.py` and the other `src/zlabel/` modules are the internal/advanced
+  surface — import them directly (`import zlabel.resolve`), do not re-export them at top level.
 - **Google-style docstrings, written as plain text.** `name (type): desc` for Args;
   a type-first `Returns:` (`type: desc`). **No backticks**, no reST (`:roles:`), and
   no block markdown (bullet lists, fences, headers) inside Python docstrings or

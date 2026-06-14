@@ -13,10 +13,11 @@ This file defines expectations for notebooks in `notebooks/build-demos/`.
 Use the canonical loop language from `docs/design.md`:
 
 1. Normalize symbols
-2. Score against panels
-3. Ground in vivo evidence
-4. Decide
-5. Emit a `Label` packet
+2. Score against panels (a coarse prior)
+3. Converge on ZFA anatomy (the namer)
+4. Guardrail against the panel's ontology anchor
+5. Decide
+6. Emit a `Label` packet
 
 State clearly which steps are implemented in the current phase and which are future phases.
 

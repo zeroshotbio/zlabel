@@ -187,3 +187,48 @@ def test_to_yaml_abstained_label():
     raw = yaml.safe_load(label.to_yaml())
     assert raw["bucket"] == "mixed/unresolved"
     assert raw["confidence"] is None
+
+
+# --- Phase 4 new fields -------------------------------------------------------
+
+
+def test_label_new_fields_default_values():
+    # All four new fields have defaults so callers that pre-date Phase 4 need no changes.
+    label = _valid_label()
+    assert label.depth == 0
+    assert label.panel_bucket == ""
+    assert label.panel_germ_layer == ""
+    assert label.convergent_genes == ()
+
+
+def test_to_yaml_new_fields_round_trip():
+    label = _valid_label(
+        depth=2,
+        panel_bucket="muscle",
+        panel_germ_layer="mesoderm",
+        convergent_genes=("acta1b", "mylpfa", "myog"),
+    )
+    raw = yaml.safe_load(label.to_yaml())
+    assert raw["depth"] == 2
+    assert raw["panel_bucket"] == "muscle"
+    assert raw["panel_germ_layer"] == "mesoderm"
+    assert raw["convergent_genes"] == ["acta1b", "mylpfa", "myog"]
+
+
+def test_to_yaml_new_field_order():
+    label = _valid_label(
+        depth=2,
+        panel_bucket="muscle",
+        panel_germ_layer="mesoderm",
+        convergent_genes=("acta1b", "mylpfa"),
+    )
+    yaml_str = label.to_yaml()
+    # depth comes after levels, before abstained
+    assert yaml_str.index("depth:") > yaml_str.index("levels:")
+    assert yaml_str.index("depth:") < yaml_str.index("abstained:")
+    # panel_bucket comes after confidence_components, before zfa_id
+    assert yaml_str.index("panel_bucket:") > yaml_str.index("confidence_components:")
+    assert yaml_str.index("panel_bucket:") < yaml_str.index("zfa_id:")
+    # convergent_genes comes after positive_markers, before expression_evidence
+    assert yaml_str.index("convergent_genes:") > yaml_str.index("positive_markers:")
+    assert yaml_str.index("convergent_genes:") < yaml_str.index("expression_evidence:")

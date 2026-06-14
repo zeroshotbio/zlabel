@@ -35,6 +35,8 @@ endothelium:
   lineage: endothelium
   kind: identity
   cite: "panels_test fixture; see docs/reference/cell_labelling_playbook.md §7"
+  ontology_anchor:
+    - ZFA:0005307  # endothelial cell (in zfa_test.obo)
   markers: [kdrl, fli1a, cdh5]
 
 cycling:

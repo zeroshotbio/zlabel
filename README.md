@@ -27,10 +27,11 @@ entry point — rules, architecture, commands, and build context in one file.
 ## The loop
 
 1. **Normalize** each marker to its official ZFIN symbol (aliases + `a`/`b` paralogs).
-2. **Score** markers against curated tissue/lineage panels → a ranked bucket table.
-3. **Ground** the top markers in vivo (ZFIN expression → ZFA anatomy; plausible for the stage via ZFS?).
-4. **Decide** — coherent markers + one dominant, corroborated bucket → assign with confidence; else abstain or roll up to a coarser tier.
-5. **Emit** a `Label` evidence packet.
+2. **Score** markers against curated tissue/lineage panels → a ranked bucket table (a coarse prior, not the namer).
+3. **Converge** on ZFA anatomy — each marker's in-vivo ZFIN expression votes for the terms it covers; the most specific term enough markers share names the cluster.
+4. **Guardrail** — if that term contradicts the winning panel's ontology anchor, fall back to the coarse panel bucket; check stage plausibility (ZFS).
+5. **Decide** — assign with confidence, or abstain / roll up to a coarser tier when nothing dominates.
+6. **Emit** a `Label` evidence packet (named term, depth, the `panel_bucket` prior, convergent genes, confidence, evidence).
 
 A label rests on **converging evidence, not one gene**. The full design is in
 [`docs/design.md`](docs/design.md).
@@ -42,14 +43,15 @@ Built in [7 phases, one PR each](.claude/docs/workflow.md):
 - [x] **Phase 1** — Skeleton + data (`zlabel.data` loaders for ZFA, ZFIN expression, GAF synonyms; fixture tests)
 - [x] **Phase 2** — Genes + panels (`normalize_symbol`, `panels.yaml` with 14 curated buckets, `score_markers`)
 - [x] **Phase 3** — Ground + label (`ground.py` lookups → converging-evidence decision → `Label`)
-- [ ] **Phase 4** — Eval (`build_daniocell_eval.py` + `evaluate.py`; agreement / coverage / calibration)
+- [x] **Phase 4a** — Resolution engine (`resolve.py` IC-weighted ZFA convergence namer; panels demote to a coarse prior + guardrail)
+- [ ] **Phase 4b** — Eval (`build_daniocell_eval.py` + `evaluate.py`; agreement / coverage / calibration)
 - [ ] **Phase 5** — CLI + notebook 01 (`zlabel label/eval`; the one-cluster walkthrough)
 - [ ] **Phase 6** — Notebooks 02/03 (scanpy clustering → markers → zlabel; end-to-end 48 hpf)
 - [ ] **Phase 7** — LLM (optional) (`explain.py` narrator behind the `[llm]` extra)
 
 ## Usage
 
-Phases 1–3 ship. All loaders run offline (no network after `setup_data.sh`).
+Phases 1–3 and the Phase 4a resolution engine ship. All loaders run offline (no network after `setup_data.sh`).
 
 ```python
 # --- Phase 3: label a cluster end-to-end ---

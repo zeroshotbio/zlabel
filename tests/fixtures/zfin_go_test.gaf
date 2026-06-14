@@ -13,3 +13,5 @@ ZFIN	ZDB-GENE-990415-8	myod1	involved_in	GO:0006936	PMID:0	IEA	GO_REF:0000002	P	
 ZFIN	ZDB-GENE-030131-9826	acta1b	involved_in	GO:0006936	PMID:0	IEA	GO_REF:0000002	P	actin alpha 1b skeletal muscle	acta1	gene	taxon:7955	20260520	ZFIN
 ZFIN	ZDB-GENE-060929-3	tnnt3a	involved_in	GO:0006936	PMID:0	IEA	GO_REF:0000002	P	troponin T type 3a (fast)	tnnt3	gene	taxon:7955	20260520	ZFIN
 ZFIN	ZDB-GENE-060929-4	myog	involved_in	GO:0006936	PMID:0	IEA	GO_REF:0000002	P	myogenin	myogenin	gene	taxon:7955	20260520	ZFIN
+ZFIN	ZDB-GENE-011128-5	flt1	involved_in	GO:0001568	PMID:0	IEA	GO_REF:0000002	P	fms related receptor tyrosine kinase 1	vegfr1	gene	taxon:7955	20260520	ZFIN
+ZFIN	ZDB-GENE-980526-444	fli1	enables	GO:0001525	PMID:0	IEA	GO_REF:0000002	P	Friend leukemia integration 1	fli1a	gene	taxon:7955	20260520	ZFIN

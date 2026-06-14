@@ -76,12 +76,14 @@ def test_load_panels_subpanels_loaded(test_panels):
 
 
 def test_load_panels_ontology_anchor_loaded(test_panels):
-    # The muscle fixture carries an anchor; a panel with no anchor key defaults
-    # to an empty frozenset (load_panels does not require one).
+    # muscle and endothelium fixtures both carry anchors; blood_erythroid has
+    # no ontology_anchor key and should default to an empty frozenset.
     muscle = next(p for p in test_panels if p.bucket == "muscle")
     assert muscle.ontology_anchor == frozenset({"ZFA:0000548"})
     endothelium = next(p for p in test_panels if p.bucket == "endothelium")
-    assert endothelium.ontology_anchor == frozenset()
+    assert endothelium.ontology_anchor == frozenset({"ZFA:0005307"})
+    blood = next(p for p in test_panels if p.bucket == "blood_erythroid")
+    assert blood.ontology_anchor == frozenset()
 
 
 def test_load_panels_scalar_ontology_anchor_raises(tmp_path):
