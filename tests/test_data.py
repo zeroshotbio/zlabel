@@ -35,36 +35,36 @@ NAMELESS_TERM = "ZFA:0000001"  # a stub term with no name: field
 
 
 @pytest.fixture
-def zfa():
+def zfa_ontology():
     return load_zfa(FIXTURES / "zfa_test.obo")
 
 
-def test_load_zfa_returns_populated_graph(zfa):
+def test_load_zfa_returns_populated_graph(zfa_ontology):
     # Superset, not equality: obonet may also add [Typedef] entries as nodes.
-    assert {WHOLE_ORGANISM, CELL, ENDOTHELIAL_CELL, ARTERIAL_EC}.issubset(zfa.nodes)
+    assert {WHOLE_ORGANISM, CELL, ENDOTHELIAL_CELL, ARTERIAL_EC}.issubset(zfa_ontology.nodes)
 
 
-def test_get_term_returns_attrs(zfa):
-    assert get_term(zfa, ENDOTHELIAL_CELL)["name"] == "endothelial cell"
+def test_get_term_returns_attrs(zfa_ontology):
+    assert get_term(zfa_ontology, ENDOTHELIAL_CELL)["name"] == "endothelial cell"
 
 
-def test_get_term_unknown_id_raises(zfa):
+def test_get_term_unknown_id_raises(zfa_ontology):
     with pytest.raises(KeyError):
-        get_term(zfa, "ZFA:9999999")
+        get_term(zfa_ontology, "ZFA:9999999")
 
 
-def test_term_name(zfa):
-    assert term_name(zfa, ARTERIAL_EC) == "arterial endothelial cell"
+def test_term_name(zfa_ontology):
+    assert term_name(zfa_ontology, ARTERIAL_EC) == "arterial endothelial cell"
 
 
-def test_term_name_returns_none_for_nameless_term(zfa):
-    assert term_name(zfa, NAMELESS_TERM) is None
+def test_term_name_returns_none_for_nameless_term(zfa_ontology):
+    assert term_name(zfa_ontology, NAMELESS_TERM) is None
 
 
-def test_ancestors_default_mixes_is_a_and_part_of(zfa):
+def test_ancestors_default_mixes_is_a_and_part_of(zfa_ontology):
     # is_a chain (endothelial cell, cell) AND part_of chain (cardiovascular
     # system, whole organism) both surface under the default edge types.
-    assert set(ancestors(zfa, ARTERIAL_EC)) == {
+    assert set(ancestors(zfa_ontology, ARTERIAL_EC)) == {
         ENDOTHELIAL_CELL,
         CELL,
         CARDIOVASCULAR_SYSTEM,
@@ -72,24 +72,24 @@ def test_ancestors_default_mixes_is_a_and_part_of(zfa):
     }
 
 
-def test_ancestors_is_a_only_excludes_part_of(zfa):
-    result = set(ancestors(zfa, ARTERIAL_EC, edge_types={"is_a"}))
+def test_ancestors_is_a_only_excludes_part_of(zfa_ontology):
+    result = set(ancestors(zfa_ontology, ARTERIAL_EC, edge_types={"is_a"}))
     assert result == {ENDOTHELIAL_CELL, CELL}
     assert CARDIOVASCULAR_SYSTEM not in result  # part_of edge must not be followed
 
 
-def test_ancestors_develops_from_is_a_separate_axis(zfa):
+def test_ancestors_develops_from_is_a_separate_axis(zfa_ontology):
     # set(): BFS order is not part of the contract, only the membership.
-    assert set(ancestors(zfa, ARTERIAL_EC, edge_types={"develops_from"})) == {ENDOTHELIAL_CELL}
+    assert set(ancestors(zfa_ontology, ARTERIAL_EC, edge_types={"develops_from"})) == {ENDOTHELIAL_CELL}
 
 
-def test_ancestors_of_root_is_empty(zfa):
-    assert ancestors(zfa, WHOLE_ORGANISM) == []
+def test_ancestors_of_root_is_empty(zfa_ontology):
+    assert ancestors(zfa_ontology, WHOLE_ORGANISM) == []
 
 
-def test_ancestors_unknown_id_raises(zfa):
+def test_ancestors_unknown_id_raises(zfa_ontology):
     with pytest.raises(KeyError):
-        ancestors(zfa, "ZFA:9999999")
+        ancestors(zfa_ontology, "ZFA:9999999")
 
 
 def test_load_zfa_missing_file_raises():
@@ -116,9 +116,9 @@ def test_expression_keys_are_lowercased_symbols(tmp_path):
 
 def test_expression_record_carries_anatomy_and_stage(tmp_path):
     rows = [expr_row("hbbe1.1", "ZFA:0000007", "blood", "", "", "Gastrula:Bud", "Larval:Day 4")]
-    rec = load_zfin_expression(write_expr(tmp_path, rows))["hbbe1.1"][0]
-    assert (rec.zfa_id, rec.zfa_name) == ("ZFA:0000007", "blood")
-    assert (rec.start_stage, rec.end_stage) == ("Gastrula:Bud", "Larval:Day 4")
+    record = load_zfin_expression(write_expr(tmp_path, rows))["hbbe1.1"][0]
+    assert (record.zfa_id, record.zfa_name) == ("ZFA:0000007", "blood")
+    assert (record.start_stage, record.end_stage) == ("Gastrula:Bud", "Larval:Day 4")
 
 
 def test_expression_sub_structure_wins_over_super(tmp_path):
@@ -126,7 +126,8 @@ def test_expression_sub_structure_wins_over_super(tmp_path):
         expr_row("kdrl", "ZFA:0000009", "blood vessel", "", "", "Long-pec", "Long-pec"),
         expr_row("kdrl", "ZFA:0000009", "blood vessel", "ZFA:0000010", "dorsal aorta", "Long-pec", "Long-pec"),
     ]
-    structures = {(r.zfa_id, r.zfa_name) for r in load_zfin_expression(write_expr(tmp_path, rows))["kdrl"]}
+    records = load_zfin_expression(write_expr(tmp_path, rows))["kdrl"]
+    structures = {(record.zfa_id, record.zfa_name) for record in records}
     assert structures == {("ZFA:0000009", "blood vessel"), ("ZFA:0000010", "dorsal aorta")}
 
 

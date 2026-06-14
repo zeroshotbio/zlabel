@@ -175,12 +175,12 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
         markers_raw: list[str] = entry.get("markers", [])  # type: ignore[assignment]
         if not markers_raw:
             raise ValueError(f"panel {bucket!r} has no markers")
-        markers = frozenset(m.lower() for m in markers_raw)
+        markers = frozenset(marker.lower() for marker in markers_raw)
 
         # Subpanels load into the same frozenset convention; not scored here.
         subpanels_raw: dict[str, list[str]] = entry.get("subpanels", {})  # type: ignore[assignment]
         subpanels: dict[str, frozenset[str]] = {
-            name: frozenset(m.lower() for m in sub_markers) for name, sub_markers in subpanels_raw.items()
+            name: frozenset(marker.lower() for marker in sub_markers) for name, sub_markers in subpanels_raw.items()
         }
 
         # Anchor must be a list of ids; a bare scalar (ontology_anchor: ZFA:0000548)
@@ -188,7 +188,7 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
         anchor_raw = entry.get("ontology_anchor", [])
         if not isinstance(anchor_raw, list):
             raise ValueError(f"panel {bucket!r} ontology_anchor must be a list of ZFA ids, not a scalar")
-        ontology_anchor = frozenset(str(a) for a in anchor_raw)
+        ontology_anchor = frozenset(str(anchor_id) for anchor_id in anchor_raw)
 
         panels.append(
             Panel(
@@ -251,12 +251,12 @@ def score_markers(
     # Denominator is the total weight of all resolved markers, whether or not
     # they hit any panel. A cluster with mostly off-panel markers cannot
     # score any bucket highly — this allows Phase 3 to abstain honestly.
-    total_weight = sum(m.weight for m in resolved)
+    total_weight = sum(matched_marker.weight for matched_marker in resolved)
 
     scores: list[BucketScore] = []
     for panel in panels:
-        matched = tuple(m for m in resolved if m.symbol in panel.markers)
-        hit_weight = sum(m.weight for m in matched)
+        matched = tuple(matched_marker for matched_marker in resolved if matched_marker.symbol in panel.markers)
+        hit_weight = sum(matched_marker.weight for matched_marker in matched)
         score = hit_weight / total_weight if total_weight > 0.0 else 0.0
         scores.append(
             BucketScore(
@@ -271,5 +271,5 @@ def score_markers(
             )
         )
 
-    scores.sort(key=lambda s: (-s.score, s.bucket))
+    scores.sort(key=lambda bucket_score: (-bucket_score.score, bucket_score.bucket))
     return scores

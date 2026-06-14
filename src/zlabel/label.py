@@ -46,7 +46,7 @@ from zlabel.genes import STATUS_RESOLVED, normalize_markers
 from zlabel.ground import expression_lookup, grounds_under, stage_plausibility
 from zlabel.models import TIER_HIGH_NAME, TIER_LOW_NAME, TIER_MEDIUM_NAME, Confidence, ExprHit, Label
 from zlabel.panels import KIND_IDENTITY, KIND_STATE, BucketScore, MatchedMarker, Panel, load_panels, score_markers
-from zlabel.resolve import STOPLIST, TermVote, build_ic, resolve_label
+from zlabel.resolve import STOPLIST, TermVote, build_information_content, resolve_label
 
 # ---------------------------------------------------------------------------
 # Decision constants
@@ -102,7 +102,7 @@ def _clamp01(x: float) -> float:
     return max(0.0, min(1.0, x))
 
 
-def _levels_chain(zfa_graph: nx.MultiDiGraph, zfa_id: str, zfa_name: str) -> tuple[str, ...]:
+def _levels_chain(zfa_ontology: nx.MultiDiGraph, zfa_id: str, zfa_name: str) -> tuple[str, ...]:
     """Build a broad-to-specific name chain ending at zfa_name.
 
     Takes the ZFA ancestor ids in BFS order (nearest first), filters out
@@ -111,20 +111,20 @@ def _levels_chain(zfa_graph: nx.MultiDiGraph, zfa_id: str, zfa_name: str) -> tup
     ZFA DAG may have multiple paths; BFS gives shortest paths first.
 
     Args:
-        zfa_graph (nx.MultiDiGraph): ZFA ontology graph.
+        zfa_ontology (nx.MultiDiGraph): ZFA ontology graph.
         zfa_id (str): The named ZFA term id.
         zfa_name (str): Human-readable name of the named term.
 
     Returns:
         tuple[str, ...]: Chain of names broad to specific, ending at zfa_name.
     """
-    if zfa_id not in zfa_graph:
+    if zfa_id not in zfa_ontology:
         return (zfa_name,)
-    ancs = ancestors(zfa_graph, zfa_id)  # BFS order, nearest ancestor first
+    ancestor_ids = ancestors(zfa_ontology, zfa_id)  # BFS order, nearest ancestor first
     names = [
-        term_name(zfa_graph, a) or a
-        for a in reversed(ancs)  # reverse so broadest (farthest) ancestor is first
-        if a not in STOPLIST and a in zfa_graph
+        term_name(zfa_ontology, ancestor_id) or ancestor_id
+        for ancestor_id in reversed(ancestor_ids)  # reverse so broadest (farthest) ancestor is first
+        if ancestor_id not in STOPLIST and ancestor_id in zfa_ontology
     ]
     return tuple(names + [zfa_name])
 
@@ -141,7 +141,7 @@ def _adj(bucket_score: BucketScore, identity_denom: float) -> float:
     """Adjusted identity score: hit_weight / identity_denom."""
     if identity_denom <= 0.0:
         return 0.0
-    hit_weight = sum(m.weight for m in bucket_score.matched_markers)
+    hit_weight = sum(matched_marker.weight for matched_marker in bucket_score.matched_markers)
     return hit_weight / identity_denom
 
 
@@ -158,16 +158,26 @@ def _state_only_weight(scores: list[BucketScore]) -> float:
     Returns:
         float: Sum of weights of markers that hit only state panels.
     """
-    identity_symbols = {m.symbol for bs in scores if bs.kind == KIND_IDENTITY for m in bs.matched_markers}
-    state_weight = {m.symbol: m.weight for bs in scores if bs.kind == KIND_STATE for m in bs.matched_markers}
+    identity_symbols = {
+        matched_marker.symbol
+        for bucket_score in scores
+        if bucket_score.kind == KIND_IDENTITY
+        for matched_marker in bucket_score.matched_markers
+    }
+    state_weight = {
+        matched_marker.symbol: matched_marker.weight
+        for bucket_score in scores
+        if bucket_score.kind == KIND_STATE
+        for matched_marker in bucket_score.matched_markers
+    }
     return sum(weight for symbol, weight in state_weight.items() if symbol not in identity_symbols)
 
 
 def _compute_grounding_evidence(
     matched_markers: tuple[MatchedMarker, ...],
     anchor: frozenset[str],
-    expr_map: Mapping[str, list[ZfinExpressionRecord]],
-    zfa_graph: nx.MultiDiGraph,
+    expression_map: Mapping[str, list[ZfinExpressionRecord]],
+    zfa_ontology: nx.MultiDiGraph,
     stage_hpf: float | None,
 ) -> tuple[tuple[ExprHit, ...], dict[str, int]]:
     """Compute per-marker grounding and stage signals for the confidence rubric.
@@ -180,8 +190,8 @@ def _compute_grounding_evidence(
     Args:
         matched_markers (tuple[MatchedMarker, ...]): MatchedMarker objects for the winner's panel hits.
         anchor (frozenset[str]): Bucket ontology anchor ids.
-        expr_map (Mapping[str, list[ZfinExpressionRecord]]): ZFIN expression data.
-        zfa_graph (nx.MultiDiGraph): ZFA ontology graph.
+        expression_map (Mapping[str, list[ZfinExpressionRecord]]): ZFIN expression data.
+        zfa_ontology (nx.MultiDiGraph): ZFA ontology graph.
         stage_hpf (float | None): Dataset stage in hpf, or None.
 
     Returns:
@@ -191,18 +201,18 @@ def _compute_grounding_evidence(
     hits: list[ExprHit] = []
     counts = {"gradable": 0, "grounded": 0, "datable": 0, "plausible": 0}
 
-    for mm in matched_markers:
-        records = expression_lookup(expr_map, mm.symbol)
+    for matched_marker in matched_markers:
+        records = expression_lookup(expression_map, matched_marker.symbol)
         if not records:
             continue  # no records -> not gradable for either component
         counts["gradable"] += 1
 
         # Grounding: the first record (if any) that sits under the anchor.
-        grounded_rec = next((rec for rec in records if grounds_under(zfa_graph, rec.zfa_id, anchor)), None)
+        grounded_rec = next((record for record in records if grounds_under(zfa_ontology, record.zfa_id, anchor)), None)
         if grounded_rec is not None:
             counts["grounded"] += 1
-            zfa_name = term_name(zfa_graph, grounded_rec.zfa_id) or grounded_rec.zfa_id
-            hits.append(ExprHit(symbol=mm.symbol, zfa_id=grounded_rec.zfa_id, zfa_name=zfa_name))
+            zfa_name = term_name(zfa_ontology, grounded_rec.zfa_id) or grounded_rec.zfa_id
+            hits.append(ExprHit(symbol=matched_marker.symbol, zfa_id=grounded_rec.zfa_id, zfa_name=zfa_name))
 
         # Stage: is any datable record on-stage?
         plausibility = stage_plausibility(records, stage_hpf)
@@ -268,15 +278,15 @@ def _grade_confidence(
     Returns:
         tuple[float, Confidence, dict[str, float]]: (score, tier, components).
     """
-    coherence = _clamp01(sum(m.weight for m in top.matched_markers) / COHERENCE_SAT)
+    coherence = _clamp01(sum(matched_marker.weight for matched_marker in top.matched_markers) / COHERENCE_SAT)
     margin = _clamp01((top_adj - second_adj) / DOMINANCE_GAP)
     grounding = counts["grounded"] / counts["gradable"] if counts["gradable"] else None
     stage = counts["plausible"] / counts["datable"] if stage_hpf is not None and counts["datable"] else None
 
-    g = grounding if grounding is not None else NEUTRAL
-    s = stage if stage is not None else NEUTRAL
-    score = W_COHERENCE * coherence + W_MARGIN * margin + W_GROUNDING * g + W_STAGE * s
-    components = {"coherence": coherence, "margin": margin, "grounding": g, "stage": s}
+    grounding_component = grounding if grounding is not None else NEUTRAL
+    stage_component = stage if stage is not None else NEUTRAL
+    score = W_COHERENCE * coherence + W_MARGIN * margin + W_GROUNDING * grounding_component + W_STAGE * stage_component
+    components = {"coherence": coherence, "margin": margin, "grounding": grounding_component, "stage": stage_component}
 
     # Cap a high call down to medium: a rollup makes no single-bucket high claim, and
     # a single-bucket high needs real grounding/stage corroboration (convergence cap).
@@ -301,12 +311,12 @@ def _detect_states(scores: list[BucketScore]) -> tuple[str, ...]:
         tuple[str, ...]: State bucket names in alphabetical order (stable output).
     """
     detected: list[str] = []
-    for bs in scores:
-        if bs.kind != KIND_STATE:
+    for bucket_score in scores:
+        if bucket_score.kind != KIND_STATE:
             continue
-        hit_weight = sum(m.weight for m in bs.matched_markers)
-        if hit_weight >= STATE_MIN_WEIGHT and len(bs.matched_markers) >= N_STATE_MIN:
-            detected.append(bs.bucket)
+        hit_weight = sum(matched_marker.weight for matched_marker in bucket_score.matched_markers)
+        if hit_weight >= STATE_MIN_WEIGHT and len(bucket_score.matched_markers) >= N_STATE_MIN:
+            detected.append(bucket_score.bucket)
     return tuple(sorted(detected))
 
 
@@ -352,11 +362,11 @@ def decide(
     scores: list[BucketScore],
     *,
     anchors: Mapping[str, frozenset[str]],
-    expr_map: Mapping[str, list[ZfinExpressionRecord]],
-    zfa_graph: nx.MultiDiGraph,
+    expression_map: Mapping[str, list[ZfinExpressionRecord]],
+    zfa_ontology: nx.MultiDiGraph,
     stage_hpf: float | None,
     symbols: list[str] | None = None,
-    ic: Mapping[str, float] | None = None,
+    information_content: Mapping[str, float] | None = None,
 ) -> Label:
     """Converging-evidence decision: turn a score table into a Label.
 
@@ -367,7 +377,7 @@ def decide(
       A. No resolved markers or no identity panel hit at all -> abstain (provisional).
       B. Top adjusted identity score < MIN_SIGNAL -> abstain (provisional).
       C. Top score dominates (gap >= DOMINANCE_GAP, or only one identity bucket) ->
-         name from ZFA convergence vote (symbols + ic required) or fall back to the
+         name from ZFA convergence vote (symbols + information_content required) or fall back to the
          panel bucket; emit the named label.
       D. Near-tie: contenders within DOMINANCE_GAP of the top.
          All share a non-empty germ layer -> assign at germ-layer tier (underclustered).
@@ -378,36 +388,40 @@ def decide(
         anchors (Mapping[str, frozenset[str]]): Bucket name to ZFA anchor ids.
             Passed explicitly so decide() stays pure; Labeler builds this from
             the loaded Panel objects.
-        expr_map (Mapping[str, list[ZfinExpressionRecord]]): From
+        expression_map (Mapping[str, list[ZfinExpressionRecord]]): From
             data.load_zfin_expression.
-        zfa_graph (nx.MultiDiGraph): From data.load_zfa.
+        zfa_ontology (nx.MultiDiGraph): From data.load_zfa.
         stage_hpf (float | None): Dataset developmental stage in hpf, or None.
         symbols (list[str] | None): Already-normalized current ZFIN symbols of the
-            cluster's markers, in rank order. When provided (with ic), drives the
+            cluster's markers, in rank order. When provided (with information_content), drives the
             IC-weighted convergence vote that names the bucket from ZFA anatomy.
             When None, the vote is skipped and the panel bucket is used directly.
-        ic (Mapping[str, float] | None): IC model from resolve.build_ic. Required
+        information_content (Mapping[str, float] | None): IC model from resolve.build_information_content. Required
             alongside symbols for the convergence vote.
 
     Returns:
         Label: Evidence packet with bucket, confidence, expression evidence, etc.
     """
-    panel_scores = {bs.bucket: bs.score for bs in scores}
+    panel_scores = {bucket_score.bucket: bucket_score.score for bucket_score in scores}
     states = _detect_states(scores)
 
     # Recover total_weight from the first score (all BucketScores share it).
     total_weight = scores[0].total_weight if scores else 0.0
 
     # Compute state-only weight to derive the identity-only denominator.
-    s_only = _state_only_weight(scores)
-    identity_denom = total_weight - s_only
+    state_only_weight = _state_only_weight(scores)
+    identity_denom = total_weight - state_only_weight
 
     # Sort identity buckets that actually matched markers, by adjusted score
     # descending. Dropping zero-marker buckets here is what keeps them from
     # padding the near-tie contender set and forcing a false "mixed" abstention.
     identity = sorted(
-        [bs for bs in scores if bs.kind == KIND_IDENTITY and bs.matched_markers],
-        key=lambda bs: (-_adj(bs, identity_denom), bs.bucket),
+        [
+            bucket_score
+            for bucket_score in scores
+            if bucket_score.kind == KIND_IDENTITY and bucket_score.matched_markers
+        ],
+        key=lambda bucket_score: (-_adj(bucket_score, identity_denom), bucket_score.bucket),
     )
 
     # --- Precheck A: no identity evidence at all ---
@@ -425,25 +439,27 @@ def decide(
     # --- C / D: dominance test ---
     gap = top_adj - second_adj
     if len(identity) == 1 or gap >= DOMINANCE_GAP:
-        # Clear winner: name from ZFA convergence vote when symbols/ic are
+        # Clear winner: name from ZFA convergence vote when symbols/information_content are
         # provided; fall back to the coarse panel bucket otherwise.
         return _assign_named(
             top=top,
             top_adj=top_adj,
             second_adj=second_adj,
             anchors=anchors,
-            expr_map=expr_map,
-            zfa_graph=zfa_graph,
+            expression_map=expression_map,
+            zfa_ontology=zfa_ontology,
             stage_hpf=stage_hpf,
             states=states,
             panel_scores=panel_scores,
             symbols=symbols or [],
-            ic=ic or {},
+            information_content=information_content or {},
         )
 
     # Near-tie: collect contenders within DOMINANCE_GAP of the top.
-    contenders = [bs for bs in identity if top_adj - _adj(bs, identity_denom) <= DOMINANCE_GAP]
-    germ_layers = {bs.germ_layer for bs in contenders if bs.germ_layer}
+    contenders = [
+        bucket_score for bucket_score in identity if top_adj - _adj(bucket_score, identity_denom) <= DOMINANCE_GAP
+    ]
+    germ_layers = {bucket_score.germ_layer for bucket_score in contenders if bucket_score.germ_layer}
 
     if len(germ_layers) == 1:
         # All contenders share a germ layer — assign at germ-layer tier.
@@ -454,8 +470,8 @@ def decide(
             top_adj=top_adj,
             second_adj=second_adj,
             anchors=anchors,
-            expr_map=expr_map,
-            zfa_graph=zfa_graph,
+            expression_map=expression_map,
+            zfa_ontology=zfa_ontology,
             stage_hpf=stage_hpf,
             states=states,
             panel_scores=panel_scores,
@@ -471,13 +487,13 @@ def _assign_named(
     top_adj: float,
     second_adj: float,
     anchors: Mapping[str, frozenset[str]],
-    expr_map: Mapping[str, list[ZfinExpressionRecord]],
-    zfa_graph: nx.MultiDiGraph,
+    expression_map: Mapping[str, list[ZfinExpressionRecord]],
+    zfa_ontology: nx.MultiDiGraph,
     stage_hpf: float | None,
     states: tuple[str, ...],
     panel_scores: dict[str, float],
     symbols: list[str],
-    ic: Mapping[str, float],
+    information_content: Mapping[str, float],
 ) -> Label:
     """Build a Label for a clear single-bucket assignment, named from ZFA convergence.
 
@@ -488,7 +504,7 @@ def _assign_named(
     is used as the fallback (named=None). Depth and levels are derived from the
     named ZFA term when one is found; otherwise the static panel triple is used.
 
-    When symbols is empty or ic is empty (pure decide() tests that omit them),
+    When symbols is empty or information_content is empty (pure decide() tests that omit them),
     resolve_label returns nothing and the behavior is identical to the old
     _assign_top fallback: panel bucket, static levels, panel anchor as zfa_id.
 
@@ -497,14 +513,14 @@ def _assign_named(
         top_adj (float): Its adjusted identity score.
         second_adj (float): Runner-up adjusted score (0 when none).
         anchors (Mapping[str, frozenset[str]]): Bucket -> ZFA anchor ids.
-        expr_map (Mapping[str, list[ZfinExpressionRecord]]): Expression data.
-        zfa_graph (nx.MultiDiGraph): ZFA ontology graph.
+        expression_map (Mapping[str, list[ZfinExpressionRecord]]): Expression data.
+        zfa_ontology (nx.MultiDiGraph): ZFA ontology graph.
         stage_hpf (float | None): Dataset stage in hpf, or None.
         states (tuple[str, ...]): Detected state programs.
         panel_scores (dict[str, float]): Raw panel scores.
         symbols (list[str]): Already-normalized current ZFIN symbols of all
             cluster markers, in rank order. May be empty.
-        ic (Mapping[str, float]): IC model from build_ic. May be empty.
+        information_content (Mapping[str, float]): IC model from build_information_content. May be empty.
 
     Returns:
         Label: Assigned evidence packet with the data-derived ZFA bucket when
@@ -513,14 +529,16 @@ def _assign_named(
     anchor = anchors.get(top.bucket, frozenset())
 
     # Run the convergence vote; take the top candidate as the named term.
-    votes = resolve_label(symbols, expr_map=expr_map, zfa_graph=zfa_graph, ic=ic)
+    votes = resolve_label(
+        symbols, expression_map=expression_map, zfa_ontology=zfa_ontology, information_content=information_content
+    )
     named: TermVote | None = votes[0] if votes else None
 
     # Guardrail: the named ZFA term must sit at or under the winning panel's
     # ontology anchor. If it doesn't, the voted anatomy contradicts the panel
     # prior -- discard the vote and fall back to the panel bucket.
     if named is not None and anchor:
-        if not grounds_under(zfa_graph, named.zfa_id, anchor):
+        if not grounds_under(zfa_ontology, named.zfa_id, anchor):
             named = None
 
     # Grounding evidence: when a term was named, check markers against that
@@ -528,19 +546,21 @@ def _assign_named(
     # anatomy). When no term was named, fall back to the panel anchor so
     # existing grounding-based tests are unaffected.
     grounding_anchor = frozenset({named.zfa_id}) if named is not None else anchor
-    hits, counts = _compute_grounding_evidence(top.matched_markers, grounding_anchor, expr_map, zfa_graph, stage_hpf)
+    hits, counts = _compute_grounding_evidence(
+        top.matched_markers, grounding_anchor, expression_map, zfa_ontology, stage_hpf
+    )
 
     conf_score, tier, components = _grade_confidence(top, second_adj, top_adj, counts, stage_hpf, rollup=False)
-    positive = tuple(m.symbol for m in top.matched_markers)
+    positive = tuple(matched_marker.symbol for matched_marker in top.matched_markers)
 
     if named is not None:
         bucket = named.zfa_name
         zfa_id = named.zfa_id
-        levels = _levels_chain(zfa_graph, named.zfa_id, named.zfa_name)
+        levels = _levels_chain(zfa_ontology, named.zfa_id, named.zfa_name)
         depth = len(levels)
         convergent_genes = named.genes
         rationale = (
-            f"{named.zfa_name} (IC {named.ic:.2f}) -- "
+            f"{named.zfa_name} (IC {named.information_content:.2f}) -- "
             f"{len(named.genes)}/{len(symbols)} markers converge; "
             f"panel prior: {top.bucket}"
         )
@@ -548,10 +568,10 @@ def _assign_named(
         # Fallback: use the coarse panel bucket (same as the old _assign_top).
         bucket = top.bucket
         zfa_id = sorted(anchor)[0] if anchor else None
-        levels = tuple(x for x in (top.germ_layer, top.tissue, top.lineage) if x)
+        levels = tuple(level for level in (top.germ_layer, top.tissue, top.lineage) if level)
         depth = len(levels)
         convergent_genes = ()
-        markers_txt = ", ".join(m.symbol for m in top.matched_markers[:3])
+        markers_txt = ", ".join(matched_marker.symbol for matched_marker in top.matched_markers[:3])
         rationale = f"{top.bucket} supported by {markers_txt} (adj_score={top_adj:.2f}; no convergent ZFA term)"
 
     return Label(
@@ -561,7 +581,7 @@ def _assign_named(
         abstained=False,
         confidence=tier,
         confidence_score=round(conf_score, 4),
-        confidence_components={k: round(v, 4) for k, v in components.items()},
+        confidence_components={name: round(value, 4) for name, value in components.items()},
         ambiguity_flag="none",
         states=states,
         panel_bucket=top.bucket,
@@ -583,8 +603,8 @@ def _assign_rollup(
     top_adj: float,
     second_adj: float,
     anchors: Mapping[str, frozenset[str]],
-    expr_map: Mapping[str, list[ZfinExpressionRecord]],
-    zfa_graph: nx.MultiDiGraph,
+    expression_map: Mapping[str, list[ZfinExpressionRecord]],
+    zfa_ontology: nx.MultiDiGraph,
     stage_hpf: float | None,
     states: tuple[str, ...],
     panel_scores: dict[str, float],
@@ -601,8 +621,8 @@ def _assign_rollup(
         top_adj (float): Adjusted score of the top contender.
         second_adj (float): Adjusted score of the second contender.
         anchors (Mapping[str, frozenset[str]]): Bucket -> ZFA anchor ids.
-        expr_map (Mapping[str, list[ZfinExpressionRecord]]): Expression data.
-        zfa_graph (nx.MultiDiGraph): ZFA ontology graph.
+        expression_map (Mapping[str, list[ZfinExpressionRecord]]): Expression data.
+        zfa_ontology (nx.MultiDiGraph): ZFA ontology graph.
         stage_hpf (float | None): Dataset stage in hpf, or None.
         states (tuple[str, ...]): Detected state programs.
         panel_scores (dict[str, float]): Raw panel scores.
@@ -613,23 +633,25 @@ def _assign_rollup(
     # Union of all contenders' matched markers (deduplicated by symbol).
     seen: set[str] = set()
     union_markers = []
-    for bs in contenders:
-        for mm in bs.matched_markers:
-            if mm.symbol not in seen:
-                seen.add(mm.symbol)
-                union_markers.append(mm)
+    for bucket_score in contenders:
+        for matched_marker in bucket_score.matched_markers:
+            if matched_marker.symbol not in seen:
+                seen.add(matched_marker.symbol)
+                union_markers.append(matched_marker)
     union_matched = tuple(union_markers)
 
     # Union of all contenders' anchors.
-    union_anchor: frozenset[str] = frozenset().union(*(anchors.get(bs.bucket, frozenset()) for bs in contenders))
+    union_anchor: frozenset[str] = frozenset().union(
+        *(anchors.get(bucket_score.bucket, frozenset()) for bucket_score in contenders)
+    )
 
-    hits, counts = _compute_grounding_evidence(union_matched, union_anchor, expr_map, zfa_graph, stage_hpf)
+    hits, counts = _compute_grounding_evidence(union_matched, union_anchor, expression_map, zfa_ontology, stage_hpf)
 
     # Use the top contender as a proxy for coherence/margin.
     top = contenders[0]
     conf_score, tier, components = _grade_confidence(top, second_adj, top_adj, counts, stage_hpf, rollup=True)
 
-    positive = tuple(mm.symbol for mm in union_matched)
+    positive = tuple(matched_marker.symbol for matched_marker in union_matched)
 
     return Label(
         bucket=germ_layer,
@@ -638,7 +660,7 @@ def _assign_rollup(
         abstained=False,
         confidence=tier,
         confidence_score=round(conf_score, 4),
-        confidence_components={k: round(v, 4) for k, v in components.items()},
+        confidence_components={name: round(value, 4) for name, value in components.items()},
         ambiguity_flag="underclustered",
         states=states,
         panel_bucket=germ_layer,
@@ -648,7 +670,7 @@ def _assign_rollup(
         positive_markers=positive,
         convergent_genes=(),
         expression_evidence=hits,
-        rationale=f"{germ_layer} rollup: contenders {[bs.bucket for bs in contenders]}",
+        rationale=f"{germ_layer} rollup: contenders {[bucket_score.bucket for bucket_score in contenders]}",
         next_step="subcluster",
     )
 
@@ -711,14 +733,16 @@ class Labeler:
         gaf_p = Path(gaf_path) if gaf_path is not None else base / "zfin.gaf"
         panels_p = Path(panels_path) if panels_path is not None else _DEFAULT_PANELS
 
-        self._zfa = load_zfa(zfa_p)
-        self._expr = load_zfin_expression(expr_p)
+        self._zfa_ontology = load_zfa(zfa_p)
+        self._expression_map = load_zfin_expression(expr_p)
         self._synonyms = load_gene_synonym_map(gaf_p)
         self._panels: list[Panel] = load_panels(panels_p)
-        self._anchors: dict[str, frozenset[str]] = {p.bucket: p.ontology_anchor for p in self._panels}
+        self._anchors: dict[str, frozenset[str]] = {panel.bucket: panel.ontology_anchor for panel in self._panels}
         # IC model built once from the loaded expression corpus.
         # Passed to decide() so resolve_label can rank convergent ZFA terms.
-        self._ic: dict[str, float] = build_ic(self._expr, self._zfa)
+        self._information_content: dict[str, float] = build_information_content(
+            self._expression_map, self._zfa_ontology
+        )
 
     def label(self, markers: list[str]) -> Label:
         """Label one cluster from its marker gene list.
@@ -750,9 +774,9 @@ class Labeler:
         return decide(
             scores,
             anchors=self._anchors,
-            expr_map=self._expr,
-            zfa_graph=self._zfa,
+            expression_map=self._expression_map,
+            zfa_ontology=self._zfa_ontology,
             stage_hpf=self.stage_hpf,
             symbols=symbols,
-            ic=self._ic,
+            information_content=self._information_content,
         )

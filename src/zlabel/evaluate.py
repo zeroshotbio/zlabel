@@ -38,7 +38,7 @@ from zlabel.ground import expression_lookup, grounds_under
 from zlabel.label import decide
 from zlabel.models import Label
 from zlabel.panels import KIND_IDENTITY, Panel, load_panels, score_markers
-from zlabel.resolve import CONVERGENCE_MIN, STOPLIST, build_ic
+from zlabel.resolve import CONVERGENCE_MIN, STOPLIST, build_information_content
 
 # Prediction classes (how the engine resolved a cluster).
 NAMED = "named"  # the convergence vote named a ZFA term
@@ -90,12 +90,12 @@ class Crosswalk:
 class Resources:
     """Engine data loaded once, shared by labeling and the overcall audit."""
 
-    zfa: nx.MultiDiGraph
-    expr: dict[str, list[ZfinExpressionRecord]]
+    zfa_ontology: nx.MultiDiGraph
+    expression_map: dict[str, list[ZfinExpressionRecord]]
     synonyms: dict[str, set[str]]
     panels: list[Panel]
     anchors: dict[str, frozenset[str]]
-    ic: dict[str, float]
+    information_content: dict[str, float]
 
 
 @dataclass(frozen=True)
@@ -163,14 +163,14 @@ def load_benchmark(path: str | Path) -> list[BenchmarkRow]:
     """
     rows: list[BenchmarkRow] = []
     with Path(path).open(newline="", encoding="utf-8") as handle:
-        for r in csv.DictReader(handle):
-            stage = r.get("stage_hpf", "").strip()
+        for row in csv.DictReader(handle):
+            stage = row.get("stage_hpf", "").strip()
             rows.append(
                 BenchmarkRow(
-                    cluster_id=r["cluster_id"],
-                    markers=[m for m in r["markers"].split(";") if m],
-                    broad_tissue=r["broad_tissue"],
-                    tissue_name=r.get("tissue_name", ""),
+                    cluster_id=row["cluster_id"],
+                    markers=[marker for marker in row["markers"].split(";") if marker],
+                    broad_tissue=row["broad_tissue"],
+                    tissue_name=row.get("tissue_name", ""),
                     stage_hpf=float(stage) if stage else None,
                 )
             )
@@ -216,32 +216,32 @@ def load_resources(
     Returns:
         Resources: The loaded ontology, expression, synonyms, panels, anchors, and IC.
     """
-    zfa = load_zfa(zfa_path)
-    expr = load_zfin_expression(expr_path)
+    zfa_ontology = load_zfa(zfa_path)
+    expression_map = load_zfin_expression(expr_path)
     synonyms = load_gene_synonym_map(gaf_path)
     panels = load_panels(panels_path)
-    anchors = {p.bucket: p.ontology_anchor for p in panels}
-    ic = build_ic(expr, zfa)
-    return Resources(zfa, expr, synonyms, panels, anchors, ic)
+    anchors = {panel.bucket: panel.ontology_anchor for panel in panels}
+    information_content = build_information_content(expression_map, zfa_ontology)
+    return Resources(zfa_ontology, expression_map, synonyms, panels, anchors, information_content)
 
 
-def _label_row(row: BenchmarkRow, res: Resources) -> tuple[Label, list[str]]:
+def _label_row(row: BenchmarkRow, resources: Resources) -> tuple[Label, list[str]]:
     """Label one cluster at its own stage; also return its normalized symbols for the audit."""
-    normalized_markers = normalize_markers(row.markers, res.synonyms)
+    normalized_markers = normalize_markers(row.markers, resources.synonyms)
     symbols = [
         next(iter(normalized_marker.symbols))
         for normalized_marker in normalized_markers
         if normalized_marker.status == STATUS_RESOLVED
     ]
-    scores = score_markers(normalized_markers, res.panels)
+    scores = score_markers(normalized_markers, resources.panels)
     label = decide(
         scores,
-        anchors=res.anchors,
-        expr_map=res.expr,
-        zfa_graph=res.zfa,
+        anchors=resources.anchors,
+        expression_map=resources.expression_map,
+        zfa_ontology=resources.zfa_ontology,
         stage_hpf=row.stage_hpf,
         symbols=symbols,
-        ic=res.ic,
+        information_content=resources.information_content,
     )
     return label, symbols
 
@@ -257,7 +257,7 @@ def _classify(label: Label) -> str:
     return FALLBACK
 
 
-def _prediction_anchor_ids(label: Label, kind: str, res: Resources) -> frozenset[str]:
+def _prediction_anchor_ids(label: Label, kind: str, resources: Resources) -> frozenset[str]:
     """The ZFA ids to score a prediction by.
 
     Named calls score by the voted term. Fallback calls are enriched eval-side: Label.zfa_id
@@ -267,7 +267,7 @@ def _prediction_anchor_ids(label: Label, kind: str, res: Resources) -> frozenset
     Args:
         label (Label): The engine's label for the cluster.
         kind (str): The prediction class from _classify.
-        res (Resources): Loaded resources (for the panel anchor lookup).
+        resources (Resources): Loaded resources (for the panel anchor lookup).
 
     Returns:
         frozenset[str]: The ZFA ids the prediction is scored under; empty for
@@ -276,14 +276,14 @@ def _prediction_anchor_ids(label: Label, kind: str, res: Resources) -> frozenset
     if kind == NAMED and label.zfa_id is not None:
         return frozenset({label.zfa_id})
     if kind == FALLBACK:
-        return res.anchors.get(label.panel_bucket, frozenset())
+        return resources.anchors.get(label.panel_bucket, frozenset())
     return frozenset()
 
 
 def _replay_tally(
     symbols: list[str],
-    expr_map: dict[str, list[ZfinExpressionRecord]],
-    zfa_graph: nx.MultiDiGraph,
+    expression_map: dict[str, list[ZfinExpressionRecord]],
+    zfa_ontology: nx.MultiDiGraph,
 ) -> dict[str, set[str]]:
     """Reconstruct the raw per-term gene tally (all terms, before the IC/stoplist gates).
 
@@ -292,22 +292,22 @@ def _replay_tally(
 
     Args:
         symbols (list[str]): Already-normalized current ZFIN symbols (as decide() received).
-        expr_map (dict[str, list[ZfinExpressionRecord]]): The loaded expression data.
-        zfa_graph (nx.MultiDiGraph): The loaded ZFA ontology.
+        expression_map (dict[str, list[ZfinExpressionRecord]]): The loaded expression data.
+        zfa_ontology (nx.MultiDiGraph): The loaded ZFA ontology.
 
     Returns:
         dict[str, set[str]]: ZFA term id to the distinct genes that credit it.
     """
-    anc_cache: dict[str, frozenset[str]] = {}
+    ancestor_cache: dict[str, frozenset[str]] = {}
 
     def credited(zfa_id: str) -> frozenset[str]:
-        if zfa_id in anc_cache:
-            return anc_cache[zfa_id]
-        if zfa_id not in zfa_graph:
+        if zfa_id in ancestor_cache:
+            return ancestor_cache[zfa_id]
+        if zfa_id not in zfa_ontology:
             result: frozenset[str] = frozenset({zfa_id})
         else:
-            result = frozenset({zfa_id}) | frozenset(ancestors(zfa_graph, zfa_id))
-        anc_cache[zfa_id] = result
+            result = frozenset({zfa_id}) | frozenset(ancestors(zfa_ontology, zfa_id))
+        ancestor_cache[zfa_id] = result
         return result
 
     tally: dict[str, set[str]] = {}
@@ -316,14 +316,14 @@ def _replay_tally(
         if sym in seen:
             continue
         seen.add(sym)
-        records = expression_lookup(expr_map, sym)
+        records = expression_lookup(expression_map, sym)
         if not records:
             continue
-        cred: set[str] = set()
-        for rec in records:
-            cred |= credited(rec.zfa_id)
-        for t in cred:
-            tally.setdefault(t, set()).add(sym)
+        credited_terms: set[str] = set()
+        for record in records:
+            credited_terms |= credited(record.zfa_id)
+        for term_id in credited_terms:
+            tally.setdefault(term_id, set()).add(sym)
     return tally
 
 
@@ -332,7 +332,7 @@ def _audit_from_tally(
     named_id: str,
     named_name: str,
     tally: dict[str, set[str]],
-    zfa: nx.MultiDiGraph,
+    zfa_ontology: nx.MultiDiGraph,
 ) -> AuditRecord:
     """Compare a named winner's support to its best-supported ancestor (the overcall signal).
 
@@ -346,7 +346,7 @@ def _audit_from_tally(
         named_id (str): The named ZFA term id.
         named_name (str): The human-readable ZFA term name (label.bucket for a named call).
         tally (dict[str, set[str]]): The raw per-term gene tally from _replay_tally.
-        zfa (nx.MultiDiGraph): The ZFA ontology (for the ancestor walk and names).
+        zfa_ontology (nx.MultiDiGraph): The ZFA ontology (for the ancestor walk and names).
 
     Returns:
         AuditRecord: The parent-child support comparison for this call.
@@ -354,17 +354,17 @@ def _audit_from_tally(
     support = len(tally.get(named_id, set()))
     parent_id: str | None = None
     parent_support = 0
-    parents = ancestors(zfa, named_id) if named_id in zfa else []
-    for a in parents:
-        if a in STOPLIST:
+    parents = ancestors(zfa_ontology, named_id) if named_id in zfa_ontology else []
+    for ancestor_id in parents:
+        if ancestor_id in STOPLIST:
             continue  # content-free roots (anatomical structure, whole organism) are not a meaningful parent
-        a_support = len(tally.get(a, set()))
-        if a_support > parent_support:
-            parent_id, parent_support = a, a_support
+        ancestor_support = len(tally.get(ancestor_id, set()))
+        if ancestor_support > parent_support:
+            parent_id, parent_support = ancestor_id, ancestor_support
     fraction = support / parent_support if parent_support else 1.0
     won_at_min = support == CONVERGENCE_MIN
     thin = won_at_min and parent_support > support
-    parent_name = (term_name(zfa, parent_id) or parent_id) if parent_id is not None else None
+    parent_name = (term_name(zfa_ontology, parent_id) or parent_id) if parent_id is not None else None
     return AuditRecord(
         cluster_id=cluster_id,
         named_id=named_id,
@@ -379,18 +379,20 @@ def _audit_from_tally(
     )
 
 
-def _audit_named(row: BenchmarkRow, label: Label, named_id: str, symbols: list[str], res: Resources) -> AuditRecord:
+def _audit_named(
+    row: BenchmarkRow, label: Label, named_id: str, symbols: list[str], resources: Resources
+) -> AuditRecord:
     """Replay the cluster's tally and audit its named winner (see _audit_from_tally)."""
-    tally = _replay_tally(symbols, res.expr, res.zfa)
-    return _audit_from_tally(row.cluster_id, named_id, label.bucket, tally, res.zfa)
+    tally = _replay_tally(symbols, resources.expression_map, resources.zfa_ontology)
+    return _audit_from_tally(row.cluster_id, named_id, label.bucket, tally, resources.zfa_ontology)
 
 
-def _abstain_reason(label: Label, res: Resources) -> str | None:
+def _abstain_reason(label: Label, resources: Resources) -> str | None:
     """Why an abstention gave no identity call: contradictory germ layers, no panel hit, or weak signal.
 
     Args:
         label (Label): The cluster's label.
-        res (Resources): Loaded resources (for the identity-panel set).
+        resources (Resources): Loaded resources (for the identity-panel set).
 
     Returns:
         str | None: "mixed", "no_panel", or "weak_signal" for an abstention; None otherwise.
@@ -399,12 +401,12 @@ def _abstain_reason(label: Label, res: Resources) -> str | None:
         return None
     if label.ambiguity_flag == "mixed":
         return "mixed"
-    identity = {p.bucket for p in res.panels if p.kind == KIND_IDENTITY}
-    top = max((s for b, s in label.panel_scores.items() if b in identity), default=0.0)
+    identity = {panel.bucket for panel in resources.panels if panel.kind == KIND_IDENTITY}
+    top = max((score for bucket, score in label.panel_scores.items() if bucket in identity), default=0.0)
     return "no_panel" if top == 0.0 else "weak_signal"
 
 
-def cluster_outcomes(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, res: Resources) -> list[ClusterOutcome]:
+def cluster_outcomes(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resources: Resources) -> list[ClusterOutcome]:
     """Label and score every benchmark cluster, returning one ClusterOutcome each.
 
     This is the per-cluster data the aggregate Report projects from, and the table the diagnostic
@@ -414,7 +416,7 @@ def cluster_outcomes(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, res: R
     Args:
         benchmark (list[BenchmarkRow]): The benchmark clusters.
         crosswalk (Crosswalk): The fail-closed gold mapping.
-        res (Resources): Loaded engine resources.
+        resources (Resources): Loaded engine resources.
 
     Returns:
         list[ClusterOutcome]: One outcome per cluster, in benchmark order.
@@ -422,18 +424,18 @@ def cluster_outcomes(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, res: R
     outcomes: list[ClusterOutcome] = []
     for row in benchmark:
         gold = crosswalk.gold(row.broad_tissue)
-        label, symbols = _label_row(row, res)
+        label, symbols = _label_row(row, resources)
         kind = _classify(label)
         agrees: bool | None = None
         if gold is not None and kind in (NAMED, FALLBACK):
-            pred_ids = _prediction_anchor_ids(label, kind, res)
+            pred_ids = _prediction_anchor_ids(label, kind, resources)
             # Empty pred_ids (a named/fallback call that carried no anchor) stays agrees=None:
             # unscoreable against gold, not a disagreement.
             if pred_ids:
-                agrees = any(grounds_under(res.zfa, pid, gold) for pid in pred_ids)
+                agrees = any(grounds_under(resources.zfa_ontology, pid, gold) for pid in pred_ids)
         audit: AuditRecord | None = None
         if kind == NAMED and label.zfa_id is not None:
-            audit = _audit_named(row, label, label.zfa_id, symbols, res)
+            audit = _audit_named(row, label, label.zfa_id, symbols, resources)
         outcomes.append(
             ClusterOutcome(
                 cluster_id=row.cluster_id,
@@ -451,46 +453,46 @@ def cluster_outcomes(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, res: R
                 agrees=agrees,
                 confidence=label.confidence,
                 convergent_genes=label.convergent_genes,
-                abstain_reason=_abstain_reason(label, res),
+                abstain_reason=_abstain_reason(label, resources),
                 audit=audit,
             )
         )
     return outcomes
 
 
-def evaluate(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, res: Resources) -> Report:
+def evaluate(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resources: Resources) -> Report:
     """Run the engine over the benchmark and aggregate per-cluster outcomes into the Report.
 
     Args:
         benchmark (list[BenchmarkRow]): The benchmark clusters.
         crosswalk (Crosswalk): The fail-closed gold mapping.
-        res (Resources): Loaded engine resources.
+        resources (Resources): Loaded engine resources.
 
     Returns:
         Report: The accumulated metrics, audit records, and failures (a projection of
         cluster_outcomes).
     """
-    rep = Report()
-    for o in cluster_outcomes(benchmark, crosswalk, res):
-        rep.total += 1
-        if not o.scored:
-            rep.not_scored += 1
+    report = Report()
+    for outcome in cluster_outcomes(benchmark, crosswalk, resources):
+        report.total += 1
+        if not outcome.scored:
+            report.not_scored += 1
             continue
-        rep.counts[o.kind] += 1
+        report.counts[outcome.kind] += 1
         # rollup / abstain, or a named/fallback call with no scoreable anchor (agrees is None):
         # counted for coverage above, but out of the agreement numerator and denominator.
-        if o.agrees is None:
+        if outcome.agrees is None:
             continue
-        tier = o.confidence or "none"
-        rep.conf_total[tier] += 1
-        if o.agrees:
-            rep.correct[o.kind] += 1
-            rep.conf_correct[tier] += 1
+        tier = outcome.confidence or "none"
+        report.conf_total[tier] += 1
+        if outcome.agrees:
+            report.correct[outcome.kind] += 1
+            report.conf_correct[tier] += 1
         else:
-            rep.failures.append((o.cluster_id, o.gold_tissue, o.bucket, o.kind))
-        if o.audit is not None:
-            rep.audits.append(o.audit)
-    return rep
+            report.failures.append((outcome.cluster_id, outcome.gold_tissue, outcome.bucket, outcome.kind))
+        if outcome.audit is not None:
+            report.audits.append(outcome.audit)
+    return report
 
 
 def _pct(num: int, denom: int) -> str:
@@ -498,60 +500,63 @@ def _pct(num: int, denom: int) -> str:
     return f"{100 * num / denom:.1f}% ({num}/{denom})" if denom else "n/a (0)"
 
 
-def render_report(rep: Report, top_n: int = 15) -> str:
+def render_report(report: Report, top_n: int = 15) -> str:
     """Render a deterministic, concise markdown report from accumulated outcomes.
 
     Args:
-        rep (Report): The accumulated outcomes.
+        report (Report): The accumulated outcomes.
         top_n (int): How many failure / overcall examples to list.
 
     Returns:
         str: The markdown report.
     """
-    scored = rep.total - rep.not_scored
-    assigned = rep.counts[NAMED] + rep.counts[FALLBACK]
-    agree = rep.correct[NAMED] + rep.correct[FALLBACK]
-    covered = assigned + rep.counts[ROLLUP]
+    scored = report.total - report.not_scored
+    assigned = report.counts[NAMED] + report.counts[FALLBACK]
+    agree = report.correct[NAMED] + report.correct[FALLBACK]
+    covered = assigned + report.counts[ROLLUP]
 
     lines = ["# Daniocell baseline report (IC-first engine)", ""]
-    lines += [f"- clusters: {rep.total}  ·  scored: {scored}  ·  not_scored: {rep.not_scored}", ""]
+    lines += [f"- clusters: {report.total}  ·  scored: {scored}  ·  not_scored: {report.not_scored}", ""]
     lines += ["## Broad agreement (named + fallback, scored against the gold tissue)"]
     lines += [f"- agreement: {_pct(agree, assigned)}", ""]
     lines += ["## Coverage / split (over scored clusters)"]
     lines += [f"- coverage (non-abstain): {_pct(covered, scored)}"]
     for kind in (NAMED, FALLBACK, ROLLUP, ABSTAIN):
-        lines.append(f"- {kind}: {_pct(rep.counts[kind], scored)}")
+        lines.append(f"- {kind}: {_pct(report.counts[kind], scored)}")
     lines += ["", "## Agreement by prediction class"]
     for kind in (NAMED, FALLBACK):
-        lines.append(f"- {kind}: {_pct(rep.correct[kind], rep.counts[kind])}")
+        lines.append(f"- {kind}: {_pct(report.correct[kind], report.counts[kind])}")
     lines += ["", "## Confidence by correctness (named + fallback)"]
     for tier in ("high", "medium", "low", "none"):
-        if rep.conf_total[tier]:
-            lines.append(f"- {tier}: {_pct(rep.conf_correct[tier], rep.conf_total[tier])}")
+        if report.conf_total[tier]:
+            lines.append(f"- {tier}: {_pct(report.conf_correct[tier], report.conf_total[tier])}")
 
     # Parent-child overcall audit.
-    won_min = sum(a.won_at_min for a in rep.audits)
-    thin = sum(a.thin_support_overcall for a in rep.audits)
+    won_min = sum(audit.won_at_min for audit in report.audits)
+    thin_overcall_count = sum(audit.thin_support_overcall for audit in report.audits)
     lines += ["", "## Parent-child overcall audit (named calls)"]
-    lines += [f"- named calls audited: {len(rep.audits)}"]
-    lines += [f"- won with exactly CONVERGENCE_MIN={CONVERGENCE_MIN} genes: {_pct(won_min, len(rep.audits))}"]
-    lines += [f"- thin-support overcalls (won at min, broader parent had more support): {_pct(thin, len(rep.audits))}"]
-    worst = sorted(rep.audits, key=lambda a: (a.support_fraction, a.cluster_id))[:top_n]
+    lines += [f"- named calls audited: {len(report.audits)}"]
+    lines += [f"- won with exactly CONVERGENCE_MIN={CONVERGENCE_MIN} genes: {_pct(won_min, len(report.audits))}"]
+    lines += [
+        f"- thin-support overcalls (won at min, broader parent had more support): "
+        f"{_pct(thin_overcall_count, len(report.audits))}"
+    ]
+    worst = sorted(report.audits, key=lambda audit: (audit.support_fraction, audit.cluster_id))[:top_n]
     if worst:
         lines += ["", f"Lowest support-fraction named calls (child support / best-parent support), top {top_n}:"]
-        for a in worst:
-            parent = f"{a.parent_name} ({a.parent_support})" if a.parent_id else "no broader parent"
+        for audit in worst:
+            parent = f"{audit.parent_name} ({audit.parent_support})" if audit.parent_id else "no broader parent"
             lines.append(
-                f"- {a.cluster_id}: {a.named_name} ({a.named_support}) vs {parent}"
-                f"  -> fraction {a.support_fraction:.2f}"
+                f"- {audit.cluster_id}: {audit.named_name} ({audit.named_support}) vs {parent}"
+                f"  -> fraction {audit.support_fraction:.2f}"
             )
 
     # Failure gallery (stably sorted).
     lines += ["", "## Failure gallery (scored disagreements)"]
-    for cluster_id, tissue, bucket, kind in sorted(rep.failures)[:top_n]:
+    for cluster_id, tissue, bucket, kind in sorted(report.failures)[:top_n]:
         lines.append(f"- {cluster_id}: gold {tissue}, predicted {bucket!r} ({kind})")
-    if len(rep.failures) > top_n:
-        lines.append(f"- ... and {len(rep.failures) - top_n} more")
+    if len(report.failures) > top_n:
+        lines.append(f"- ... and {len(report.failures) - top_n} more")
     return "\n".join(lines) + "\n"
 
 
@@ -574,7 +579,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     data = Path(args.data_dir)
-    res = load_resources(
+    resources = load_resources(
         zfa_path=data / "zfa.obo",
         expr_path=data / "zfin_wildtype_expression.txt",
         gaf_path=data / "zfin.gaf",
@@ -582,7 +587,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     benchmark = load_benchmark(args.benchmark)
     crosswalk = load_crosswalk(args.crosswalk)
-    report = render_report(evaluate(benchmark, crosswalk, res), top_n=args.top_n)
+    report = render_report(evaluate(benchmark, crosswalk, resources), top_n=args.top_n)
     Path(args.out).write_text(report, encoding="utf-8")
     sys.stdout.write(report)
     return 0

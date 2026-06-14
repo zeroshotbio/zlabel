@@ -8,7 +8,7 @@ import yaml
 from zlabel.models import TIER_HIGH_NAME, TIER_LOW_NAME, TIER_MEDIUM_NAME, ExprHit, Label
 
 
-def _valid_label(**overrides: Any) -> Label:
+def _make_valid_label(**overrides: Any) -> Label:
     """Build a minimal valid assigned Label; overrides replace specific fields."""
     defaults = dict(
         bucket="muscle",
@@ -41,7 +41,7 @@ def test_exprhit_fields():
 
 
 def test_label_assigned_round_trips():
-    label = _valid_label()
+    label = _make_valid_label()
     assert label.bucket == "muscle"
     assert label.abstained is False
     assert label.confidence == TIER_HIGH_NAME
@@ -66,7 +66,7 @@ def test_label_abstained_round_trips():
 
 
 def test_label_with_states():
-    label = _valid_label(states=("cycling",))
+    label = _make_valid_label(states=("cycling",))
     assert "cycling" in label.states
 
 
@@ -147,7 +147,7 @@ def test_tier_name_constants():
 
 
 def test_to_yaml_round_trips():
-    label = _valid_label()
+    label = _make_valid_label()
     raw = yaml.safe_load(label.to_yaml())
     assert raw["bucket"] == "muscle"
     assert raw["abstained"] is False
@@ -155,14 +155,14 @@ def test_to_yaml_round_trips():
 
 
 def test_to_yaml_preserves_field_order():
-    label = _valid_label()
+    label = _make_valid_label()
     yaml_str = label.to_yaml()
     # bucket appears before confidence in the declaration order.
     assert yaml_str.index("bucket:") < yaml_str.index("confidence:")
 
 
 def test_to_yaml_exprhit_serialised_as_dict():
-    label = _valid_label()
+    label = _make_valid_label()
     raw = yaml.safe_load(label.to_yaml())
     # ExprHit should serialise as a dict (model_dump recursively converts sub-models).
     evidence = raw["expression_evidence"]
@@ -194,7 +194,7 @@ def test_to_yaml_abstained_label():
 
 def test_label_new_fields_default_values():
     # All four new fields have defaults so callers that pre-date Phase 4 need no changes.
-    label = _valid_label()
+    label = _make_valid_label()
     assert label.depth == 0
     assert label.panel_bucket == ""
     assert label.panel_germ_layer == ""
@@ -202,7 +202,7 @@ def test_label_new_fields_default_values():
 
 
 def test_to_yaml_new_fields_round_trip():
-    label = _valid_label(
+    label = _make_valid_label(
         depth=2,
         panel_bucket="muscle",
         panel_germ_layer="mesoderm",
@@ -216,7 +216,7 @@ def test_to_yaml_new_fields_round_trip():
 
 
 def test_to_yaml_new_field_order():
-    label = _valid_label(
+    label = _make_valid_label(
         depth=2,
         panel_bucket="muscle",
         panel_germ_layer="mesoderm",

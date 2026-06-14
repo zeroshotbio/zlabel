@@ -130,4 +130,4 @@ def normalize_markers(
         list[NormalizedSymbol]: One NormalizedSymbol per input marker, in the
             same order as the input.
     """
-    return [normalize_symbol(m, synonym_map) for m in markers]
+    return [normalize_symbol(marker, synonym_map) for marker in markers]
