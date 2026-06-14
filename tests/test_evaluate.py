@@ -7,12 +7,13 @@ Three groups:
      resolve_label, the parent-child overcall audit, and an end-to-end evaluate() pass.
 """
 
+import dataclasses
 from pathlib import Path
 
 import build_daniocell_eval as build_eval
 import pytest
 
-from zlabel import evaluate
+from zlabel import Label, evaluate
 from zlabel.resolve import CONVERGENCE_MIN, INFORMATION_CONTENT_MIN, STOPLIST, resolve_label
 
 REPO = Path(__file__).parent.parent
@@ -189,3 +190,42 @@ def test_cluster_outcomes_abstain_reason_no_panel(resources):
     assert outcome.kind == evaluate.ABSTAIN
     assert outcome.abstain_reason == "no_panel"
     assert outcome.agrees is None
+
+
+# ---------------------------------------------------------------------------
+# Fallback anchor recovery (multi-anchor panels)
+# ---------------------------------------------------------------------------
+
+
+def _fallback_label(panel_bucket: str, zfa_id: str) -> Label:
+    """A minimal non-abstained fallback Label (only panel_bucket and zfa_id matter here)."""
+    return Label(
+        bucket=panel_bucket,
+        levels=(panel_bucket,),
+        depth=1,
+        abstained=False,
+        confidence="low",
+        confidence_score=0.5,
+        confidence_components={"coherence": 0.5, "margin": 0.5, "grounding": 0.5, "stage": 0.5},
+        ambiguity_flag="none",
+        states=(),
+        panel_bucket=panel_bucket,
+        panel_germ_layer="",
+        zfa_id=zfa_id,
+        panel_scores={},
+        positive_markers=(),
+        convergent_genes=(),
+        expression_evidence=(),
+        rationale="fallback",
+        next_step="subcluster",
+    )
+
+
+def test_prediction_anchor_ids_fallback_uses_full_panel_anchor(resources):
+    # A fallback prediction is scored against the panel's FULL ontology_anchor (recovered from
+    # panel_bucket), not the single truncated anchor kept on Label.zfa_id -- this is what keeps
+    # the real multi-anchor panels from undercounting agreement.
+    two_anchor = dataclasses.replace(resources, anchors={"endo": frozenset({"ZFA:0005307", "ZFA:0009618"})})
+    label = _fallback_label(panel_bucket="endo", zfa_id="ZFA:0005307")  # zfa_id holds only one
+    anchor_ids = evaluate._prediction_anchor_ids(label, evaluate.FALLBACK, two_anchor)
+    assert anchor_ids == frozenset({"ZFA:0005307", "ZFA:0009618"})
