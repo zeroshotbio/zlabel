@@ -250,6 +250,41 @@ Recommended benchmark sources:
 | ZSCAPE perturbation atlas | Robustness and stress testing only. |
 | ZCL / scZCL | Reference-match support and marker comparison. |
 
+## Epistemic status
+
+| Claim | Status | Basis |
+| :---- | :---- | :---- |
+| Zebrafish whole-organism atlases use broad-to-fine local annotation rather than one global best K. | Established practice | Daniocell, Zebrahub, and ZSCAPE all describe broad grouping followed by tissue, lineage, or major-group refinement. |
+| Human/atlas annotation uses markers, literature or database evidence, ontology terms, stage context, and manual review. | Established practice | Daniocell amendment guidance, Zebrahub annotation notes, and ZSCAPE methods all describe evidence review beyond top expression alone. |
+| Symbol normalization and ontology-aware grounding are required before on-the-fly naming can be trusted. | Established practice | ZFIN exposes previous names, IDs, marker relationships, orthology files, and ontology-structured expression resources. |
+| A single metric such as silhouette, modularity, or DE significance is insufficient to control recursion depth. | Established in principle | Single metrics capture one failure mode and can miss continua, technical artifacts, or small biological populations. |
+| Deterministic split evidence packets plus agent/curator review are the right architecture. | Plausible design judgment | This matches atlas practice and zlabel's evidence-packet architecture, but the combined controller is not implemented or benchmarked. |
+| zlabel confidence gain, ontology-depth gain, and grounding improvement are useful recursion signals. | Plausible heuristic | These align with the project thesis but need ablation against scanpy-only and marker-only controllers. |
+| Exact thresholds for cell counts, marker strength, stability, label gain, and topology warnings are known. | Not proven | They need dataset- and stage-aware benchmark calibration. |
+| A combined controller will outperform scanpy-only or atlas-only heuristics across zebrafish datasets. | Unvalidated future design | This is the benchmark question, not a current claim. |
+
+## Validation experiments
+
+The shortest path from plausible design to evidence is an ablation benchmark. Start
+with simple variants and ask whether each one reduces under-splitting,
+over-splitting, or review burden.
+
+| Experiment | What it tests |
+| :---- | :---- |
+| No recursion | Baseline: how often broad clusters remain mixed or shallow. |
+| Scanpy-only recursion | Whether graph resolution and practical gates alone are enough. |
+| DE-only recursion | Whether marker separability alone over-splits states, gradients, or artifacts. |
+| zlabel-guided recursion | Whether parent-child label packets improve split/stop decisions without graph stability. |
+| Combined controller | Whether graph, marker, topology, reference, and zlabel evidence improve together. |
+| Global vs stage-conditioned grounding | Whether stage-aware ZFIN/ZFA/ZFS evidence improves developmental depth decisions. |
+| Wild-type hierarchy first, perturbation second | Whether the controller works on clean reference structure before condition-shifted stress tests. |
+| Hard-continuum review set | Where deterministic rules fail on trajectories, rare populations, and ambiguous lineages. |
+
+Do not treat any controller as successful unless it improves the balance between
+under-splitting and over-splitting while preserving reviewable evidence. Runtime
+and curator burden also matter: a more complex controller is only useful if it
+changes real split, stop, or review decisions.
+
 ## Open questions
 
 | Open question | Why unresolved |
