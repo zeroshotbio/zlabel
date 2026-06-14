@@ -736,13 +736,17 @@ class Labeler:
             Label: Evidence packet with bucket, confidence, grounding evidence,
             and next_step.
         """
-        # Normalize markers to current ZFIN symbols before grounding.
-        # resolve_label requires already-normalized symbols; without this,
-        # aliases like fli1a -> fli1 (314 expression records) would be missed.
-        norm = normalize_markers(markers, self._synonyms)
-        symbols = [next(iter(ns.symbols)) for ns in norm if ns.status == STATUS_RESOLVED]
-
-        scores = score_markers(markers, self._panels, self._synonyms)
+        # Normalize once: the panel scorer and the convergence vote both consume
+        # the same normalized markers. resolve_label requires already-normalized
+        # symbols; without this, aliases like fli1a -> fli1 (314 expression
+        # records) would be missed.
+        normalized_markers = normalize_markers(markers, self._synonyms)
+        symbols = [
+            next(iter(normalized_marker.symbols))
+            for normalized_marker in normalized_markers
+            if normalized_marker.status == STATUS_RESOLVED
+        ]
+        scores = score_markers(normalized_markers, self._panels)
         return decide(
             scores,
             anchors=self._anchors,

@@ -21,6 +21,7 @@ from zlabel import (
     KIND_STATE,
     Panel,
     load_panels,
+    normalize_markers,
     score_markers,
 )
 
@@ -170,7 +171,7 @@ def test_score_markers_muscle_keystone_trace(test_panels):
     all_markers = ["mylpfa", "acta1b", "tnnt3a", "myod1", "myog", "hbae1.1", "kdrl"]
     syn = _make_synonym_map(*all_markers)
 
-    scores = score_markers(all_markers, test_panels, syn)
+    scores = score_markers(normalize_markers(all_markers, syn), test_panels)
 
     top = scores[0]
     assert top.bucket == "muscle"
@@ -188,7 +189,7 @@ def test_score_markers_muscle_keystone_trace(test_panels):
 
 def test_score_markers_sorted_descending_by_score(test_panels):
     syn = _make_synonym_map("mylpfa", "acta1b", "myod1")
-    scores = score_markers(["mylpfa", "acta1b", "myod1"], test_panels, syn)
+    scores = score_markers(normalize_markers(["mylpfa", "acta1b", "myod1"], syn), test_panels)
     for a, b in zip(scores, scores[1:], strict=False):
         assert a.score >= b.score
 
@@ -198,12 +199,12 @@ def test_score_markers_sorted_descending_by_score(test_panels):
 
 def test_score_markers_all_unresolved_gives_zero_scores(test_panels):
     syn: dict[str, set[str]] = {}  # empty — every marker is unresolved
-    scores = score_markers(["zyxwvut", "abc123"], test_panels, syn)
+    scores = score_markers(normalize_markers(["zyxwvut", "abc123"], syn), test_panels)
     assert all(s.score == 0.0 for s in scores)
 
 
 def test_score_markers_empty_input_gives_zero_scores(test_panels):
-    scores = score_markers([], test_panels, {})
+    scores = score_markers(normalize_markers([], {}), test_panels)
     assert all(s.score == 0.0 for s in scores)
 
 
@@ -215,14 +216,14 @@ def test_score_markers_ambiguous_excluded_from_denominator(test_panels):
         "hbae1": {"hbae1.1", "hbae1.2"},  # ambiguous
         "mylpfa": {"mylpfa"},  # resolved
     }
-    scores = score_markers(["mylpfa", "hbae1"], test_panels, syn)
+    scores = score_markers(normalize_markers(["mylpfa", "hbae1"], syn), test_panels)
     muscle = next(s for s in scores if s.bucket == "muscle")
     assert math.isclose(muscle.score, 1.0, rel_tol=1e-9)
 
 
 def test_score_markers_matched_markers_recorded_in_rank_order(test_panels):
     syn = _make_synonym_map("mylpfa", "acta1b")
-    scores = score_markers(["mylpfa", "acta1b"], test_panels, syn)
+    scores = score_markers(normalize_markers(["mylpfa", "acta1b"], syn), test_panels)
     muscle = next(s for s in scores if s.bucket == "muscle")
     assert len(muscle.matched_markers) == 2
     assert muscle.matched_markers[0].rank == 1
@@ -237,7 +238,7 @@ def test_score_markers_matched_markers_recorded_in_rank_order(test_panels):
 def test_score_markers_tie_broken_alphabetically_by_bucket(test_panels):
     # When every bucket scores 0.0 (no resolved markers hit any panel), the
     # sort key (-score, bucket) breaks the tie alphabetically.
-    scores = score_markers([], test_panels, {})
+    scores = score_markers(normalize_markers([], {}), test_panels)
     bucket_names = [s.bucket for s in scores]
     assert bucket_names == sorted(bucket_names)
 
@@ -245,5 +246,5 @@ def test_score_markers_tie_broken_alphabetically_by_bucket(test_panels):
 def test_score_markers_all_panels_always_returned(test_panels):
     # Even when nothing matches, all panels appear in the output.
     syn = _make_synonym_map("zyxwvut")
-    scores = score_markers(["zyxwvut"], test_panels, syn)
+    scores = score_markers(normalize_markers(["zyxwvut"], syn), test_panels)
     assert len(scores) == len(test_panels)

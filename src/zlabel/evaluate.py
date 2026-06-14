@@ -227,9 +227,13 @@ def load_resources(
 
 def _label_row(row: BenchmarkRow, res: Resources) -> tuple[Label, list[str]]:
     """Label one cluster at its own stage; also return its normalized symbols for the audit."""
-    norm = normalize_markers(row.markers, res.synonyms)
-    symbols = [next(iter(ns.symbols)) for ns in norm if ns.status == STATUS_RESOLVED]
-    scores = score_markers(row.markers, res.panels, res.synonyms)
+    normalized_markers = normalize_markers(row.markers, res.synonyms)
+    symbols = [
+        next(iter(normalized_marker.symbols))
+        for normalized_marker in normalized_markers
+        if normalized_marker.status == STATUS_RESOLVED
+    ]
+    scores = score_markers(normalized_markers, res.panels)
     label = decide(
         scores,
         anchors=res.anchors,

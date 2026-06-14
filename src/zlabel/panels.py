@@ -3,9 +3,9 @@
 Domain knowledge lives in panels.yaml, not in this module. The scorer applies
 rank-weighted overlap: a marker at rank r contributes weight 1/log2(r+1), so the
 most significant markers drive the score and the tail is down-weighted without
-being discarded. Only resolved markers (STATUS_RESOLVED from genes.normalize_symbol)
-enter the denominator; ambiguous and unresolved markers are excluded so the scorer
-never guesses on an uncertain symbol.
+being discarded. The caller normalizes first (genes.normalize_markers); only resolved
+markers (STATUS_RESOLVED) enter the denominator, so ambiguous and unresolved markers
+never make the scorer guess on an uncertain symbol.
 
 panels.yaml defines two panel kinds:
   identity: a cell-type lineage bucket (neural, muscle, blood, ...).
@@ -17,13 +17,13 @@ from __future__ import annotations
 
 import math
 import os
-from collections.abc import Iterable, Mapping
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
 
-from zlabel.genes import STATUS_RESOLVED, normalize_symbol
+from zlabel.genes import STATUS_RESOLVED, NormalizedSymbol
 
 # --- panel kinds --------------------------------------------------------------
 
@@ -207,11 +207,10 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
 
 
 def score_markers(
-    markers: Iterable[str],
+    normalized_markers: list[NormalizedSymbol],
     panels: list[Panel],
-    synonym_map: dict[str, set[str]],
 ) -> list[BucketScore]:
-    """Score a ranked marker list against all panels using rank-weighted overlap.
+    """Score already-normalized markers against all panels using rank-weighted overlap.
 
     Weight for rank r (1-based): 1 / log2(r + 1). Rank 1 weighs 1.0,
     decaying toward zero as r grows. Only resolved markers enter the
@@ -219,32 +218,35 @@ def score_markers(
     numerator and denominator so uncertainty never inflates or deflates a
     score. When no resolved markers exist, every bucket scores 0.0.
 
+    The caller normalizes once (genes.normalize_markers) and passes the result
+    here, so a cluster's markers are normalized a single time and shared with the
+    convergence vote rather than re-normalized per consumer.
+
     The returned list contains one BucketScore per panel, sorted by
     (-score, bucket). The top candidate is always at index 0. All panels are
     always returned even when their score is zero, so the caller can inspect
     any bucket without searching.
 
     Args:
-        markers (Iterable[str]): Raw marker symbols ordered by significance
-            (rank 1 = most significant = index 0); assumed unique, as scanpy
-            marker lists are. The order determines the rank weights.
+        normalized_markers (list[NormalizedSymbol]): Markers already normalized
+            by genes.normalize_markers, in significance rank order (rank 1 =
+            index 0). Unresolved and ambiguous entries stay in the list (they
+            hold their rank) but are excluded from scoring.
         panels (list[Panel]): Panels to score against, as returned by
             load_panels.
-        synonym_map (dict[str, set[str]]): From data.load_gene_synonym_map;
-            maps lowercased names to current ZFIN symbol(s).
 
     Returns:
         list[BucketScore]: One score per panel, sorted descending by score
             then ascending by bucket name for a stable, readable order.
     """
-    # Normalize in rank order; keep only resolved markers for scoring.
+    # Keep only resolved markers; rank is the 1-based input position (unresolved
+    # entries still consume a rank, so the resolved markers keep their weights).
     resolved: list[MatchedMarker] = []
-    for rank, raw in enumerate(markers, start=1):
-        result = normalize_symbol(raw, synonym_map)
-        if result.status == STATUS_RESOLVED:
+    for rank, normalized_marker in enumerate(normalized_markers, start=1):
+        if normalized_marker.status == STATUS_RESOLVED:
             weight = 1.0 / math.log2(rank + 1)
-            symbol = next(iter(result.symbols))
-            resolved.append(MatchedMarker(input=raw, symbol=symbol, rank=rank, weight=weight))
+            symbol = next(iter(normalized_marker.symbols))
+            resolved.append(MatchedMarker(input=normalized_marker.input, symbol=symbol, rank=rank, weight=weight))
 
     # Denominator is the total weight of all resolved markers, whether or not
     # they hit any panel. A cluster with mostly off-panel markers cannot
