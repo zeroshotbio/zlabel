@@ -36,8 +36,10 @@ uv run python -m zlabel.evaluate benchmarks/daniocell_eval.csv
 ## Parameters (deterministic)
 
 - Benchmark unit: fine `clust`; broad agreement scored against the parent `tissue`.
-- Markers: scanpy `rank_genes_groups(method="wilcoxon")`, positive (logfoldchange > 0) only,
-  rank-ordered, top N = 25, after `normalize_total(target_sum=1e4)` + `log1p`.
+- Markers: scanpy `rank_genes_groups` (default `method="t-test"` — scanpy's default, far faster
+  than wilcoxon at this scale and near-identical top-N for labeling; `MARKER_METHOD="wilcoxon"`
+  for rigor), positive (logfoldchange > 0) and non-technical (mitochondrial/ribosomal genes
+  dropped) only, rank-ordered, top N = 25, after `normalize_total(target_sum=1e4)` + `log1p`.
 - Representative stage: the modal `stage.integer` per cluster; the median of the cluster's
   stages on a modal tie.
 

@@ -73,22 +73,28 @@ scores = zlabel.score_markers(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"], pa
 scores[0]   # BucketScore(bucket='muscle', score=0.8105, kind='identity', ...)
 ```
 
-### Phase 4a (current — the resolution engine)
+### Phase 4 (current — the resolution engine + eval)
 
 ```python
 from zlabel import Labeler
 
 labeler = Labeler(stage_hpf=48)                  # loads ZFA + ZFIN-expr + GAF + panels once
 label = labeler.label(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"])
-# Label(bucket="muscle cell",                     # named ZFA term, not the panel bucket
-#       levels=("cell", "muscle cell"),            # ZFA ancestry chain
-#       depth=2,                                   # len(levels)
+# Label(bucket="posterior hypaxial muscle",       # named ZFA term, not the panel bucket
+#       depth=6, zfa_id="ZFA:0005926",            # len(levels); the broad->specific chain below
+#       levels=("musculature system", "portion of tissue", "trunk musculature",
+#               "muscle", "hypaxialis", "posterior hypaxial muscle"),
 #       panel_bucket="muscle",                     # coarse prior (kept visible)
-#       convergent_genes=("acta1b", "myog", "mylpfa"),  # anatomy-vote evidence
-#       confidence="high", zfa_id="ZFA:0009234",
-#       expression_evidence=[...], abstained=False, next_step="subcluster")
+#       convergent_genes=("mylpfa", "myod1", "myog"),  # anatomy-vote evidence
+#       confidence="high", abstained=False, next_step="subcluster")
 print(label.to_yaml())                           # the evidence packet
 ```
+
+> [!NOTE]
+> Depth-6 `posterior hypaxial muscle` from five generic muscle markers is the IC-first
+> over-specification the Phase 4b audit is built to surface (§Validation): a specific term
+> winning on the bare convergence minimum over the broader `muscle` consensus. 4b measures it;
+> retuning the ranking is a later 4c.
 
 One entry point. The public surface is small — `Labeler`, `Label`, and the Phase 1/2
 primitives — while the decision code beneath it stays readable and unit-tested.
@@ -104,7 +110,7 @@ germ-layer rollup never exceeds `medium`, and `high` requires real anatomy conve
 guardrail blocking the named term drops grounding and prevents false `high`). The weights are a
 first cut; Phase 4b eval calibrates them.
 
-## Repo structure (~7 core files, ~1,800 LOC core)
+## Repo structure (~9 core modules, ~2,600 LOC core)
 
 Files marked [P1] / [P2] shipped; later phases show their planned target.
 
@@ -142,10 +148,11 @@ zlabel/
 ```
 
 **Core deps (added per phase):** Phase 1 obonet + networkx; Phase 2 adds pyyaml;
-Phase 3 adds pydantic; Phase 4 adds pandas + numpy. **No scanpy, anndata,
-decoupler, or pydantic-ai in the core** — those live only in the optional `[llm]`
-extra (pydantic-ai) and the notebooks (scanpy/anndata). The labeler takes strings
-in, hands an evidence packet out.
+Phase 3 adds pydantic; Phase 4b keeps the core unchanged — the evaluator is stdlib +
+these core deps. **No pandas, numpy, scanpy, anndata, decoupler, or pydantic-ai in the
+core** — scanpy/anndata live in the optional `[eval]` extra (the benchmark builder; also
+the notebooks), and pydantic-ai will live in the optional `[llm]` extra. The labeler takes
+strings in, hands an evidence packet out.
 
 ## Lift vs. rewrite (zero daniotype dependency)
 

@@ -12,9 +12,11 @@ imported lazily behind the optional [eval] extra, so importing this module needs
 core deps.
 
 Marker defaults (also recorded in benchmarks/README.md): group by clust, scanpy
-rank_genes_groups(method="wilcoxon"), positive (logfoldchange > 0) markers only, rank-ordered,
-top N = 25. Representative stage: the modal stage.integer per cluster, the median of all the
-cluster's stages on a modal tie.
+rank_genes_groups (default method t-test -- scanpy's own default and far faster than wilcoxon at
+this scale; near-identical top-N for feeding a labeler; edit MARKER_METHOD for a rigorous run),
+positive (logfoldchange > 0), non-technical (mitochondrial/ribosomal genes dropped) markers only,
+rank-ordered, top N = 25. Representative stage: the modal stage.integer per cluster, the median of
+all the cluster's stages on a modal tie.
 """
 
 from __future__ import annotations
@@ -38,7 +40,11 @@ _FILES = {
     "metadata": "GSE223922_Sur2023_metadata.tsv.gz",
 }
 
-MARKER_METHOD = "wilcoxon"
+# t-test is scanpy's default and far faster than wilcoxon at this scale (489k cells x 522
+# clusters); for feeding top-N markers to the labeler the two give near-identical gene lists.
+# Set "wilcoxon" for a rigorous (much slower) run -- it, like the t-test family, emits the
+# logfoldchanges that top_positive_markers needs; "logreg" does not and would KeyError below.
+MARKER_METHOD = "t-test"
 TOP_N = 25
 GROUPBY = "clust"
 _COLUMNS = ["cluster_id", "markers", "broad_tissue", "tissue_name", "stage_hpf"]
@@ -62,8 +68,18 @@ def representative_stage(stages: list[int]) -> float:
     return float(modes[0]) if len(modes) == 1 else float(statistics.median(stages))
 
 
+def _is_technical(gene: str) -> bool:
+    """Whether a gene is a technical (mitochondrial or ribosomal) marker, not cell identity."""
+    g = gene.lower()
+    return g.startswith("mt-") or g.startswith(("rps", "rpl", "mrps", "mrpl"))
+
+
 def top_positive_markers(ranked: list[tuple[str, float]], n: int = TOP_N) -> list[str]:
-    """Keep the first n score-ranked genes whose log fold change is positive (up-regulated).
+    """Keep the first n score-ranked, up-regulated, non-technical genes.
+
+    Drops mitochondrial and ribosomal genes (a QC/technical signal, not cell identity) so the
+    benchmark feeds the labeler identity markers -- standard marker-selection practice, and
+    without it technical-dominated clusters look falsely unlabelable.
 
     Args:
         ranked (list[tuple[str, float]]): (gene, log_fold_change) pairs, already ordered by
@@ -71,9 +87,9 @@ def top_positive_markers(ranked: list[tuple[str, float]], n: int = TOP_N) -> lis
         n (int): How many markers to keep.
 
     Returns:
-        list[str]: The top n up-regulated marker symbols, in rank order.
+        list[str]: The top n up-regulated, non-technical marker symbols, in rank order.
     """
-    return [gene for gene, logfc in ranked if logfc > 0][:n]
+    return [gene for gene, logfc in ranked if logfc > 0 and not _is_technical(gene)][:n]
 
 
 def _modal(values: list[str]) -> str:
@@ -167,16 +183,21 @@ def compute_markers(counts: Path, genes: Path, cells: Path, cell_to_clust: dict[
     import anndata as ad
     import scanpy as sc
     from scipy.io import mmread
+    from scipy.sparse import csr_matrix
 
     gene_names = _read_lines(genes)
     cell_names = _read_lines(cells)
+    sys.stderr.write(f"loading counts matrix ({counts.name}) ...\n")
+    # mmread yields a genes x cells COO matrix; .T is a cheap axis swap, then a single CSR copy
+    # gives the cells x genes layout AnnData wants (one fewer full sparse copy than csr-then-T).
     with gzip.open(counts, "rb") as handle:
-        matrix = mmread(handle).tocsr()  # genes x cells
-    adata = ad.AnnData(matrix.T.tocsr())  # cells x genes
+        matrix = csr_matrix(mmread(handle).T)
+    adata = ad.AnnData(matrix)  # cells x genes
     adata.var_names = gene_names
     adata.obs_names = cell_names
     adata.obs[GROUPBY] = [cell_to_clust.get(c, "") for c in cell_names]
     adata = adata[adata.obs[GROUPBY] != ""].copy()
+    sys.stderr.write(f"computing markers ({MARKER_METHOD}) over {adata.n_obs} cells x {adata.n_vars} genes\n")
 
     sc.pp.normalize_total(adata, target_sum=1e4)
     sc.pp.log1p(adata)
@@ -249,6 +270,7 @@ def main(argv: list[str] | None = None) -> int:
     paths = _resolve_inputs(Path(args.cache_dir), explicit, args.download)
 
     per_cluster, cell_to_clust = read_metadata(paths["metadata"])
+    sys.stderr.write(f"metadata: {len(per_cluster)} clusters, {len(cell_to_clust)} cells\n")
     markers = compute_markers(paths["counts"], paths["genes"], paths["cells"], cell_to_clust)
     rows = assemble_rows(markers, per_cluster)
 

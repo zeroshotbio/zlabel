@@ -106,7 +106,6 @@ def test_edge_type_constants():
 # --- ZFIN wildtype expression ------------------------------------------------
 
 
-
 def test_expression_keys_are_lowercased_symbols(tmp_path):
     rows = [
         expr_row("Kdrl", "ZFA:0000009", "blood vessel", "", "", "Long-pec", "Day 5"),

@@ -51,6 +51,12 @@ def test_top_positive_markers_filters_negatives_and_caps():
     assert bd.top_positive_markers(ranked, n=2) == ["a", "c"]
 
 
+def test_top_positive_markers_drops_technical():
+    # mito (mt-) and ribosomal (rps/rpl) genes are technical, not identity.
+    ranked = [("mt-co1", 5.0), ("rps12", 4.0), ("rpl7", 3.5), ("myod1", 3.0), ("acta1b", 2.0)]
+    assert bd.top_positive_markers(ranked, n=5) == ["myod1", "acta1b"]
+
+
 def test_modal():
     assert bd._modal(["musc", "musc", "neur"]) == "musc"
     assert bd._modal([]) == ""
@@ -94,6 +100,7 @@ def test_crosswalk_fails_closed_on_unknown_tissue():
 def test_replay_tally_matches_resolve_label(zfa_graph, expr_map, ic):
     tally = ev._replay_tally(MUSCLE_SYMBOLS, expr_map, zfa_graph)
     votes = resolve_label(MUSCLE_SYMBOLS, expr_map=expr_map, zfa_graph=zfa_graph, ic=ic)
+    assert votes, "consistency test needs at least one vote candidate to be non-vacuous"
     # every engine candidate carries the same gene set in the raw tally
     for v in votes:
         assert set(tally[v.zfa_id]) == set(v.genes)
@@ -146,10 +153,32 @@ def test_evaluate_muscle_agrees_and_not_scored_excluded(res):
     xw = ev.Crosswalk(anchors={"musc": frozenset({"ZFA:0000548"})}, not_scored=frozenset({"blas"}))
     rep = ev.evaluate(benchmark, xw, res)
     assert rep.total == 2
-    assert rep.not_scored == 1  # blas is excluded, never labeled
+    assert rep.not_scored == 1  # blas is not_scored: labeled, but excluded from report counts and agreement
     assert rep.counts[ev.NAMED] == 1
     assert rep.correct[ev.NAMED] == 1  # muscle cell grounds under musculature system
     assert len(rep.audits) == 1
     report = ev.render_report(rep)
     assert "Broad agreement" in report
     assert "overcall audit" in report
+
+
+def test_cluster_outcomes_named_agrees_with_audit(res):
+    bench = [ev.BenchmarkRow("musc.1", MUSCLE_MARKERS, "musc", "somites", 48.0)]
+    xw = ev.Crosswalk(anchors={"musc": frozenset({"ZFA:0000548"})}, not_scored=frozenset())
+    o = ev.cluster_outcomes(bench, xw, res)[0]
+    assert o.kind == ev.NAMED
+    assert o.scored is True
+    assert o.agrees is True
+    assert o.audit is not None
+    assert o.abstain_reason is None
+    assert set(o.convergent_genes) == {"mylpfa", "acta1b", "myog"}
+
+
+def test_cluster_outcomes_abstain_reason_no_panel(res):
+    # empty markers -> no panel hit -> abstain with abstain_reason "no_panel".
+    bench = [ev.BenchmarkRow("empty.1", [], "musc", "somites", 48.0)]
+    xw = ev.Crosswalk(anchors={"musc": frozenset({"ZFA:0000548"})}, not_scored=frozenset())
+    o = ev.cluster_outcomes(bench, xw, res)[0]
+    assert o.kind == ev.ABSTAIN
+    assert o.abstain_reason == "no_panel"
+    assert o.agrees is None

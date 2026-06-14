@@ -54,13 +54,15 @@ IC_MIN: float = 1.0
 # IC_MIN=1.0 means the term must be credited by fewer than half of all
 # genes in the corpus. Provisional.
 
-STOPLIST: frozenset[str] = frozenset({
-    "ZFA:0100000",  # zebrafish anatomical entity (formal root)
-    "ZFA:0001094",  # whole organism
-    "ZFA:0000037",  # anatomical structure
-    "ZFA:0001512",  # anatomical group
-    "ZFA:0001439",  # anatomical system
-})
+STOPLIST: frozenset[str] = frozenset(
+    {
+        "ZFA:0100000",  # zebrafish anatomical entity (formal root)
+        "ZFA:0001094",  # whole organism
+        "ZFA:0000037",  # anatomical structure
+        "ZFA:0001512",  # anatomical group
+        "ZFA:0001439",  # anatomical system
+    }
+)
 # Content-free attractor terms that are never a useful label even at high
 # gene counts. IC_MIN is the second safety net; the stoplist handles terms
 # that could otherwise win before the IC gate applies. head (ZFA:0000035)
@@ -153,11 +155,7 @@ def build_ic(
             credited |= _credited(rec.zfa_id)
         gene_counts.update(credited)
 
-    return {
-        t: -math.log2(count / n_genes)
-        for t, count in gene_counts.items()
-        if count > 0
-    }
+    return {t: -math.log2(count / n_genes) for t, count in gene_counts.items() if count > 0}
 
 
 # ---------------------------------------------------------------------------
@@ -247,13 +245,15 @@ def resolve_label(
         # _credited(t) includes the term itself; ancestor_depth counts only its
         # ancestors. Reuses the cache, so no term's ancestors are walked twice.
         ancestor_depth = len(_credited(t)) - 1
-        candidates.append(TermVote(
-            zfa_id=t,
-            zfa_name=name,
-            genes=tuple(sorted(genes)),
-            ic=term_ic,
-            ancestor_depth=ancestor_depth,
-        ))
+        candidates.append(
+            TermVote(
+                zfa_id=t,
+                zfa_name=name,
+                genes=tuple(sorted(genes)),
+                ic=term_ic,
+                ancestor_depth=ancestor_depth,
+            )
+        )
 
     # Rank most-specific first: IC is the selector (highest IC = most specific
     # relative to the background); gene count is the gate magnitude;

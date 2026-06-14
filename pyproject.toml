@@ -14,8 +14,8 @@ classifiers = [
 
 # Per-phase deps: declare only what the shipped code imports. Phase 1: obonet + networkx.
 # Phase 2 adds pyyaml (panels). Phase 3 adds pydantic (Label packet). Phase 4b keeps the core
-# unchanged — the evaluator is stdlib-only — and adds an optional [eval] extra (below) used only
-# by the benchmark builder.
+# unchanged — the evaluator uses only stdlib + these core deps (no pandas/scanpy) — and adds an
+# optional [eval] extra (below) used only by the benchmark builder.
 dependencies = [
   "obonet>=1.3.0", # read_obo -> networkx.MultiDiGraph keyed by relation type
   "networkx>=3.6.1",
@@ -42,7 +42,8 @@ dev = [
   "plotly>=6.8.0",
   "pyvis>=0.3.2",
   "matplotlib>=3.10.9",
-  "types-networkx>=3.6.1",  # stubs: networkx ships no inline types; pyright basic needs these
+  "types-networkx>=3.6.1", # stubs: networkx ships no inline types; pyright basic needs these
+  "rich>=15.0.0",
 ]
 
 [build-system]

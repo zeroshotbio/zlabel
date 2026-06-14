@@ -46,9 +46,7 @@ def test_build_ic_descendant_ic_ge_ancestor(ic):
     # endothelial cell (ZFA:0005307) is part_of cardiovascular system (ZFA:0001262)
     ic_endo = ic.get("ZFA:0005307", 0.0)
     ic_cardio = ic.get("ZFA:0001262", 0.0)
-    assert ic_endo >= ic_cardio, (
-        f"IC(endothelial cell)={ic_endo:.3f} < IC(cardiovascular system)={ic_cardio:.3f}"
-    )
+    assert ic_endo >= ic_cardio, f"IC(endothelial cell)={ic_endo:.3f} < IC(cardiovascular system)={ic_cardio:.3f}"
 
 
 def test_build_ic_root_is_zero(ic):
@@ -61,10 +59,14 @@ def test_build_ic_absent_zfa_id_no_crash(zfa_graph):
     # A gene with a record pointing at an id absent from the graph is credited
     # for itself only (no ancestor walk). build_ic must not raise.
     phantom_expr = {
-        "gene_x": [ZfinExpressionRecord(
-            zfa_id="ZFA:9999999", zfa_name="phantom term",
-            start_stage="x", end_stage="y",
-        )]
+        "gene_x": [
+            ZfinExpressionRecord(
+                zfa_id="ZFA:9999999",
+                zfa_name="phantom term",
+                start_stage="x",
+                end_stage="y",
+            )
+        ]
     }
     result = build_ic(phantom_expr, zfa_graph)
     # The absent id gets self-credit: 1/1 gene -> IC = -log2(1) = 0.
@@ -90,7 +92,9 @@ def test_resolve_label_muscle_markers_name_muscle_cell(expr_map, zfa_graph, ic):
     # and is filtered by the IC gate. Muscle cell is the sole surviving candidate.
     votes = resolve_label(
         ["mylpfa", "myod1", "acta1b", "myog"],
-        expr_map=expr_map, zfa_graph=zfa_graph, ic=ic,
+        expr_map=expr_map,
+        zfa_graph=zfa_graph,
+        ic=ic,
     )
     assert votes, "expected at least one candidate for muscle markers"
     top = votes[0]
@@ -107,7 +111,9 @@ def test_resolve_label_endothelium_names_endothelial_cell_not_cardiovascular(exp
     # breaks the tie: endothelial cell has more ancestors, so it ranks first.
     votes = resolve_label(
         ["kdrl", "cdh5", "flt1"],
-        expr_map=expr_map, zfa_graph=zfa_graph, ic=ic,
+        expr_map=expr_map,
+        zfa_graph=zfa_graph,
+        ic=ic,
     )
     assert votes, "expected candidates for endothelial markers"
     top = votes[0]
@@ -129,7 +135,9 @@ def test_resolve_label_below_convergence_min_returns_empty(expr_map, zfa_graph, 
     # 2 muscle genes — below CONVERGENCE_MIN=3, so no term survives.
     votes = resolve_label(
         ["mylpfa", "acta1b"],
-        expr_map=expr_map, zfa_graph=zfa_graph, ic=ic,
+        expr_map=expr_map,
+        zfa_graph=zfa_graph,
+        ic=ic,
     )
     assert votes == []
 

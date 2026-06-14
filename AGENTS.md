@@ -52,9 +52,8 @@ make verify   # lint + docstrings + types + tests
 ## Tech stack
 
 - Python 3.13 · uv · ruff (120 cols) · pyright (basic) · pytest.
-- **Core deps (keep tiny, added per phase):** Phase 1 obonet + networkx; Phase 2 adds pyyaml; Phase 3 adds pydantic; Phase 4 adds pandas + numpy.
-- **Not in core:** scanpy / anndata (notebooks only); pydantic-ai (optional `[llm]`
-  extra, added later).
+- **Core deps (keep tiny, added per phase):** Phase 1 obonet + networkx; Phase 2 adds pyyaml; Phase 3 adds pydantic; Phase 4b keeps the core unchanged (the evaluator is stdlib + core deps).
+- **Not in core:** scanpy / anndata (optional `[eval]` extra — the benchmark builder; also notebooks); pydantic-ai (optional `[llm]` extra, added later).
 
 ## Rules
 

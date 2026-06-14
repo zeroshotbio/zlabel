@@ -528,9 +528,7 @@ def _assign_named(
     # anatomy). When no term was named, fall back to the panel anchor so
     # existing grounding-based tests are unaffected.
     grounding_anchor = frozenset({named.zfa_id}) if named is not None else anchor
-    hits, counts = _compute_grounding_evidence(
-        top.matched_markers, grounding_anchor, expr_map, zfa_graph, stage_hpf
-    )
+    hits, counts = _compute_grounding_evidence(top.matched_markers, grounding_anchor, expr_map, zfa_graph, stage_hpf)
 
     conf_score, tier, components = _grade_confidence(top, second_adj, top_adj, counts, stage_hpf, rollup=False)
     positive = tuple(m.symbol for m in top.matched_markers)
@@ -625,9 +623,7 @@ def _assign_rollup(
     # Union of all contenders' anchors.
     union_anchor: frozenset[str] = frozenset().union(*(anchors.get(bs.bucket, frozenset()) for bs in contenders))
 
-    hits, counts = _compute_grounding_evidence(
-        union_matched, union_anchor, expr_map, zfa_graph, stage_hpf
-    )
+    hits, counts = _compute_grounding_evidence(union_matched, union_anchor, expr_map, zfa_graph, stage_hpf)
 
     # Use the top contender as a proxy for coherence/margin.
     top = contenders[0]
@@ -719,9 +715,7 @@ class Labeler:
         self._expr = load_zfin_expression(expr_p)
         self._synonyms = load_gene_synonym_map(gaf_p)
         self._panels: list[Panel] = load_panels(panels_p)
-        self._anchors: dict[str, frozenset[str]] = {
-            p.bucket: p.ontology_anchor for p in self._panels
-        }
+        self._anchors: dict[str, frozenset[str]] = {p.bucket: p.ontology_anchor for p in self._panels}
         # IC model built once from the loaded expression corpus.
         # Passed to decide() so resolve_label can rank convergent ZFA terms.
         self._ic: dict[str, float] = build_ic(self._expr, self._zfa)

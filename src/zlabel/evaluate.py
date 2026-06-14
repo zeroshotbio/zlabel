@@ -37,14 +37,14 @@ from zlabel.genes import STATUS_RESOLVED, normalize_markers
 from zlabel.ground import expression_lookup, grounds_under
 from zlabel.label import decide
 from zlabel.models import Label
-from zlabel.panels import Panel, load_panels, score_markers
-from zlabel.resolve import CONVERGENCE_MIN, build_ic
+from zlabel.panels import KIND_IDENTITY, Panel, load_panels, score_markers
+from zlabel.resolve import CONVERGENCE_MIN, STOPLIST, build_ic
 
 # Prediction classes (how the engine resolved a cluster).
-NAMED = "named"        # the convergence vote named a ZFA term
+NAMED = "named"  # the convergence vote named a ZFA term
 FALLBACK = "fallback"  # vote found nothing / guardrail fired -> coarse panel bucket
-ROLLUP = "rollup"      # near-tie within a shared germ layer -> germ-layer tier
-ABSTAIN = "abstain"    # mixed / no signal
+ROLLUP = "rollup"  # near-tie within a shared germ layer -> germ-layer tier
+ABSTAIN = "abstain"  # mixed / no signal
 
 
 @dataclass(frozen=True)
@@ -112,6 +112,29 @@ class AuditRecord:
     support_fraction: float
     won_at_min: bool
     thin_support_overcall: bool
+
+
+@dataclass(frozen=True)
+class ClusterOutcome:
+    """One cluster's full evaluation result -- the row the Report aggregates and the notebook explores."""
+
+    cluster_id: str
+    gold_tissue: str
+    tissue_name: str
+    stage_hpf: float | None
+    markers: list[str]
+    n_resolved: int
+    kind: str
+    bucket: str
+    panel_bucket: str
+    zfa_id: str | None
+    depth: int
+    scored: bool
+    agrees: bool | None
+    confidence: str | None
+    convergent_genes: tuple[str, ...]
+    abstain_reason: str | None
+    audit: AuditRecord | None
 
 
 @dataclass
@@ -310,13 +333,14 @@ def _audit_from_tally(
     """Compare a named winner's support to its best-supported ancestor (the overcall signal).
 
     A thin-support overcall is a winner that cleared exactly CONVERGENCE_MIN genes while a
-    broader ancestor (often IC-filtered out of the engine's candidates) had strictly more
-    support -- the IC-first sort preferring specificity over consensus. Pure over the tally.
+    broader ancestor (content-free stoplist roots excluded; often IC-filtered out of the engine's
+    candidates) had strictly more support -- the IC-first sort preferring specificity over
+    consensus. Pure over the tally.
 
     Args:
         cluster_id (str): The cluster id.
         named_id (str): The named ZFA term id.
-        named_name (str): The label bucket name (for display).
+        named_name (str): The human-readable ZFA term name (label.bucket for a named call).
         tally (dict[str, set[str]]): The raw per-term gene tally from _replay_tally.
         zfa (nx.MultiDiGraph): The ZFA ontology (for the ancestor walk and names).
 
@@ -328,6 +352,8 @@ def _audit_from_tally(
     parent_support = 0
     parents = ancestors(zfa, named_id) if named_id in zfa else []
     for a in parents:
+        if a in STOPLIST:
+            continue  # content-free roots (anatomical structure, whole organism) are not a meaningful parent
         a_support = len(tally.get(a, set()))
         if a_support > parent_support:
             parent_id, parent_support = a, a_support
@@ -355,8 +381,31 @@ def _audit_named(row: BenchmarkRow, label: Label, named_id: str, symbols: list[s
     return _audit_from_tally(row.cluster_id, named_id, label.bucket, tally, res.zfa)
 
 
-def evaluate(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, res: Resources) -> Report:
-    """Run the engine over the benchmark and accumulate outcomes.
+def _abstain_reason(label: Label, res: Resources) -> str | None:
+    """Why an abstention gave no identity call: contradictory germ layers, no panel hit, or weak signal.
+
+    Args:
+        label (Label): The cluster's label.
+        res (Resources): Loaded resources (for the identity-panel set).
+
+    Returns:
+        str | None: "mixed", "no_panel", or "weak_signal" for an abstention; None otherwise.
+    """
+    if not label.abstained:
+        return None
+    if label.ambiguity_flag == "mixed":
+        return "mixed"
+    identity = {p.bucket for p in res.panels if p.kind == KIND_IDENTITY}
+    top = max((s for b, s in label.panel_scores.items() if b in identity), default=0.0)
+    return "no_panel" if top == 0.0 else "weak_signal"
+
+
+def cluster_outcomes(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, res: Resources) -> list[ClusterOutcome]:
+    """Label and score every benchmark cluster, returning one ClusterOutcome each.
+
+    This is the per-cluster data the aggregate Report projects from, and the table the diagnostic
+    notebook explores. Every cluster is labeled (including not_scored ones) so the full benchmark is
+    inspectable; the crosswalk still fails closed on an unmapped tissue.
 
     Args:
         benchmark (list[BenchmarkRow]): The benchmark clusters.
@@ -364,31 +413,79 @@ def evaluate(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, res: Resources
         res (Resources): Loaded engine resources.
 
     Returns:
-        Report: The accumulated metrics, audit records, and failures.
+        list[ClusterOutcome]: One outcome per cluster, in benchmark order.
     """
-    rep = Report()
+    outcomes: list[ClusterOutcome] = []
     for row in benchmark:
-        rep.total += 1
         gold = crosswalk.gold(row.broad_tissue)
-        if gold is None:
-            rep.not_scored += 1
-            continue
         label, symbols = _label_row(row, res)
         kind = _classify(label)
-        rep.counts[kind] += 1
-        if kind not in (NAMED, FALLBACK):
-            continue  # rollup / abstain: counted for coverage, out of agreement
-        pred_ids = _prediction_anchor_ids(label, kind, res)
-        agrees = any(grounds_under(res.zfa, pid, gold) for pid in pred_ids)
-        tier = label.confidence or "none"
+        agrees: bool | None = None
+        if gold is not None and kind in (NAMED, FALLBACK):
+            pred_ids = _prediction_anchor_ids(label, kind, res)
+            # Empty pred_ids (a named/fallback call that carried no anchor) stays agrees=None:
+            # unscoreable against gold, not a disagreement.
+            if pred_ids:
+                agrees = any(grounds_under(res.zfa, pid, gold) for pid in pred_ids)
+        audit: AuditRecord | None = None
+        if kind == NAMED and label.zfa_id is not None:
+            audit = _audit_named(row, label, label.zfa_id, symbols, res)
+        outcomes.append(
+            ClusterOutcome(
+                cluster_id=row.cluster_id,
+                gold_tissue=row.broad_tissue,
+                tissue_name=row.tissue_name,
+                stage_hpf=row.stage_hpf,
+                markers=row.markers,
+                n_resolved=len(symbols),
+                kind=kind,
+                bucket=label.bucket,
+                panel_bucket=label.panel_bucket,
+                zfa_id=label.zfa_id,
+                depth=label.depth,
+                scored=gold is not None,
+                agrees=agrees,
+                confidence=label.confidence,
+                convergent_genes=label.convergent_genes,
+                abstain_reason=_abstain_reason(label, res),
+                audit=audit,
+            )
+        )
+    return outcomes
+
+
+def evaluate(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, res: Resources) -> Report:
+    """Run the engine over the benchmark and aggregate per-cluster outcomes into the Report.
+
+    Args:
+        benchmark (list[BenchmarkRow]): The benchmark clusters.
+        crosswalk (Crosswalk): The fail-closed gold mapping.
+        res (Resources): Loaded engine resources.
+
+    Returns:
+        Report: The accumulated metrics, audit records, and failures (a projection of
+        cluster_outcomes).
+    """
+    rep = Report()
+    for o in cluster_outcomes(benchmark, crosswalk, res):
+        rep.total += 1
+        if not o.scored:
+            rep.not_scored += 1
+            continue
+        rep.counts[o.kind] += 1
+        # rollup / abstain, or a named/fallback call with no scoreable anchor (agrees is None):
+        # counted for coverage above, but out of the agreement numerator and denominator.
+        if o.agrees is None:
+            continue
+        tier = o.confidence or "none"
         rep.conf_total[tier] += 1
-        if agrees:
-            rep.correct[kind] += 1
+        if o.agrees:
+            rep.correct[o.kind] += 1
             rep.conf_correct[tier] += 1
         else:
-            rep.failures.append((row.cluster_id, row.broad_tissue, label.bucket, kind))
-        if kind == NAMED and label.zfa_id is not None:
-            rep.audits.append(_audit_named(row, label, label.zfa_id, symbols, res))
+            rep.failures.append((o.cluster_id, o.gold_tissue, o.bucket, o.kind))
+        if o.audit is not None:
+            rep.audits.append(o.audit)
     return rep
 
 

@@ -25,12 +25,22 @@ def zfa():
 def tiny_expr(tmp_path):
     rows = [
         expr_row(
-            "mylpfa", "ZFA:0000548", "musculature system",
-            "ZFA:0009234", "muscle cell", "Hatching:Long-pec", "Larval:Day 5",
+            "mylpfa",
+            "ZFA:0000548",
+            "musculature system",
+            "ZFA:0009234",
+            "muscle cell",
+            "Hatching:Long-pec",
+            "Larval:Day 5",
         ),
         expr_row(
-            "kdrl", "ZFA:0001262", "cardiovascular system",
-            "ZFA:0005307", "endothelial cell", "Pharyngula:Prim-5", "Larval:Day 5",
+            "kdrl",
+            "ZFA:0001262",
+            "cardiovascular system",
+            "ZFA:0005307",
+            "endothelial cell",
+            "Pharyngula:Prim-5",
+            "Larval:Day 5",
         ),
     ]
     path = write_expr(tmp_path, rows)

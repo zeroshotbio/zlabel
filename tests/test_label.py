@@ -118,8 +118,12 @@ def test_assign_clear_winner(zfa):
     # Muscle has 3 markers, blood has 1, total_weight=3 so muscle adj score dominates.
     muscle = _bs("muscle", markers=["mylpfa", "myod1", "myog"], total_weight=3.0)
     blood = _bs(
-        "blood_erythroid", germ_layer="mesoderm", tissue="blood",
-        lineage="erythroid", markers=["gata1a"], total_weight=3.0,
+        "blood_erythroid",
+        germ_layer="mesoderm",
+        tissue="blood",
+        lineage="erythroid",
+        markers=["gata1a"],
+        total_weight=3.0,
     )
     cycling = _empty_bs("cycling", kind=KIND_STATE, germ_layer="")
     scores = [muscle, blood, cycling]
@@ -171,12 +175,20 @@ def test_rollup_same_germ_layer(zfa):
     # Two evidence-bearing mesoderm buckets, exactly tied (same matched weight) so
     # they are within DOMINANCE_GAP -> roll up to the shared germ layer.
     muscle = _bs(
-        "muscle", germ_layer="mesoderm", tissue="muscle",
-        lineage="skeletal muscle", markers=["myod1", "myog"], total_weight=3.0,
+        "muscle",
+        germ_layer="mesoderm",
+        tissue="muscle",
+        lineage="skeletal muscle",
+        markers=["myod1", "myog"],
+        total_weight=3.0,
     )
     blood = _bs(
-        "blood_erythroid", germ_layer="mesoderm", tissue="blood",
-        lineage="erythroid", markers=["gata1a", "hbae1.1"], total_weight=3.0,
+        "blood_erythroid",
+        germ_layer="mesoderm",
+        tissue="blood",
+        lineage="erythroid",
+        markers=["gata1a", "hbae1.1"],
+        total_weight=3.0,
     )
     scores = [muscle, blood]
     anchors = {"muscle": MUSCLE_ANCHOR, "blood_erythroid": BLOOD_ANCHOR}
@@ -190,12 +202,20 @@ def test_rollup_same_germ_layer(zfa):
 def test_rollup_contradictory_germ_layers_abstains(zfa):
     # Two evidence-bearing buckets in different germ layers, exactly tied -> mixed.
     neural = _bs(
-        "neural", germ_layer="ectoderm", tissue="nervous system",
-        lineage="neural", markers=["elavl3", "neurod1"], total_weight=3.0,
+        "neural",
+        germ_layer="ectoderm",
+        tissue="nervous system",
+        lineage="neural",
+        markers=["elavl3", "neurod1"],
+        total_weight=3.0,
     )
     blood = _bs(
-        "blood_erythroid", germ_layer="mesoderm", tissue="blood",
-        lineage="erythroid", markers=["gata1a", "hbae1.1"], total_weight=3.0,
+        "blood_erythroid",
+        germ_layer="mesoderm",
+        tissue="blood",
+        lineage="erythroid",
+        markers=["gata1a", "hbae1.1"],
+        total_weight=3.0,
     )
     scores = [neural, blood]
     label = decide(scores, anchors={}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
@@ -345,9 +365,7 @@ def test_high_blocked_by_contradictory_grounding(zfa):
         "tnnt3a": [ZfinExpressionRecord("ZFA:0005307", "endothelial cell", *on_stage)],
         "myog": [ZfinExpressionRecord("ZFA:0005307", "endothelial cell", *on_stage)],
     }
-    label = decide(
-        [muscle, blood], anchors={"muscle": MUSCLE_ANCHOR}, expr_map=expr_map, zfa_graph=zfa, stage_hpf=48.0
-    )
+    label = decide([muscle, blood], anchors={"muscle": MUSCLE_ANCHOR}, expr_map=expr_map, zfa_graph=zfa, stage_hpf=48.0)
     assert not label.abstained
     assert label.bucket == "muscle"
     assert label.confidence_components["grounding"] == 0.25
@@ -376,7 +394,7 @@ def test_labeler_smoke_muscle_cluster():
     # all express under ZFA:0009234 (muscle cell), which has higher IC than
     # musculature system and clears CONVERGENCE_MIN=3.
     assert label.bucket == "muscle cell"
-    assert label.panel_bucket == "muscle"   # coarse prior is still visible
+    assert label.panel_bucket == "muscle"  # coarse prior is still visible
     assert label.zfa_id == "ZFA:0009234"
     assert label.next_step == "subcluster"
     assert label.depth >= 1
