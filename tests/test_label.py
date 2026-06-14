@@ -31,11 +31,11 @@ FIXTURES = Path(__file__).parent / "fixtures"
 # ---------------------------------------------------------------------------
 
 
-def _mm(symbol: str, rank: int) -> MatchedMarker:
+def _make_matched_marker(symbol: str, rank: int) -> MatchedMarker:
     return MatchedMarker(input=symbol, symbol=symbol, rank=rank, weight=1.0 / math.log2(rank + 1))
 
 
-def _bs(
+def _make_bucket_score(
     bucket: str,
     *,
     germ_layer: str = "mesoderm",
@@ -45,7 +45,7 @@ def _bs(
     markers: list[str],
     total_weight: float = 3.0,
 ) -> BucketScore:
-    matched = tuple(_mm(sym, rank) for rank, sym in enumerate(markers, start=1))
+    matched = tuple(_make_matched_marker(sym, rank) for rank, sym in enumerate(markers, start=1))
     hit_weight = sum(m.weight for m in matched)
     score = hit_weight / total_weight if total_weight > 0 else 0.0
     return BucketScore(
@@ -60,7 +60,7 @@ def _bs(
     )
 
 
-def _empty_bs(bucket: str, *, kind: str = KIND_IDENTITY, germ_layer: str = "mesoderm") -> BucketScore:
+def _make_empty_bucket_score(bucket: str, *, kind: str = KIND_IDENTITY, germ_layer: str = "mesoderm") -> BucketScore:
     return BucketScore(
         bucket=bucket,
         score=0.0,
@@ -86,18 +86,18 @@ EMPTY_ZFA = None  # only used when grounds_under path is exercised
 # ---------------------------------------------------------------------------
 
 
-def test_abstain_no_markers(zfa):
-    scores = [_empty_bs("muscle"), _empty_bs("blood_erythroid")]
-    label = decide(scores, anchors={}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+def test_abstain_no_markers(zfa_ontology):
+    scores = [_make_empty_bucket_score("muscle"), _make_empty_bucket_score("blood_erythroid")]
+    label = decide(scores, anchors={}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None)
     assert label.abstained
     assert label.bucket == "mixed/unresolved"
     assert label.ambiguity_flag == "provisional"
 
 
-def test_abstain_weak_signal(zfa):
+def test_abstain_weak_signal(zfa_ontology):
     # Muscle scores just below MIN_SIGNAL.
-    blood = _empty_bs("blood_erythroid")
-    blood_endo = _empty_bs("endothelium", germ_layer="mesoderm")
+    blood = _make_empty_bucket_score("blood_erythroid")
+    blood_endo = _make_empty_bucket_score("endothelium", germ_layer="mesoderm")
     muscle = BucketScore(
         bucket="muscle",
         score=MIN_SIGNAL - 0.01,
@@ -105,44 +105,50 @@ def test_abstain_weak_signal(zfa):
         tissue="muscle",
         lineage="skeletal muscle",
         kind=KIND_IDENTITY,
-        matched_markers=(_mm("myod1", 1),),
+        matched_markers=(_make_matched_marker("myod1", 1),),
         total_weight=10.0,  # very large denominator makes adj score tiny
     )
     scores = [muscle, blood, blood_endo]
-    label = decide(scores, anchors={}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+    label = decide(scores, anchors={}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None)
     assert label.abstained
     assert label.ambiguity_flag == "provisional"
 
 
-def test_assign_clear_winner(zfa):
+def test_assign_clear_winner(zfa_ontology):
     # Muscle has 3 markers, blood has 1, total_weight=3 so muscle adj score dominates.
-    muscle = _bs("muscle", markers=["mylpfa", "myod1", "myog"], total_weight=3.0)
-    blood = _bs(
-        "blood_erythroid", germ_layer="mesoderm", tissue="blood",
-        lineage="erythroid", markers=["gata1a"], total_weight=3.0,
+    muscle = _make_bucket_score("muscle", markers=["mylpfa", "myod1", "myog"], total_weight=3.0)
+    blood = _make_bucket_score(
+        "blood_erythroid",
+        germ_layer="mesoderm",
+        tissue="blood",
+        lineage="erythroid",
+        markers=["gata1a"],
+        total_weight=3.0,
     )
-    cycling = _empty_bs("cycling", kind=KIND_STATE, germ_layer="")
+    cycling = _make_empty_bucket_score("cycling", kind=KIND_STATE, germ_layer="")
     scores = [muscle, blood, cycling]
-    label = decide(scores, anchors={"muscle": MUSCLE_ANCHOR}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+    label = decide(
+        scores, anchors={"muscle": MUSCLE_ANCHOR}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None
+    )
     assert not label.abstained
     assert label.bucket == "muscle"
     assert label.next_step == "subcluster"
     assert label.levels == ("mesoderm", "muscle", "skeletal muscle")
 
 
-def test_decide_names_from_zfa_when_symbols_provided(zfa, expr_map, ic):
-    # With symbols + ic, the clear-winner branch names the bucket from the ZFA
+def test_decide_names_from_zfa_when_symbols_provided(zfa_ontology, expression_map, information_content):
+    # With symbols + information_content, the clear-winner branch names the bucket from the ZFA
     # convergence vote (muscle cell) instead of the coarse panel bucket (muscle).
-    muscle = _bs("muscle", markers=["mylpfa", "acta1b", "myog"], total_weight=3.0)
-    blood = _empty_bs("blood_erythroid")
+    muscle = _make_bucket_score("muscle", markers=["mylpfa", "acta1b", "myog"], total_weight=3.0)
+    blood = _make_empty_bucket_score("blood_erythroid")
     label = decide(
         [muscle, blood],
         anchors={"muscle": MUSCLE_ANCHOR},
-        expr_map=expr_map,
-        zfa_graph=zfa,
+        expression_map=expression_map,
+        zfa_ontology=zfa_ontology,
         stage_hpf=None,
         symbols=["mylpfa", "acta1b", "myog"],
-        ic=ic,
+        information_content=information_content,
     )
     assert not label.abstained
     assert label.bucket == "muscle cell"  # named ZFA term, not the panel bucket
@@ -151,59 +157,77 @@ def test_decide_names_from_zfa_when_symbols_provided(zfa, expr_map, ic):
     assert label.depth == len(label.levels)  # the restored len(levels) contract
 
 
-def test_invariant_abstained_implies_no_tier(zfa):
-    scores = [_empty_bs("muscle")]
-    label = decide(scores, anchors={}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+def test_invariant_abstained_implies_no_tier(zfa_ontology):
+    scores = [_make_empty_bucket_score("muscle")]
+    label = decide(scores, anchors={}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None)
     assert label.abstained == (label.confidence is None)
 
 
-def test_invariant_assigned_implies_tier(zfa):
-    muscle = _bs("muscle", markers=["mylpfa", "myod1", "myog"], total_weight=3.0)
-    blood = _empty_bs("blood_erythroid")
+def test_invariant_assigned_implies_tier(zfa_ontology):
+    muscle = _make_bucket_score("muscle", markers=["mylpfa", "myod1", "myog"], total_weight=3.0)
+    blood = _make_empty_bucket_score("blood_erythroid")
     scores = [muscle, blood]
-    label = decide(scores, anchors={"muscle": MUSCLE_ANCHOR}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+    label = decide(
+        scores, anchors={"muscle": MUSCLE_ANCHOR}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None
+    )
     assert not label.abstained
     assert label.confidence is not None
     assert label.confidence in (TIER_HIGH_NAME, TIER_MEDIUM_NAME, TIER_LOW_NAME)
 
 
-def test_rollup_same_germ_layer(zfa):
+def test_rollup_same_germ_layer(zfa_ontology):
     # Two evidence-bearing mesoderm buckets, exactly tied (same matched weight) so
     # they are within DOMINANCE_GAP -> roll up to the shared germ layer.
-    muscle = _bs(
-        "muscle", germ_layer="mesoderm", tissue="muscle",
-        lineage="skeletal muscle", markers=["myod1", "myog"], total_weight=3.0,
+    muscle = _make_bucket_score(
+        "muscle",
+        germ_layer="mesoderm",
+        tissue="muscle",
+        lineage="skeletal muscle",
+        markers=["myod1", "myog"],
+        total_weight=3.0,
     )
-    blood = _bs(
-        "blood_erythroid", germ_layer="mesoderm", tissue="blood",
-        lineage="erythroid", markers=["gata1a", "hbae1.1"], total_weight=3.0,
+    blood = _make_bucket_score(
+        "blood_erythroid",
+        germ_layer="mesoderm",
+        tissue="blood",
+        lineage="erythroid",
+        markers=["gata1a", "hbae1.1"],
+        total_weight=3.0,
     )
     scores = [muscle, blood]
     anchors = {"muscle": MUSCLE_ANCHOR, "blood_erythroid": BLOOD_ANCHOR}
-    label = decide(scores, anchors=anchors, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+    label = decide(scores, anchors=anchors, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None)
     assert label.bucket == "mesoderm"
     assert label.ambiguity_flag == "underclustered"
     assert label.zfa_id is None
     assert label.confidence in (TIER_MEDIUM_NAME, TIER_LOW_NAME)
 
 
-def test_rollup_contradictory_germ_layers_abstains(zfa):
+def test_rollup_contradictory_germ_layers_abstains(zfa_ontology):
     # Two evidence-bearing buckets in different germ layers, exactly tied -> mixed.
-    neural = _bs(
-        "neural", germ_layer="ectoderm", tissue="nervous system",
-        lineage="neural", markers=["elavl3", "neurod1"], total_weight=3.0,
+    neural = _make_bucket_score(
+        "neural",
+        germ_layer="ectoderm",
+        tissue="nervous system",
+        lineage="neural",
+        markers=["elavl3", "neurod1"],
+        total_weight=3.0,
     )
-    blood = _bs(
-        "blood_erythroid", germ_layer="mesoderm", tissue="blood",
-        lineage="erythroid", markers=["gata1a", "hbae1.1"], total_weight=3.0,
+    blood = _make_bucket_score(
+        "blood_erythroid",
+        germ_layer="mesoderm",
+        tissue="blood",
+        lineage="erythroid",
+        markers=["gata1a", "hbae1.1"],
+        total_weight=3.0,
     )
     scores = [neural, blood]
-    label = decide(scores, anchors={}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+    label = decide(scores, anchors={}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None)
     assert label.abstained
     assert label.ambiguity_flag == "mixed"
 
 
-def test_weak_single_signal_assigns_not_mixed(zfa):
+def test_weak_single_signal_assigns_not_mixed(zfa_ontology):
     # Regression guard: a lone, weak-but-genuine identity signal (one neural marker,
     # adj 0.25) alongside empty buckets in other germ layers must assign neural.
     # Zero-marker buckets used to pad the contender set and force a false "mixed".
@@ -214,13 +238,13 @@ def test_weak_single_signal_assigns_not_mixed(zfa):
         tissue="nervous system",
         lineage="neural",
         kind=KIND_IDENTITY,
-        matched_markers=(_mm("elavl3", 1),),
+        matched_markers=(_make_matched_marker("elavl3", 1),),
         total_weight=4.0,  # off-panel filler in the denominator -> adj 0.25
     )
-    muscle = _empty_bs("muscle", germ_layer="mesoderm")
-    gut = _empty_bs("endoderm_gut", germ_layer="endoderm")
+    muscle = _make_empty_bucket_score("muscle", germ_layer="mesoderm")
+    gut = _make_empty_bucket_score("endoderm_gut", germ_layer="endoderm")
     scores = [neural, muscle, gut]
-    label = decide(scores, anchors={}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+    label = decide(scores, anchors={}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None)
     assert not label.abstained
     assert label.bucket == "neural"
 
@@ -230,9 +254,9 @@ def test_weak_single_signal_assigns_not_mixed(zfa):
 # ---------------------------------------------------------------------------
 
 
-def test_cycling_muscle_reports_both(zfa):
-    muscle = _bs("muscle", markers=["mylpfa", "myod1", "myog"], total_weight=5.0)
-    blood = _empty_bs("blood_erythroid")
+def test_cycling_muscle_reports_both(zfa_ontology):
+    muscle = _make_bucket_score("muscle", markers=["mylpfa", "myod1", "myog"], total_weight=5.0)
+    blood = _make_empty_bucket_score("blood_erythroid")
     # Cycling state with 2 markers, enough weight.
     mki67_w = 1.0 / math.log2(2)
     pcna_w = 1.0 / math.log2(3)
@@ -243,19 +267,21 @@ def test_cycling_muscle_reports_both(zfa):
         tissue="",
         lineage="",
         kind=KIND_STATE,
-        matched_markers=(_mm("mki67", 1), _mm("pcna", 2)),
+        matched_markers=(_make_matched_marker("mki67", 1), _make_matched_marker("pcna", 2)),
         total_weight=5.0,
     )
     scores = [muscle, blood, cycling]
-    label = decide(scores, anchors={"muscle": MUSCLE_ANCHOR}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+    label = decide(
+        scores, anchors={"muscle": MUSCLE_ANCHOR}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None
+    )
     assert not label.abstained
     assert label.bucket == "muscle"
     assert "cycling" in label.states
 
 
-def test_pure_cycling_no_identity_abstains(zfa):
-    muscle = _empty_bs("muscle")
-    blood = _empty_bs("blood_erythroid")
+def test_pure_cycling_no_identity_abstains(zfa_ontology):
+    muscle = _make_empty_bucket_score("muscle")
+    blood = _make_empty_bucket_score("blood_erythroid")
     mki67_w = 1.0 / math.log2(2)
     pcna_w = 1.0 / math.log2(3)
     cycling = BucketScore(
@@ -265,17 +291,17 @@ def test_pure_cycling_no_identity_abstains(zfa):
         tissue="",
         lineage="",
         kind=KIND_STATE,
-        matched_markers=(_mm("mki67", 1), _mm("pcna", 2)),
+        matched_markers=(_make_matched_marker("mki67", 1), _make_matched_marker("pcna", 2)),
         total_weight=2.0,
     )
     scores = [muscle, blood, cycling]
-    label = decide(scores, anchors={}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+    label = decide(scores, anchors={}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None)
     assert label.abstained
     assert "cycling" in label.states
 
 
-def test_single_state_marker_not_called(zfa):
-    muscle = _empty_bs("muscle")
+def test_single_state_marker_not_called(zfa_ontology):
+    muscle = _make_empty_bucket_score("muscle")
     # Only one cycling marker — below N_STATE_MIN.
     cycling = BucketScore(
         bucket="cycling",
@@ -284,11 +310,11 @@ def test_single_state_marker_not_called(zfa):
         tissue="",
         lineage="",
         kind=KIND_STATE,
-        matched_markers=(_mm("mki67", 1),),
+        matched_markers=(_make_matched_marker("mki67", 1),),
         total_weight=2.0,
     )
     scores = [muscle, cycling]
-    label = decide(scores, anchors={}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+    label = decide(scores, anchors={}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None)
     assert "cycling" not in label.states
 
 
@@ -297,7 +323,7 @@ def test_single_state_marker_not_called(zfa):
 # ---------------------------------------------------------------------------
 
 
-def test_floor_low_when_weak_signal_but_still_assigned(zfa):
+def test_floor_low_when_weak_signal_but_still_assigned(zfa_ontology):
     # Muscle is the only evidence-bearing bucket, scoring just above MIN_SIGNAL
     # (adj 0.2) with no grounding -> assigned (not rolled up), floored at low.
     muscle = BucketScore(
@@ -307,46 +333,54 @@ def test_floor_low_when_weak_signal_but_still_assigned(zfa):
         tissue="muscle",
         lineage="skeletal muscle",
         kind=KIND_IDENTITY,
-        matched_markers=(_mm("myod1", 1),),
+        matched_markers=(_make_matched_marker("myod1", 1),),
         total_weight=5.0,
     )
-    blood = _empty_bs("blood_erythroid")
+    blood = _make_empty_bucket_score("blood_erythroid")
     scores = [muscle, blood]
-    label = decide(scores, anchors={"muscle": MUSCLE_ANCHOR}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+    label = decide(
+        scores, anchors={"muscle": MUSCLE_ANCHOR}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None
+    )
     assert not label.abstained
     assert label.bucket == "muscle"
     assert label.confidence == TIER_LOW_NAME
 
 
-def test_convergence_cap_without_grounding_is_medium(zfa):
+def test_convergence_cap_without_grounding_is_medium(zfa_ontology):
     # Strong panels: 3 muscle markers dominate (score -> high). No expression data
     # and no stage_hpf -> grounding/stage are NEUTRAL, so the convergence cap pulls
     # the tier down to exactly medium.
-    muscle = _bs("muscle", markers=["mylpfa", "myod1", "myog"], total_weight=3.0)
-    blood = _empty_bs("blood_erythroid")
+    muscle = _make_bucket_score("muscle", markers=["mylpfa", "myod1", "myog"], total_weight=3.0)
+    blood = _make_empty_bucket_score("blood_erythroid")
     scores = [muscle, blood]
-    label = decide(scores, anchors={"muscle": MUSCLE_ANCHOR}, expr_map=EMPTY_EXPR, zfa_graph=zfa, stage_hpf=None)
+    label = decide(
+        scores, anchors={"muscle": MUSCLE_ANCHOR}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None
+    )
     assert not label.abstained
     assert label.bucket == "muscle"
     assert label.confidence == TIER_MEDIUM_NAME
 
 
-def test_high_blocked_by_contradictory_grounding(zfa):
+def test_high_blocked_by_contradictory_grounding(zfa_ontology):
     # Strong muscle panel, but only 1 of 4 markers grounds under the muscle anchor;
     # the other 3 express under endothelial anatomy. All are on-stage at 48 hpf.
     # Grounding 0.25 (< NEUTRAL) must block high even though stage is fully
     # supportive — anatomy that contradicts the call is not "converging evidence".
-    muscle = _bs("muscle", markers=["mylpfa", "acta1b", "tnnt3a", "myog"], total_weight=3.0)
-    blood = _empty_bs("blood_erythroid")
+    muscle = _make_bucket_score("muscle", markers=["mylpfa", "acta1b", "tnnt3a", "myog"], total_weight=3.0)
+    blood = _make_empty_bucket_score("blood_erythroid")
     on_stage = ("Hatching:Long-pec", "Larval:Day 5")
-    expr_map = {
+    expression_map = {
         "mylpfa": [ZfinExpressionRecord("ZFA:0009234", "muscle cell", *on_stage)],  # under ZFA:0000548
         "acta1b": [ZfinExpressionRecord("ZFA:0005307", "endothelial cell", *on_stage)],
         "tnnt3a": [ZfinExpressionRecord("ZFA:0005307", "endothelial cell", *on_stage)],
         "myog": [ZfinExpressionRecord("ZFA:0005307", "endothelial cell", *on_stage)],
     }
     label = decide(
-        [muscle, blood], anchors={"muscle": MUSCLE_ANCHOR}, expr_map=expr_map, zfa_graph=zfa, stage_hpf=48.0
+        [muscle, blood],
+        anchors={"muscle": MUSCLE_ANCHOR},
+        expression_map=expression_map,
+        zfa_ontology=zfa_ontology,
+        stage_hpf=48.0,
     )
     assert not label.abstained
     assert label.bucket == "muscle"
@@ -376,7 +410,7 @@ def test_labeler_smoke_muscle_cluster():
     # all express under ZFA:0009234 (muscle cell), which has higher IC than
     # musculature system and clears CONVERGENCE_MIN=3.
     assert label.bucket == "muscle cell"
-    assert label.panel_bucket == "muscle"   # coarse prior is still visible
+    assert label.panel_bucket == "muscle"  # coarse prior is still visible
     assert label.zfa_id == "ZFA:0009234"
     assert label.next_step == "subcluster"
     assert label.depth >= 1

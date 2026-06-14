@@ -44,14 +44,14 @@ Built in [7 phases, one PR each](.claude/docs/workflow.md):
 - [x] **Phase 2** — Genes + panels (`normalize_symbol`, `panels.yaml` with 14 curated buckets, `score_markers`)
 - [x] **Phase 3** — Ground + label (`ground.py` lookups → converging-evidence decision → `Label`)
 - [x] **Phase 4a** — Resolution engine (`resolve.py` IC-weighted ZFA convergence namer; panels demote to a coarse prior + guardrail)
-- [ ] **Phase 4b** — Eval (`build_daniocell_eval.py` + `evaluate.py`; agreement / coverage / calibration)
+- [x] **Phase 4b** — Eval (`build_daniocell_eval.py` + `evaluate.py` + the Daniocell crosswalk; broad agreement, coverage, named/fallback/abstain split, parent-child overcall audit)
 - [ ] **Phase 5** — CLI + notebook 01 (`zlabel label/eval`; the one-cluster walkthrough)
 - [ ] **Phase 6** — Notebooks 02/03 (scanpy clustering → markers → zlabel; end-to-end 48 hpf)
 - [ ] **Phase 7** — LLM (optional) (`explain.py` narrator behind the `[llm]` extra)
 
 ## Usage
 
-Phases 1–3 and the Phase 4a resolution engine ship. All loaders run offline (no network after `setup_data.sh`).
+Phases 1–4a ship, plus the Phase 4b Daniocell evaluation harness. All loaders run offline (no network after `setup_data.sh`).
 
 ```python
 # --- Phase 3: label a cluster end-to-end ---
@@ -70,8 +70,8 @@ synonyms = zlabel.load_gene_synonym_map("data/ontologies/zfin.gaf")
 synonyms["flk1"]   # -> {'kdrl'}    alias resolved to current ZFIN symbol
 synonyms["kdrl"]   # -> {'kdrl'}    current symbol is its own identity
 
-zfa = zlabel.load_zfa("data/ontologies/zfa.obo")
-zlabel.term_name(zfa, "ZFA:0005307")   # -> 'endothelial cell'
+zfa_ontology = zlabel.load_zfa("data/ontologies/zfa.obo")
+zlabel.term_name(zfa_ontology, "ZFA:0005307")   # -> 'endothelial cell'
 
 # --- Phase 2: normalize markers and score panels ---
 result = zlabel.normalize_symbol("flk1", synonyms)
@@ -83,7 +83,8 @@ panels = zlabel.load_panels("src/zlabel/panels.yaml")
 # pigment, germline, cycling, stress_response
 
 markers = ["mylz2", "acta1b", "tnnt3a", "myod1", "myog", "hbae1.1", "kdrl"]
-scores = zlabel.score_markers(markers, panels, synonyms)
+normalized = zlabel.normalize_markers(markers, synonyms)   # normalize once, then score
+scores = zlabel.score_markers(normalized, panels)
 scores[0]   # BucketScore(bucket='muscle', score=0.8105, kind='identity', ...)
 scores[1]   # BucketScore(bucket='blood_erythroid', score=0.0979, ...)
 ```

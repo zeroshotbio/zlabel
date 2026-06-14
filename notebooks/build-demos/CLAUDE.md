@@ -31,6 +31,12 @@ Each build-demo notebook should include:
 4. Section rhythm: markdown context -> code -> short interpretation
 5. A synthesis section that names the phase handoff artifact
 6. A final "What's next" section linking to the next phase notebook
+7. An "Explore it yourself" section — a documented helper the reader re-runs with their
+   own inputs (e.g. `label_and_explain`, `explore_gene`, `score_panels`) plus a "now try
+   your own" cell. Build-demos are exploration tools, not just linear demonstrations.
+8. A deep-unfold of the phase's keystone function(s): a markdown cell that walks the
+   algorithm step by step, then inline code that reproduces those steps on the real
+   example and asserts the result matches the library call.
 
 ## Execution Flow Requirements
 
@@ -42,6 +48,11 @@ Each build-demo notebook should include:
 ## Visuals And Output Hygiene
 
 - Add a one-line "What to look for" caption before each major visual/output block.
+- Use `rich` (Table / Panel / Tree) for structured text output, with a consistent colour
+  key (green = resolved/agree/identity, yellow = ambiguous/state/warning, red =
+  unresolved/disagree, dim = zero/abstain). rich augments the interactive viz (pyvis /
+  plotly / matplotlib); it does not replace it.
+- Write heavy, stepwise comments in code cells so a reader follows the logic line by line.
 - Prefer lightweight visuals that explain the current phase; avoid adding heavy tooling unless needed.
 - Keep notebook diffs reviewable: clear noisy or bulky outputs (especially embedded interactive HTML) before committing.
 

@@ -69,31 +69,38 @@ result = zlabel.normalize_symbol("flk1", synonyms)
 # NormalizedSymbol(input='flk1', status='resolved', symbols=frozenset({'kdrl'}), note=None)
 
 panels = zlabel.load_panels("src/zlabel/panels.yaml")   # 14 curated buckets
-scores = zlabel.score_markers(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"], panels, synonyms)
+normalized = zlabel.normalize_markers(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"], synonyms)
+scores = zlabel.score_markers(normalized, panels)
 scores[0]   # BucketScore(bucket='muscle', score=0.8105, kind='identity', ...)
 ```
 
-### Phase 4a (current — the resolution engine)
+### Phase 4a + 4b (shipped — the resolution engine + eval)
 
 ```python
 from zlabel import Labeler
 
 labeler = Labeler(stage_hpf=48)                  # loads ZFA + ZFIN-expr + GAF + panels once
 label = labeler.label(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"])
-# Label(bucket="muscle cell",                     # named ZFA term, not the panel bucket
-#       levels=("cell", "muscle cell"),            # ZFA ancestry chain
-#       depth=2,                                   # len(levels)
+# Label(bucket="posterior hypaxial muscle",       # named ZFA term, not the panel bucket
+#       depth=6, zfa_id="ZFA:0005926",            # len(levels); the broad->specific chain below
+#       levels=("musculature system", "portion of tissue", "trunk musculature",
+#               "muscle", "hypaxialis", "posterior hypaxial muscle"),
 #       panel_bucket="muscle",                     # coarse prior (kept visible)
-#       convergent_genes=("acta1b", "myog", "mylpfa"),  # anatomy-vote evidence
-#       confidence="high", zfa_id="ZFA:0009234",
-#       expression_evidence=[...], abstained=False, next_step="subcluster")
+#       convergent_genes=("mylpfa", "myod1", "myog"),  # anatomy-vote evidence
+#       confidence="high", abstained=False, next_step="subcluster")
 print(label.to_yaml())                           # the evidence packet
 ```
+
+> [!NOTE]
+> Depth-6 `posterior hypaxial muscle` from five generic muscle markers is the IC-first
+> over-specification the Phase 4b audit is built to surface (§Validation): a specific term
+> winning on the bare convergence minimum over the broader `muscle` consensus. 4b measures it;
+> retuning the ranking is a future calibration pass.
 
 One entry point. The public surface is small — `Labeler`, `Label`, and the Phase 1/2
 primitives — while the decision code beneath it stays readable and unit-tested.
 
-### Confidence rubric (provisional — calibrated in Phase 4b eval)
+### Confidence rubric (provisional — measured in Phase 4b; calibration deferred)
 
 `Labeler` grades an assigned call on a weighted 0–1 score: **coherence** 0.40 (rank-weighted
 strength of the winner's markers) + **margin** 0.30 (lead over the runner-up) + **grounding**
@@ -102,9 +109,9 @@ named ZFA term, or the panel anchor when the vote fails) + **stage** 0.10 (fract
 sample). Tiers: ≥ 0.80 `high`, ≥ 0.60 `medium`, else `low`. Two caps keep it honest — a
 germ-layer rollup never exceeds `medium`, and `high` requires real anatomy convergence (the
 guardrail blocking the named term drops grounding and prevents false `high`). The weights are a
-first cut; Phase 4b eval calibrates them.
+first cut; Phase 4b measured the baseline — calibration is deferred.
 
-## Repo structure (~7 core files, ~1,800 LOC core)
+## Repo structure (~9 core modules, ~2,800 LOC core)
 
 Files marked [P1] / [P2] shipped; later phases show their planned target.
 
@@ -115,7 +122,7 @@ zlabel/
   Makefile                # setup / format / lint / lint-docstrings / type / test / verify [P1]
   scripts/
     setup_data.sh         # curl zfa.obo, zfin.gaf, zfin_wildtype_expression.txt -> data/ontologies/  [P1]
-    build_daniocell_eval.py  # Daniocell 19 broad tissues + cluster markers -> benchmarks/ csv  [P4]
+    build_daniocell_eval.py  # Daniocell clust markers + parent tissue -> benchmarks/ csv  [P4b shipped]
   src/zlabel/
     data.py     # LIFT (pure): load ZFA via obonet; parse ZFIN-expr TSV; load GAF synonym map  [P1]
     genes.py    # normalize_symbol() via GAF alias/paralog resolution                           [P2]
@@ -124,17 +131,19 @@ zlabel/
     ground.py   # pure fns: expression_lookup / grounds_under / stage_plausibility              [P3 shipped]
     label.py    # converging-evidence decision -> Label  (the heart)                           [P3+4a shipped]
     models.py   # Label evidence packet (pydantic) + to_yaml()                                 [P3+4a shipped]
-    resolve.py  # IC-weighted ZFA convergence namer (build_ic + resolve_label)                 [P4a shipped]
-    evaluate.py # run on labeled clusters -> agreement + coverage + calibration                [P4b]
+    resolve.py  # IC-weighted ZFA convergence namer (build_information_content + resolve_label) [P4a shipped]
+    evaluate.py # run on Daniocell clusters -> agreement + coverage + overcall audit            [P4b shipped]
     explain.py  # OPTIONAL [llm] extra: thin narrator over a finished Label                    [P7]
     cli.py      # typer: zlabel label --markers ... --stage 48 ; zlabel eval <csv>            [P5]
-  benchmarks/   # committed eval substrate (data/ is gitignored, so eval data lives here)     [P4]
+  benchmarks/   # committed eval substrate: daniocell_eval.csv + crosswalk + baseline report  [P4b shipped]
   data/         # gitignored: downloaded ontologies
   tests/        # genes, panel scoring, ground lookups, label decision, eval — real unit tests, no LLM
   notebooks/
     build-demos/
-      phase_01.ipynb           # data-layer walkthrough (Phase 1)                   [P1 shipped]
-      phase_02.ipynb           # genes + panels walkthrough (Phase 2)               [P2 shipped]
+      phase_01.ipynb           # data-layer walkthrough + explorer (Phase 1)        [P1 shipped]
+      phase_02.ipynb           # genes + panels walkthrough + explorer (Phase 2)    [P2 shipped]
+      phase_03.ipynb           # grounding + the decision, unfolded (Phase 3)       [P3+4a shipped]
+      phase_04.ipynb           # Daniocell eval diagnostic workbench (Phase 4b)     [P4b shipped]
     demo/
       01_label_one_cluster.ipynb    # the muscle-cluster walkthrough                [P5]
       02_cluster_with_scanpy.ipynb  # layer-2: adata -> leiden -> rank_genes -> zlabel [P6]
@@ -142,10 +151,11 @@ zlabel/
 ```
 
 **Core deps (added per phase):** Phase 1 obonet + networkx; Phase 2 adds pyyaml;
-Phase 3 adds pydantic; Phase 4 adds pandas + numpy. **No scanpy, anndata,
-decoupler, or pydantic-ai in the core** — those live only in the optional `[llm]`
-extra (pydantic-ai) and the notebooks (scanpy/anndata). The labeler takes strings
-in, hands an evidence packet out.
+Phase 3 adds pydantic; Phase 4b keeps the core unchanged — the evaluator is stdlib +
+these core deps. **No pandas, numpy, scanpy, anndata, decoupler, or pydantic-ai in the
+core** — scanpy/anndata live in the optional `[eval]` extra (the benchmark builder; also
+the notebooks), and pydantic-ai will live in the optional `[llm]` extra. The labeler takes
+strings in, hands an evidence packet out.
 
 ## Lift vs. rewrite (zero daniotype dependency)
 
@@ -162,14 +172,19 @@ in, hands an evidence packet out.
 
 ## Validation (built in from day one)
 
-`build_daniocell_eval.py` produces a small CSV (`cluster_id, markers, broad_tissue`)
-from **Daniocell's 19 broad tissue assignments** (ground truth) + its per-cluster
-markers, committed under `benchmarks/`. `evaluate.py` runs zlabel on it and reports
-three numbers: **broad-bucket agreement**, **coverage** (non-abstain rate), and
-**abstention calibration** (accuracy on confident calls vs. abstain rate). Optional
-comparison points: a bare-LLM baseline (GPTCellType-style) and a panels-only-no-
-ontology score, to see what each layer earns. Daniocell's broad-tissue labels make
-this a clean benchmark — no fine-naming ambiguity, no platform-gap confound.
+`build_daniocell_eval.py` derives a small benchmark CSV (`cluster_id, markers, broad_tissue,
+tissue_name, stage_hpf`) from the public Daniocell release (GEO GSE223922): one row per fine
+`clust`, with its parent `tissue` as the gold broad label and top-25 computed markers. Only the
+derived CSV plus a reviewed, fail-closed `{tissue -> broad ZFA anchor}` crosswalk are committed
+under `benchmarks/` (the ~2.5 GB source is not). `evaluate.py` runs the engine over it and scores
+**broad agreement** in ZFA-ancestry space (`grounds_under`), reporting **coverage**, the
+**named/fallback/rollup/abstain** split, **confidence-by-correctness**, and a structural
+**parent-child overcall audit** — the signal for whether the IC-first sort overcalls (a specific
+term winning on the bare `CONVERGENCE_MIN` while a broader parent had more support). The engine is
+untouched; the audit replays the vote tally privately. Daniocell's broad labels cannot validate
+within-bucket fine-naming, so depth correctness there is reported by the structural audit, not
+checked against truth — finer-reference depth validation (ZSCAPE/Zebrahub) and bare-LLM /
+panels-only baselines are deferred to a future calibration pass.
 
 ## Build order (7 phases, one PR each)
 
@@ -181,7 +196,7 @@ discipline and the review bar.
 3. **Ground + label** — grounding lookups, then the decision in `label.py` → `Label`; unit-test the worked examples.
 4. **Resolution engine + eval** — split into two PRs:
    - **4a (engine)** — `resolve.py` IC-weighted ZFA convergence namer; `label.py`/`models.py` wired to name from ZFA; panels demote to coarse prior + guardrail.
-   - **4b (eval)** — `build_daniocell_eval.py` + `evaluate.py`; first broad-agreement + depth numbers. *The proof it works.*
+   - **4b (eval, shipped)** — `build_daniocell_eval.py` + `evaluate.py` + the Daniocell crosswalk; broad agreement, coverage, the named/fallback/abstain split, and the parent-child overcall audit. *The proof it works.*
 5. **CLI + notebook 01** — `zlabel label/eval`; the one-cluster walkthrough.
 6. **Notebooks 02/03** — scanpy clustering → markers → zlabel, then end-to-end.
 7. **LLM (optional)** — `explain.py`, behind the `[llm]` extra.

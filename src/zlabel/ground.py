@@ -110,8 +110,8 @@ def _stage_to_hpf(stage: str) -> tuple[float, float] | None:
         when the name is not a known ZFS stage.
     """
     # Prefixed name (Hatching:Long-pec) first, else the bare substage (Long-pec).
-    s = stage.strip()
-    return _STAGE_WINDOW.get(s) or _BARE_STAGE_WINDOW.get(s.split(":", 1)[-1])
+    stage_name = stage.strip()
+    return _STAGE_WINDOW.get(stage_name) or _BARE_STAGE_WINDOW.get(stage_name.split(":", 1)[-1])
 
 
 # ---------------------------------------------------------------------------
@@ -120,17 +120,17 @@ def _stage_to_hpf(stage: str) -> tuple[float, float] | None:
 
 
 def expression_lookup(
-    expr_map: Mapping[str, list[ZfinExpressionRecord]],
+    expression_map: Mapping[str, list[ZfinExpressionRecord]],
     symbol: str,
 ) -> list[ZfinExpressionRecord]:
     """Return all ZFIN wildtype-expression records for a gene symbol.
 
-    Lowercases the symbol before lookup to match the expr_map key convention
+    Lowercases the symbol before lookup to match the expression_map key convention
     (data.load_zfin_expression lowercases keys at load time). Returns an empty
     list when the gene has no curated expression data — not an error.
 
     Args:
-        expr_map (Mapping[str, list[ZfinExpressionRecord]]): From
+        expression_map (Mapping[str, list[ZfinExpressionRecord]]): From
             data.load_zfin_expression; maps lowercased gene symbol to records.
         symbol (str): The resolved current ZFIN symbol to look up.
 
@@ -138,11 +138,11 @@ def expression_lookup(
         list[ZfinExpressionRecord]: All expression records for the gene, or
         an empty list when the gene is absent from the map.
     """
-    return list(expr_map.get(symbol.lower(), []))
+    return list(expression_map.get(symbol.lower(), []))
 
 
 def grounds_under(
-    zfa_graph: nx.MultiDiGraph,
+    zfa_ontology: nx.MultiDiGraph,
     rec_zfa_id: str,
     anchor: frozenset[str],
 ) -> bool:
@@ -156,7 +156,7 @@ def grounds_under(
     matched markers ground under the anchor (aggregating across records).
 
     Args:
-        zfa_graph (nx.MultiDiGraph): ZFA ontology graph from data.load_zfa.
+        zfa_ontology (nx.MultiDiGraph): ZFA ontology graph from data.load_zfa.
         rec_zfa_id (str): The ZFA id from a ZFIN expression record.
         anchor (frozenset[str]): The bucket's ontology anchor ids. May be empty
             for state panels; grounds_under always returns False for an empty
@@ -170,12 +170,12 @@ def grounds_under(
         return False
     if rec_zfa_id in anchor:
         return True
-    if rec_zfa_id not in zfa_graph:
+    if rec_zfa_id not in zfa_ontology:
         # Expression record points at a ZFA term not present in the loaded
         # ontology subset (e.g. an older id not in the fixture). Treat as
         # ungrounded rather than raising.
         return False
-    return bool(anchor & set(ancestors(zfa_graph, rec_zfa_id)))
+    return bool(anchor & set(ancestors(zfa_ontology, rec_zfa_id)))
 
 
 def stage_plausibility(
@@ -209,14 +209,14 @@ def stage_plausibility(
     if stage_hpf is None:
         return None
     found_datable = False
-    for rec in records:
-        start_w = _stage_to_hpf(rec.start_stage)
-        end_w = _stage_to_hpf(rec.end_stage)
-        if start_w is None or end_w is None:
+    for record in records:
+        start_window = _stage_to_hpf(record.start_stage)
+        end_window = _stage_to_hpf(record.end_stage)
+        if start_window is None or end_window is None:
             continue  # unparseable stage name -> skip, don't count as datable
         found_datable = True
-        rec_lo = min(start_w[0], end_w[0])
-        rec_hi = max(start_w[1], end_w[1])
-        if rec_lo <= stage_hpf + window and rec_hi >= stage_hpf - window:
+        record_start_hpf = min(start_window[0], end_window[0])
+        record_end_hpf = max(start_window[1], end_window[1])
+        if record_start_hpf <= stage_hpf + window and record_end_hpf >= stage_hpf - window:
             return True  # any datable record on-stage -> plausible
     return False if found_datable else None  # datable but none on-stage -> False; nothing datable -> None

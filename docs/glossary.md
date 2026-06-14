@@ -84,8 +84,8 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   selector — the highest-IC term that clears the gates wins.
 - **The three gates** — a term must clear all three to be a candidate: `CONVERGENCE_MIN`
   (at least 3 distinct genes vote for it), `STOPLIST` (a few content-free attractors like
-  "whole organism" are never labels), and `IC_MIN` (at least 1.0 bits — screens near-root
-  terms). All three are provisional, calibrated by the Phase 4b eval.
+  "whole organism" are never labels), and `INFORMATION_CONTENT_MIN` (at least 1.0 bits — screens near-root
+  terms). All three are provisional; Phase 4b measured the baseline — calibration is deferred.
 - **TermVote** — the internal candidate object `resolve.resolve_label` returns, one per
   surviving term (its ZFA id, name, the genes that voted for it, IC, and ancestor depth). Not
   a user-facing API; reach it via `zlabel.resolve` if you need it.
@@ -122,6 +122,20 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   strong panels alone top out at `medium`; `high` is reserved for calls the in-vivo expression
   (or stage) actually corroborates.
 
+## Evaluation (Phase 4b)
+
+- **Daniocell benchmark** — a committed CSV (one row per Daniocell fine cluster: its markers and
+  its parent broad tissue) derived from the public Daniocell atlas. zlabel's broad call is scored
+  against the gold tissue. Lives in `benchmarks/`.
+- **crosswalk** — the reviewed, fail-closed `{Daniocell tissue -> broad ZFA anchor(s)}` map used
+  for scoring. Agreement means the prediction's ZFA term grounds (sits at or under) a gold anchor;
+  unmapped tissues are `not_scored`, never guessed.
+- **broad agreement / coverage** — the fraction of scored clusters whose call lands in the right
+  broad tissue; coverage is the non-abstain rate (named + fallback + rollup).
+- **overcall audit** — a structural check for false precision: a named term that won on the bare
+  `CONVERGENCE_MIN` genes while a broader parent term had more support (the IC-first sort favouring
+  a rare specific term over the consensus). Phase 4b reports it; it is not yet tuned.
+
 ## How data flows through zlabel
 
 ```
@@ -138,6 +152,7 @@ src/zlabel/panels.py    ->  load_panels() · score_markers() -> list[BucketScore
                                         |
                                         v
 src/zlabel/ground.py    ->  expression_lookup() · grounds_under() · stage_plausibility() (Phase 3)
-src/zlabel/resolve.py   ->  build_ic() · resolve_label() -> list[TermVote]               (Phase 4a)
+src/zlabel/resolve.py   ->  build_information_content() · resolve_label() -> list[TermVote] (Phase 4a)
 src/zlabel/label.py     ->  decide() · Labeler.label() -> Label                         (Phase 3+4a)
+src/zlabel/evaluate.py  ->  evaluate() over the Daniocell benchmark -> baseline report  (Phase 4b)
 ```

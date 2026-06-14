@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from zlabel.data import load_zfa, load_zfin_expression
-from zlabel.resolve import build_ic
+from zlabel.resolve import build_information_content
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -51,24 +51,18 @@ def write_gaf(tmp_path: Path):
 
 
 @pytest.fixture(scope="module")
-def zfa_graph():
+def zfa_ontology():
     """The ZFA test ontology graph, shared by resolve and label tests."""
     return load_zfa(FIXTURES / "zfa_test.obo")
 
 
 @pytest.fixture(scope="module")
-def zfa(zfa_graph):
-    """Alias for zfa_graph; lets label tests keep the shorter name."""
-    return zfa_graph
-
-
-@pytest.fixture(scope="module")
-def expr_map():
+def expression_map():
     """ZFIN in-vivo expression records from the test fixture."""
     return load_zfin_expression(FIXTURES / "zfin_expr_test.txt")
 
 
 @pytest.fixture(scope="module")
-def ic(expr_map, zfa_graph):
+def information_content(expression_map, zfa_ontology):
     """IC background model built once from the test expression fixture."""
-    return build_ic(expr_map, zfa_graph)
+    return build_information_content(expression_map, zfa_ontology)

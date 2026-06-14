@@ -21,6 +21,7 @@ from zlabel import (
     KIND_STATE,
     Panel,
     load_panels,
+    normalize_markers,
     score_markers,
 )
 
@@ -34,7 +35,7 @@ PANELS_YAML = Path(zlabel.__file__).parent / "panels.yaml"
 
 def _make_synonym_map(*symbols: str) -> dict[str, set[str]]:
     """Build a minimal synonym map where every symbol is its own current name."""
-    return {s.lower(): {s} for s in symbols}
+    return {symbol.lower(): {symbol} for symbol in symbols}
 
 
 # --- load_panels -------------------------------------------------------------
@@ -46,30 +47,30 @@ def test_panels() -> list[Panel]:
 
 
 def test_load_panels_returns_expected_buckets(test_panels):
-    buckets = {p.bucket for p in test_panels}
+    buckets = {panel.bucket for panel in test_panels}
     assert {"muscle", "blood_erythroid", "endothelium", "cycling"}.issubset(buckets)
 
 
 def test_load_panels_markers_are_lowercased(test_panels):
-    muscle = next(p for p in test_panels if p.bucket == "muscle")
+    muscle = next(panel for panel in test_panels if panel.bucket == "muscle")
     assert "mylpfa" in muscle.markers
-    assert all(m == m.lower() for m in muscle.markers)
+    assert all(marker == marker.lower() for marker in muscle.markers)
 
 
 def test_load_panels_kind_identity(test_panels):
-    identity_buckets = {p.bucket for p in test_panels if p.kind == KIND_IDENTITY}
+    identity_buckets = {panel.bucket for panel in test_panels if panel.kind == KIND_IDENTITY}
     assert "muscle" in identity_buckets
     assert "blood_erythroid" in identity_buckets
 
 
 def test_load_panels_kind_state(test_panels):
-    state_buckets = {p.bucket for p in test_panels if p.kind == KIND_STATE}
+    state_buckets = {panel.bucket for panel in test_panels if panel.kind == KIND_STATE}
     assert "cycling" in state_buckets
 
 
 def test_load_panels_subpanels_loaded(test_panels):
     # Subpanels load in Phase 2 even though they are not scored yet.
-    muscle = next(p for p in test_panels if p.bucket == "muscle")
+    muscle = next(panel for panel in test_panels if panel.bucket == "muscle")
     assert "myoblast" in muscle.subpanels
     assert isinstance(muscle.subpanels["myoblast"], frozenset)
     assert "myod1" in muscle.subpanels["myoblast"]
@@ -78,11 +79,11 @@ def test_load_panels_subpanels_loaded(test_panels):
 def test_load_panels_ontology_anchor_loaded(test_panels):
     # muscle and endothelium fixtures both carry anchors; blood_erythroid has
     # no ontology_anchor key and should default to an empty frozenset.
-    muscle = next(p for p in test_panels if p.bucket == "muscle")
+    muscle = next(panel for panel in test_panels if panel.bucket == "muscle")
     assert muscle.ontology_anchor == frozenset({"ZFA:0000548"})
-    endothelium = next(p for p in test_panels if p.bucket == "endothelium")
+    endothelium = next(panel for panel in test_panels if panel.bucket == "endothelium")
     assert endothelium.ontology_anchor == frozenset({"ZFA:0005307"})
-    blood = next(p for p in test_panels if p.bucket == "blood_erythroid")
+    blood = next(panel for panel in test_panels if panel.bucket == "blood_erythroid")
     assert blood.ontology_anchor == frozenset()
 
 
@@ -148,17 +149,17 @@ def test_production_panels_yaml_loads_and_is_well_formed():
     # check; assert a few invariants on top to catch typos or schema drift.
     panels = load_panels(PANELS_YAML)
     assert panels
-    buckets = [p.bucket for p in panels]
+    buckets = [panel.bucket for panel in panels]
     assert len(buckets) == len(set(buckets))  # no duplicate bucket names
-    assert {p.kind for p in panels} == {KIND_IDENTITY, KIND_STATE}
-    for p in panels:
-        assert all(m == m.lower() for m in p.markers)
+    assert {panel.kind for panel in panels} == {KIND_IDENTITY, KIND_STATE}
+    for panel in panels:
+        assert all(marker == marker.lower() for marker in panel.markers)
         # The shipped model's anchor invariant: identity panels ground somewhere,
         # state panels (a transcriptional program) carry no anatomy anchor.
-        if p.kind == KIND_IDENTITY:
-            assert p.ontology_anchor, f"identity panel {p.bucket!r} must have an ontology_anchor"
+        if panel.kind == KIND_IDENTITY:
+            assert panel.ontology_anchor, f"identity panel {panel.bucket!r} must have an ontology_anchor"
         else:
-            assert not p.ontology_anchor, f"state panel {p.bucket!r} must not have an ontology_anchor"
+            assert not panel.ontology_anchor, f"state panel {panel.bucket!r} must not have an ontology_anchor"
 
 
 # --- score_markers: keystone trace -------------------------------------------
@@ -170,7 +171,7 @@ def test_score_markers_muscle_keystone_trace(test_panels):
     all_markers = ["mylpfa", "acta1b", "tnnt3a", "myod1", "myog", "hbae1.1", "kdrl"]
     syn = _make_synonym_map(*all_markers)
 
-    scores = score_markers(all_markers, test_panels, syn)
+    scores = score_markers(normalize_markers(all_markers, syn), test_panels)
 
     top = scores[0]
     assert top.bucket == "muscle"
@@ -178,19 +179,19 @@ def test_score_markers_muscle_keystone_trace(test_panels):
 
     # Every runner-up scores far below muscle: the next-highest bucket
     # (blood_erythroid) is ~0.098 in this trace, comfortably under the 0.15 bound.
-    for s in scores[1:]:
-        assert s.score < 0.15, f"expected {s.bucket} < 0.15, got {s.score:.4f}"
+    for score in scores[1:]:
+        assert score.score < 0.15, f"expected {score.bucket} < 0.15, got {score.score:.4f}"
 
     # Dominance: muscle must be at least 5x the blood erythroid score.
-    blood = next(s for s in scores if s.bucket == "blood_erythroid")
+    blood = next(score for score in scores if score.bucket == "blood_erythroid")
     assert top.score > 5 * blood.score
 
 
 def test_score_markers_sorted_descending_by_score(test_panels):
     syn = _make_synonym_map("mylpfa", "acta1b", "myod1")
-    scores = score_markers(["mylpfa", "acta1b", "myod1"], test_panels, syn)
-    for a, b in zip(scores, scores[1:], strict=False):
-        assert a.score >= b.score
+    scores = score_markers(normalize_markers(["mylpfa", "acta1b", "myod1"], syn), test_panels)
+    for current, following in zip(scores, scores[1:], strict=False):
+        assert current.score >= following.score
 
 
 # --- score_markers: edge cases -----------------------------------------------
@@ -198,13 +199,13 @@ def test_score_markers_sorted_descending_by_score(test_panels):
 
 def test_score_markers_all_unresolved_gives_zero_scores(test_panels):
     syn: dict[str, set[str]] = {}  # empty — every marker is unresolved
-    scores = score_markers(["zyxwvut", "abc123"], test_panels, syn)
-    assert all(s.score == 0.0 for s in scores)
+    scores = score_markers(normalize_markers(["zyxwvut", "abc123"], syn), test_panels)
+    assert all(score.score == 0.0 for score in scores)
 
 
 def test_score_markers_empty_input_gives_zero_scores(test_panels):
-    scores = score_markers([], test_panels, {})
-    assert all(s.score == 0.0 for s in scores)
+    scores = score_markers(normalize_markers([], {}), test_panels)
+    assert all(score.score == 0.0 for score in scores)
 
 
 def test_score_markers_ambiguous_excluded_from_denominator(test_panels):
@@ -215,15 +216,15 @@ def test_score_markers_ambiguous_excluded_from_denominator(test_panels):
         "hbae1": {"hbae1.1", "hbae1.2"},  # ambiguous
         "mylpfa": {"mylpfa"},  # resolved
     }
-    scores = score_markers(["mylpfa", "hbae1"], test_panels, syn)
-    muscle = next(s for s in scores if s.bucket == "muscle")
+    scores = score_markers(normalize_markers(["mylpfa", "hbae1"], syn), test_panels)
+    muscle = next(score for score in scores if score.bucket == "muscle")
     assert math.isclose(muscle.score, 1.0, rel_tol=1e-9)
 
 
 def test_score_markers_matched_markers_recorded_in_rank_order(test_panels):
     syn = _make_synonym_map("mylpfa", "acta1b")
-    scores = score_markers(["mylpfa", "acta1b"], test_panels, syn)
-    muscle = next(s for s in scores if s.bucket == "muscle")
+    scores = score_markers(normalize_markers(["mylpfa", "acta1b"], syn), test_panels)
+    muscle = next(score for score in scores if score.bucket == "muscle")
     assert len(muscle.matched_markers) == 2
     assert muscle.matched_markers[0].rank == 1
     assert muscle.matched_markers[0].symbol == "mylpfa"
@@ -237,13 +238,13 @@ def test_score_markers_matched_markers_recorded_in_rank_order(test_panels):
 def test_score_markers_tie_broken_alphabetically_by_bucket(test_panels):
     # When every bucket scores 0.0 (no resolved markers hit any panel), the
     # sort key (-score, bucket) breaks the tie alphabetically.
-    scores = score_markers([], test_panels, {})
-    bucket_names = [s.bucket for s in scores]
+    scores = score_markers(normalize_markers([], {}), test_panels)
+    bucket_names = [score.bucket for score in scores]
     assert bucket_names == sorted(bucket_names)
 
 
 def test_score_markers_all_panels_always_returned(test_panels):
     # Even when nothing matches, all panels appear in the output.
     syn = _make_synonym_map("zyxwvut")
-    scores = score_markers(["zyxwvut"], test_panels, syn)
+    scores = score_markers(normalize_markers(["zyxwvut"], syn), test_panels)
     assert len(scores) == len(test_panels)

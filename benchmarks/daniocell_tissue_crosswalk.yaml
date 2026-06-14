@@ -1,0 +1,54 @@
+# Daniocell broad-tissue crosswalk -- eval-only, gold-side.
+#
+# Maps each Daniocell `tissue` code (Sur et al. 2023, Dev Cell; GEO GSE223922 metadata)
+# to one or more broad ZFA anchor terms, in ZFA-ancestry space. Phase 4b scores broad
+# agreement as: any(grounds_under(prediction_zfa_id, anchors)).
+#
+# This is a benchmark SCORING vocabulary, curated independently of panels.yaml -- it is
+# NOT a remap of the 12 panel buckets. It FAILS CLOSED: every Daniocell tissue is either
+# mapped to reviewed ZFA anchors or explicitly `not_scored: true`. The evaluator errors on
+# any tissue value missing from this file rather than guessing. Every id below was verified
+# to exist in data/ontologies/zfa.obo. Reviewed like code; lines tagged `review:` are the
+# anchors I am least certain of biologically.
+
+tissues:
+  axia:                                 # axial (notochord, prechordal plate, hatching gland)
+    anchors: [ZFA:0001204]              # axial mesoderm
+  blas:                                 # blastomeres -- undifferentiated, not a tissue
+    not_scored: true
+  ceph:                                 # cephalic / head mesoderm + mesenchyme
+    anchors: [ZFA:0000113]              # head mesenchyme            # review: broad cranial anchor
+  endo:                                 # endoderm (gut, liver, pancreas)
+    anchors: [ZFA:0000017, ZFA:0000339] # endoderm; digestive system
+  epid:                                 # epidermis
+    anchors: [ZFA:0000105, ZFA:0000368] # epidermis; integument
+  eye:                                  # eye
+    anchors: [ZFA:0000107]              # eye
+  fin:                                  # fin epithelia / mesenchyme
+    anchors: [ZFA:0000108]              # fin
+  glia:                                 # glial
+    anchors: [ZFA:0009073]              # glial cell
+  hema:                                 # erythrocytes + immune
+    anchors: [ZFA:0000007, ZFA:0005023, ZFA:0001159]  # blood; hematopoietic system; immune system
+  iono:                                 # ionocyte
+    anchors: [ZFA:0005323]              # ionocyte
+  mese:                                 # mesenchyme
+    anchors: [ZFA:0000393]              # mesenchyme
+  mura:                                 # mural cells (pericytes, vascular smooth muscle)
+    anchors: [ZFA:0005944]              # mural cell                 # review: specific cell-type anchor
+  musc:                                 # muscle
+    anchors: [ZFA:0000548]              # musculature system
+  neur:                                 # neural
+    anchors: [ZFA:0000396]              # nervous system
+  otic:                                 # otic / ear
+    anchors: [ZFA:0000051, ZFA:0000217] # otic vesicle; inner ear
+  peri:                                 # periderm (outer embryonic epithelium)
+    anchors: [ZFA:0001185]              # periderm                   # review: peri = periderm, not pericyte
+  pgc:                                  # primordial germ cells
+    anchors: [ZFA:0009288]              # primordial germ cell
+  pigm:                                 # pigment (melanocytes, iridophores, xanthophores)
+    anchors: [ZFA:0009090]              # pigment cell
+  pron:                                 # pronephros (kidney)
+    anchors: [ZFA:0000151]              # pronephros
+  tast:                                 # taste / lateral line
+    anchors: [ZFA:0001074, ZFA:0000034] # taste bud; lateral line system

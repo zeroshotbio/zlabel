@@ -17,20 +17,30 @@ FIXTURES = Path(__file__).parent / "fixtures"
 
 
 @pytest.fixture(scope="module")
-def zfa():
+def zfa_ontology():
     return load_zfa(FIXTURES / "zfa_test.obo")
 
 
 @pytest.fixture
-def tiny_expr(tmp_path):
+def minimal_expression_map(tmp_path):
     rows = [
         expr_row(
-            "mylpfa", "ZFA:0000548", "musculature system",
-            "ZFA:0009234", "muscle cell", "Hatching:Long-pec", "Larval:Day 5",
+            "mylpfa",
+            "ZFA:0000548",
+            "musculature system",
+            "ZFA:0009234",
+            "muscle cell",
+            "Hatching:Long-pec",
+            "Larval:Day 5",
         ),
         expr_row(
-            "kdrl", "ZFA:0001262", "cardiovascular system",
-            "ZFA:0005307", "endothelial cell", "Pharyngula:Prim-5", "Larval:Day 5",
+            "kdrl",
+            "ZFA:0001262",
+            "cardiovascular system",
+            "ZFA:0005307",
+            "endothelial cell",
+            "Pharyngula:Prim-5",
+            "Larval:Day 5",
         ),
     ]
     path = write_expr(tmp_path, rows)
@@ -40,18 +50,18 @@ def tiny_expr(tmp_path):
 # --- expression_lookup -------------------------------------------------------
 
 
-def test_expression_lookup_hit(tiny_expr):
-    recs = expression_lookup(tiny_expr, "mylpfa")
+def test_expression_lookup_hit(minimal_expression_map):
+    recs = expression_lookup(minimal_expression_map, "mylpfa")
     assert len(recs) == 1
     assert recs[0].zfa_id == "ZFA:0009234"
 
 
-def test_expression_lookup_lowercases(tiny_expr):
-    assert expression_lookup(tiny_expr, "MYLPFA") == expression_lookup(tiny_expr, "mylpfa")
+def test_expression_lookup_lowercases(minimal_expression_map):
+    assert expression_lookup(minimal_expression_map, "MYLPFA") == expression_lookup(minimal_expression_map, "mylpfa")
 
 
-def test_expression_lookup_miss_returns_empty(tiny_expr):
-    assert expression_lookup(tiny_expr, "notareal") == []
+def test_expression_lookup_miss_returns_empty(minimal_expression_map):
+    assert expression_lookup(minimal_expression_map, "notareal") == []
 
 
 # --- grounds_under -----------------------------------------------------------
@@ -60,28 +70,28 @@ MUSCLE_ANCHOR = frozenset({"ZFA:0000548"})
 ENDOTHELIAL_ANCHOR = frozenset({"ZFA:0001262"})  # cardiovascular system
 
 
-def test_grounds_under_self_match(zfa):
-    assert grounds_under(zfa, "ZFA:0000548", MUSCLE_ANCHOR)
+def test_grounds_under_self_match(zfa_ontology):
+    assert grounds_under(zfa_ontology, "ZFA:0000548", MUSCLE_ANCHOR)
 
 
-def test_grounds_under_ancestor_match(zfa):
+def test_grounds_under_ancestor_match(zfa_ontology):
     # ZFA:0009234 (muscle cell) is part_of ZFA:0000548 (musculature system)
-    assert grounds_under(zfa, "ZFA:0009234", MUSCLE_ANCHOR)
+    assert grounds_under(zfa_ontology, "ZFA:0009234", MUSCLE_ANCHOR)
 
 
-def test_grounds_under_non_match(zfa):
+def test_grounds_under_non_match(zfa_ontology):
     # Endothelial cell is not under musculature system.
-    assert not grounds_under(zfa, "ZFA:0005307", MUSCLE_ANCHOR)
+    assert not grounds_under(zfa_ontology, "ZFA:0005307", MUSCLE_ANCHOR)
 
 
-def test_grounds_under_id_absent_from_graph(zfa):
+def test_grounds_under_id_absent_from_graph(zfa_ontology):
     # An expression record pointing at an unknown ZFA id should return False,
     # not raise.
-    assert not grounds_under(zfa, "ZFA:9999999", MUSCLE_ANCHOR)
+    assert not grounds_under(zfa_ontology, "ZFA:9999999", MUSCLE_ANCHOR)
 
 
-def test_grounds_under_empty_anchor_returns_false(zfa):
-    assert not grounds_under(zfa, "ZFA:0000548", frozenset())
+def test_grounds_under_empty_anchor_returns_false(zfa_ontology):
+    assert not grounds_under(zfa_ontology, "ZFA:0000548", frozenset())
 
 
 # --- stage_plausibility ------------------------------------------------------

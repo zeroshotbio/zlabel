@@ -130,4 +130,24 @@ def normalize_markers(
         list[NormalizedSymbol]: One NormalizedSymbol per input marker, in the
             same order as the input.
     """
-    return [normalize_symbol(m, synonym_map) for m in markers]
+    return [normalize_symbol(marker, synonym_map) for marker in markers]
+
+
+def resolved_symbols(normalized_markers: list[NormalizedSymbol]) -> list[str]:
+    """Return the single current symbol of each resolved marker, in input order.
+
+    The resolved markers (ambiguous and unresolved are dropped) are exactly what panel
+    scoring and the convergence vote operate on; each carries exactly one symbol. A small
+    convenience so callers do not re-implement the same filter-and-unwrap.
+
+    Args:
+        normalized_markers (list[NormalizedSymbol]): Output of normalize_markers.
+
+    Returns:
+        list[str]: One current ZFIN symbol per resolved marker, in rank order.
+    """
+    return [
+        next(iter(normalized_marker.symbols))
+        for normalized_marker in normalized_markers
+        if normalized_marker.status == STATUS_RESOLVED
+    ]
