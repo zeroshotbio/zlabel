@@ -6,26 +6,29 @@ End-to-end scientific workflow and agentic automation blueprint
 
 | Primary audience | Zebrafish scientists, computational biologists, atlas curators, and engineers building annotation agents. |
 | :---- | :---- |
-| **Primary question** | How do we assign a defensible high-level label to a cluster before diving into subclusters? |
-| **Core principle** | Cell labels should be evidence packets: marker genes \+ reference-atlas support \+ ontology mapping \+ stage context \+ confidence. |
+| **Primary question** | How do we assign the deepest defensible label to a cluster without overcalling? |
+| **Core principle** | Cell labels should be evidence packets: marker genes \+ ZFIN/ZFA/ZFS grounding \+ reference-atlas support \+ confidence. |
 | **Primary authorities** | ZFIN gene nomenclature and expression context; ZFA/ZFS for zebrafish anatomy and stages; CL/Uberon for interoperability; zebrafish-native atlases for expression-based evidence. |
 | **What this is not** | It is not a promise of fully automatic perfect annotation. The goal is a reproducible, reviewable workflow that makes uncertainty explicit. |
 
 # **1\. Executive summary**
 
-**The useful unit of annotation is not a free-text label; it is an evidence-backed decision.** For a low-resolution whole-organism zebrafish scRNA-seq dataset, the first pass should assign clusters to broad compartments such as neural, epidermal, muscle, endoderm, blood/immune, endothelium, mesenchyme, notochord, pigment, germline, proliferative, or unresolved/mixed. Fine-grained cell types should be handled after subclustering within those broad compartments.
+**The useful unit of annotation is not a free-text label; it is an evidence-backed decision.** For a low-resolution whole-organism zebrafish scRNA-seq dataset, the first pass should usually assign clusters to broad compartments such as neural, epidermal, muscle, endoderm, blood/immune, endothelium, mesenchyme, notochord, pigment, germline, proliferative, or unresolved/mixed. Fine-grained cell types should be handled after subclustering within those broad compartments unless the markers already converge on a more specific zebrafish-native ontology term.
 
-*Rule of thumb: call broad labels early; call precise labels only when marker coherence, atlas mapping, developmental timing, and ontology mapping all agree.*
+*Rule of thumb: call broad labels early; call precise labels only when marker coherence, ZFIN/ZFA grounding, developmental timing, and atlas context all agree.*
 
 * **Use zebrafish-native resources first.** ZFIN, ZFA, ZFS, ZCL, Daniocell, and Zebrahub should be privileged over human/mouse marker databases for final labels.  
 * **Separate identity from state.** A cluster enriched for cell-cycle, heat-shock, hypoxia, interferon, ribosomal, mitochondrial, or stress programs may represent a state within many lineages, not a standalone cell type.  
 * **Record stage and anatomy separately.** A zebrafish label is often best represented as cell identity \+ anatomical context \+ developmental stage, not as a single flat label.  
 * **Never depend on one marker.** Require a positive marker set, negative controls, reference-atlas support, and a confidence tier.  
+* **Let depth come from evidence.** A fixed hierarchy is an output schema and review scaffold, not the source of truth for the final name. If markers converge on a specific ZFA term, use it; if they converge only on a parent, keep the parent; if they conflict, abstain or mark mixed.
 * **Make uncertainty machine-readable.** Use labels such as provisional\_neural, mixed\_endoderm\_epithelial, or cycling\_mesoderm when evidence does not support a sharper label.
+
+For a deeper split of deterministic steps, agentic judgment, and human review checkpoints, see [Human and Agentic Cluster Annotation](human_agentic_cluster_annotation.md).
 
 # **2\. Resource stack: what each system contributes**
 
-**The zebrafish annotation ecosystem works as a stack.** No single resource labels every cell perfectly. The workflow should combine nomenclature, ontologies, atlas-derived expression evidence, scoring methods, and human review.
+**The zebrafish annotation ecosystem works as a stack.** No single resource labels every cell perfectly. Separate the official grounding resources used for deterministic naming from atlas references used for benchmarking, triangulation, and review. The workflow should combine nomenclature, ontologies, atlas-derived expression evidence, scoring methods, and human review.
 
 | Resource | Provides | Use during annotation | Caution / authority |
 | :---- | :---- | :---- | :---- |
@@ -39,6 +42,7 @@ End-to-end scientific workflow and agentic automation blueprint
 | ZCL | Zebrafish Cell Landscape / Cell Development Landscape. | Reference marker lists, organism-level cluster context, and scZCL correlation-based query matching. | Strong broad-tissue reference; watch stage/tissue mismatch. \[R10\] |
 | Daniocell | Whole-embryo/larval wild-type zebrafish scRNA-seq time course. | Developmental and early-larval reference labels; broad tissue types and marker exploration. | Especially useful for 3.3-120 hpf embryo/larva datasets. \[R11\] |
 | Zebrahub | Multimodal developmental atlas combining scRNA-seq and live light-sheet imaging. | Developmental timing, lineage trajectory context, and spatial/temporal plausibility. | Strong for embryonic development and lineage-aware review. \[R12\] |
+| ZSCAPE | Hierarchically annotated zebrafish developmental reference and perturbation atlas. | Benchmark broad accuracy, depth choice, and stage robustness; compare against a large hierarchical reference. | Strong validation resource, not a sole naming oracle. \[R19, R20\] |
 | MSigDB/msigdbr | Gene sets for pathways and programs, including model-organism mappings. | Score states and programs such as hypoxia, cell cycle, interferon, metabolism. | Supportive, not a primary cell-name authority. \[R13\] |
 | AUCell / module scoring | Algorithms for scoring signatures per cell or cluster. | Quantify enrichment of curated marker panels and biological programs. | Scores are evidence, not final labels. \[R14, R16\] |
 | Seurat / SingleR | Reference mapping and label transfer frameworks. | Transfer atlas labels, get prediction scores, project query cells onto reference structure. | Only as good as the reference labels and gene mapping. \[R15, R17\] |
@@ -46,7 +50,7 @@ End-to-end scientific workflow and agentic automation blueprint
 
 # **3\. Conceptual model: label broad, then refine**
 
-**Start with a hierarchical view of identity.** Low-resolution Leiden clustering should usually be interpreted at the level of major lineage or tissue systems. Later, each broad compartment can be reclustered to resolve fine subtypes, maturation states, or spatially defined populations.
+**Use hierarchy as an output contract, not a rigid name tree.** Low-resolution Leiden clustering should usually be interpreted at the level of major lineage or tissue systems. Later, each broad compartment can be reclustered to resolve fine subtypes, maturation states, or spatially defined populations. When a cluster's markers already converge on a specific ZFA anatomy term, the resolved depth can be deeper; when evidence is broad or mixed, the label should roll up or abstain.
 
 | Level | Typical label examples | Evidence threshold | Recommended timing |
 | :---- | :---- | :---- | :---- |
@@ -70,17 +74,19 @@ End-to-end scientific workflow and agentic automation blueprint
 
 5\.   **Score high-level signatures.** Use curated broad zebrafish marker panels; score with AUCell, AddModuleScore, scanpy score\_genes, or equivalent.
 
-6\.   **Map against references.** Run label transfer/correlation against context-appropriate references such as ZCL, Daniocell, Zebrahub, or a tissue-specific atlas.
+6\.   **Run zebrafish-native grounding.** Use ZFIN expression records and the ZFA/ZFS ontologies to ask where the positive identity markers converge in vivo. Aggregate by distinct genes, roll evidence through the ZFA graph, downweight generic terms, and keep stage plausibility explicit.
 
-7\.   **Check stage and condition plausibility.** Use ZFS/stage metadata and ZECO/condition metadata to downweight labels that make no developmental or experimental sense.
+7\.   **Map against references.** Run label transfer/correlation against context-appropriate references such as ZCL, Daniocell, Zebrahub, ZSCAPE, or a tissue-specific atlas.
 
-8\.   **Map to ontologies.** Assign ZFA and ZFS terms; add CL and Uberon terms when appropriate.
+8\.   **Check stage and condition plausibility.** Use ZFS/stage metadata and ZECO/condition metadata to downweight labels that make no developmental or experimental sense.
 
-9\.   **Synthesize evidence and confidence.** Generate a label plus a machine-readable evidence packet.
+9\.   **Map to interoperability ontologies.** Keep ZFA/ZFS as the zebrafish-native grounding terms; add CL and Uberon terms when appropriate for export.
 
-10\.   **Human review and iteration.** Produce dot plots, violin plots, UMAP overlays, and evidence tables for review; then revise marker panels and labels as needed.
+10\.   **Synthesize evidence and confidence.** Generate a label plus a machine-readable evidence packet.
 
-| `High-level process flowRaw / processed object  -> QC + metadata validation  -> ZFIN gene-symbol resolver  -> cluster marker extraction  -> signature scoring against broad zebrafish panels  -> reference atlas mapping: ZCL / Daniocell / Zebrahub / specialized atlas  -> ontology mapping: ZFA + ZFS, plus CL / Uberon when appropriate  -> evidence synthesis: label, confidence, disagreements, next action  -> scientist review  -> final cluster metadata + provenance + report` |
+11\.   **Human review and iteration.** Produce dot plots, violin plots, UMAP overlays, and evidence tables for review; then revise marker panels and labels as needed.
+
+| `High-level process flowRaw / processed object  -> QC + metadata validation  -> ZFIN gene-symbol resolver  -> cluster marker extraction  -> signature scoring against broad zebrafish panels  -> ZFIN/ZFA/ZFS convergence grounding  -> reference atlas mapping: ZCL / Daniocell / Zebrahub / ZSCAPE / specialized atlas  -> interoperability mapping: CL / Uberon when appropriate  -> evidence synthesis: label, confidence, disagreements, next action  -> scientist review  -> final cluster metadata + provenance + report` |
 | :---- |
 
 # **5\. The cluster annotation loop in detail**
@@ -113,6 +119,30 @@ For each Leiden cluster, create a compact evidence packet before attempting a fi
 | Negative neural markers | elavl3, neurod1, sox3 low | Argues against neural identity. |
 | Negative blood markers | gata1a, hbae1.1, hbbe1.1 low | Argues against erythroid/blood identity. |
 | Negative endothelial markers | kdrl, fli1a, cdh5 low | Argues against vascular/endothelial identity. |
+
+## **5.4 Use deterministic ZFIN/ZFA convergence naming**
+
+For zebrafish-native labels, the preferred deterministic naming layer should ground positive identity markers in ZFIN expression data and the ZFA/ZFS ontologies. This is not a raw mention-count lookup. ZFIN expression records are curated by gene, anatomy, stage, assay, publication, fish, and reagent context; raw record counts can be biased by famous genes, repeated figures, generic parent terms, and stage mismatch.
+
+The minimum defensible convergence-namer is:
+
+1\.   Normalize marker symbols to official ZFIN symbols before looking up evidence.
+
+2\.   Use positive identity markers for the anatomy vote; score cell-cycle, stress, interferon, hypoxia, and ambient programs separately as states.
+
+3\.   For each marker, retrieve wild-type ZFIN expression records, map records to ZFA terms, and credit the term plus its `is_a` / `part_of` ancestors.
+
+4\.   Aggregate by distinct genes, not raw records, so one heavily curated marker cannot dominate the vote.
+
+5\.   Prefer specific terms with information content or another specificity weight, while blocking ultra-generic stoplist terms such as whole organism or broad administrative roots.
+
+6\.   Check stage plausibility with ZFS and sample hpf/dpf metadata.
+
+7\.   Return the deepest defensible term when markers converge; return a parent term or unresolved/mixed status when evidence is broad, incompatible, or state-dominated.
+
+Panels and reference atlases still matter, but their role changes. Curated panels provide a coarse prior and review scaffold; atlas references provide triangulation and benchmarks. The ZFIN/ZFA convergence vote is the zebrafish-native grounding layer that decides how deep the label is allowed to go.
+
+The following additions are useful but should be treated as experimental until benchmarked: publication-debias weights beyond distinct-gene aggregation, assay-specific weights, context/environment weights, tuned numeric thresholds, and calibrated probability scores.
 
 # **6\. Gene identifier normalization and paralog handling**
 
@@ -182,18 +212,25 @@ Reference mapping asks whether each query cell or cluster resembles annotated re
 | `R-style pseudocode: reference label transfer# reference_obj has curated zebrafish labels and ZFIN-normalized gene symbolsanchors <- FindTransferAnchors(reference = reference_obj, query = query_obj,                               dims = 1:30, reference.reduction = 'pca')pred <- TransferData(anchorset = anchors,                     refdata = reference_obj$label_broad,                     dims = 1:30)query_obj <- AddMetaData(query_obj, metadata = pred)# Then summarize predicted labels and prediction scores by Leiden cluster.# Do not accept a transferred label automatically; compare to markers and ontology constraints.` |
 | :---- |
 
+## **9.3 Benchmark the convergence namer**
+
+A convergence-namer should be validated as a depth-aware decision system, not only as a flat label matcher. Use ZSCAPE, Daniocell, ZCL, Zebrahub, and legacy developmental atlases as complementary benchmarks when available. Report broad-compartment accuracy, ancestor-aware precision/recall/F1, overcall versus undercall depth error, calibration, abstention quality, marker-ablation robustness, and leave-one-atlas-out generalization.
+
+Treat these as explicit research questions until measured: whether IC weighting improves over distinct-gene counts, whether publication-debias weights help beyond distinct-gene aggregation, and whether assay/context weights improve labels enough to justify the added complexity.
+
 # **10\. Decision logic and confidence tiers**
 
 | Condition | Recommended label behavior | Confidence |
 | :---- | :---- | :---- |
-| Positive markers, high signature score, top atlas hits agree, stage-compatible, ontology term exists | Assign specific broad label and record evidence. | High |
+| Positive markers, high signature score, ZFIN/ZFA convergence, top atlas hits agree, stage-compatible, ontology term exists | Assign the deepest convergent label and record evidence. | High |
 | Positive markers and signature score agree, but atlas hits are weak or stage-mismatched | Assign broad parent label; flag reference mismatch. | Medium |
+| Positive markers converge only on a parent ZFA term | Assign the parent term rather than forcing a fine label. | Medium |
 | Markers support two related compartments, such as endoderm/epithelium or neural/neural crest | Use compound or parent label; subcluster. | Medium-low |
 | State program dominates and identity markers are weak | Label state separately; identity unresolved. | Low for identity; high for state |
 | Incompatible markers from unrelated compartments in same cluster | Mixed/doublet/underclustered; subcluster or filter. | Low |
 | Reference transfer provides precise label but marker evidence does not support it | Reject or downgrade transferred label; keep candidate only. | Low to medium |
 
-| `Confidence scoring exampleconfidence_score =  0.30 * marker_coherence +  0.20 * high_level_signature_margin +  0.20 * reference_agreement +  0.15 * stage_plausibility +  0.10 * ontology_mapping_quality +  0.05 * reviewer_consensusSuggested tiers:  >= 0.80 high  0.60-0.79 medium  0.40-0.59 low / provisional  < 0.40 unresolved` |
+| `Confidence scoring exampleconfidence_score =  0.30 * marker_coherence +  0.20 * high_level_signature_margin +  0.20 * ZFIN_ZFA_grounding +  0.15 * reference_agreement +  0.10 * stage_plausibility +  0.05 * reviewer_consensusSuggested tiers:  >= 0.80 high  0.60-0.79 medium  0.40-0.59 low / provisional  < 0.40 unresolved` |
 | :---- |
 
 # **11\. Worked examples of first-pass cluster labels**
@@ -262,11 +299,13 @@ A scientist should not have to inspect raw matrices to review a label. The workf
 | Ignoring paralogs | Human-to-zebrafish mapping can split one marker into multiple paralogs. | Keep one-to-many mappings explicit and validate expression. |
 | Ignoring developmental stage | Markers and tissues change meaning across hpf/dpf. | Require ZFS stage context and stage-compatible reference weighting. |
 | Accepting label transfer blindly | Reference mapping can be wrong when stage, tissue, or chemistry differs. | Require marker coherence and reference agreement. |
+| Counting raw ZFIN expression records | Famous genes and repeated curation events can dominate a flat count. | Aggregate by distinct marker genes and record the evidence. |
+| Treating a fixed hierarchy as the naming authority | Low-resolution clusters and evolving atlas labels do not always fit a prewritten tree. | Use hierarchy as output schema; let ZFIN/ZFA evidence determine resolved depth. |
 | Conflating state with identity | Cycling/stress clusters can span many cell types. | Store state\_labels separately from identity\_label. |
 | Not versioning resources | Ontologies, gene symbols, and atlas labels change. | Record resource versions and download dates. |
 
 * **Minimum evidence to accept a broad label:** at least three coherent positive markers, a high broad-signature score, low scores for incompatible lineages, and either atlas support or strong ZFIN/ZFA biological plausibility.  
-* **Minimum evidence to accept a fine label:** specific markers, atlas support at similar stage/tissue, a mapped ontology term, and agreement after subclustering.  
+* **Minimum evidence to accept a fine label:** specific markers, ZFIN/ZFA convergence on a specific term, stage plausibility, and atlas support at similar stage/tissue or agreement after subclustering.
 * **When in doubt:** use a parent label and mark the record provisional. A conservative parent label is more useful than a false precise label.
 
 # **17\. Reproducibility requirements**
@@ -312,6 +351,7 @@ A lab can start without a full agentic system. The practical minimum is:
 * **\[ \]** Does the cluster have coherent positive markers?  
 * **\[ \]** Are incompatible lineage markers absent or low?  
 * **\[ \]** Do broad marker scores support the candidate label?  
+* **\[ \]** Do positive identity markers converge on a ZFA term by distinct-gene support rather than raw record count?
 * **\[ \]** Do zebrafish-native references agree, or is there a stage/tissue mismatch?  
 * **\[ \]** Is the proposed label plausible for this developmental stage?  
 * **\[ \]** Can the label be mapped to ZFA and ZFS? Can CL/Uberon be added appropriately?  
@@ -358,9 +398,11 @@ A lab can start without a full agentic system. The practical minimum is:
 
 **\[R19\] ZSCAPE / perturbed embryo atlas article.** Embryo-scale perturbation atlas useful for distinguishing developmental identity from perturbation effects. [https://www.nature.com/articles/s41586-023-06720-2](https://www.nature.com/articles/s41586-023-06720-2)
 
+**\[R20\] ZSCAPE project overview and downloads.** Zebrafish single-cell atlas resources for reference and perturbation datasets. [https://cole-trapnell-lab.github.io/zscape/](https://cole-trapnell-lab.github.io/zscape/)
+
 # **Appendix A. One-page operational summary**
 
-| `For every cluster:1. Validate metadata: stage, tissue scope, condition, genome build.2. Normalize genes to official ZFIN symbols; preserve aliases and paralogs.3. Compute markers: logFC, pct_in, pct_out, specificity.4. Score broad panels: neural, epidermis, muscle, blood, immune, endothelium,   endoderm, mesenchyme, cartilage, notochord, pigment, germline, cycling, stress.5. Map to references: ZCL, Daniocell, Zebrahub, specialized atlas if relevant.6. Check stage plausibility using ZFS and anatomy plausibility using ZFA.7. Separate cell identity from state.8. Assign broad label + confidence + ontology terms.9. Generate plots and evidence record.10. Subcluster broad compartments and repeat for finer labels.` |
+| `For every cluster:1. Validate metadata: stage, tissue scope, condition, genome build.2. Normalize genes to official ZFIN symbols; preserve aliases and paralogs.3. Compute markers: logFC, pct_in, pct_out, specificity.4. Score broad panels: neural, epidermis, muscle, blood, immune, endothelium,   endoderm, mesenchyme, cartilage, notochord, pigment, germline, cycling, stress.5. Ground positive identity markers with ZFIN expression and ZFA/ZFS convergence.6. Map to references: ZCL, Daniocell, Zebrahub, ZSCAPE, specialized atlas if relevant.7. Check stage plausibility using ZFS and anatomy plausibility using ZFA.8. Separate cell identity from state.9. Assign the deepest defensible label + confidence + ontology terms.10. Generate plots and evidence record.11. Subcluster broad compartments and repeat for finer labels.` |
 | :---- |
 
 *Default answer when evidence is incomplete: use a parent label and write down why. A conservative, evidence-backed label is better than a precise but unsupported label.*
