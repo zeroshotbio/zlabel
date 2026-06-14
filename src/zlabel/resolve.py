@@ -5,7 +5,7 @@ specific ZFA anatomy term the markers converge on in vivo (via ZFIN
 curated expression). The label depth falls out of the evidence: a tight
 endothelial panel resolves to a cell type, a broad neural panel resolves
 to CNS, a mixed cluster abstains. Panels demote to a coarse prior and
-germ-layer guardrail upstream (in label.py).
+ontology-anchor guardrail upstream (in label.py).
 
 The algorithm:
   1. For each distinct normalized gene, look up its ZFIN expression
@@ -19,7 +19,7 @@ The algorithm:
        - IC >= IC_MIN (near-root terms down-weighted)
   4. Rank surviving terms most-specific first: descending IC (the
      selector), then descending gene count (gate magnitude), then
-     descending depth (specificity tiebreak), then id (stable output).
+     descending ancestor_depth (specificity tiebreak), then id (stable output).
   5. Return the ranked list; empty means nothing converged.
 
 The background IC model (build_ic) is computed once from the loaded ZFIN
@@ -65,7 +65,7 @@ STOPLIST: frozenset[str] = frozenset({
 # gene counts. IC_MIN is the second safety net; the stoplist handles terms
 # that could otherwise win before the IC gate applies. head (ZFA:0000035)
 # is deliberately absent -- it is a legitimate region label and never wins
-# on the worked examples; the eval PR may revisit.
+# on the worked examples.
 
 
 # ---------------------------------------------------------------------------
@@ -84,16 +84,16 @@ class TermVote:
             credited this term, sorted for determinism.
         ic (float): Information content of the term under the background
             model from build_ic (bits, -log2 scale).
-        depth (int): Number of is_a+part_of ancestors in the ZFA graph.
-            A proxy for ontological specificity. 0 when the term is not
-            in the loaded graph (e.g. an older id not in the fixture).
+        ancestor_depth (int): Number of is_a+part_of ancestors in the ZFA
+            graph. A proxy for ontological specificity. 0 when the term is
+            not in the loaded graph (e.g. an older id not in the fixture).
     """
 
     zfa_id: str
     zfa_name: str
     genes: tuple[str, ...]
     ic: float
-    depth: int
+    ancestor_depth: int
 
 
 # ---------------------------------------------------------------------------
@@ -180,7 +180,7 @@ def resolve_label(
     is_a+part_of ancestors (DAG ancestor credit). Terms that clear
     CONVERGENCE_MIN distinct genes, are not in STOPLIST, and have IC >= IC_MIN
     are returned ranked most-specific first (descending IC, then gene count,
-    then depth, then id). Empty list means nothing converged.
+    then ancestor_depth, then id). Empty list means nothing converged.
 
     Args:
         symbols (list[str]): Already-normalized current ZFIN symbols in rank
@@ -195,6 +195,22 @@ def resolve_label(
         list[TermVote]: Candidate terms ranked most-specific first (index 0
         is the best label). Empty when no term clears all three gates.
     """
+    # Memoize ancestor walks (mirrors build_ic): each ZFA id is walked at
+    # most once, shared between the vote tally below and the per-term depth.
+    anc_cache: dict[str, frozenset[str]] = {}
+
+    def _credited(zfa_id: str) -> frozenset[str]:
+        if zfa_id in anc_cache:
+            return anc_cache[zfa_id]
+        if zfa_id not in zfa_graph:
+            # Older or retired id not in the loaded ontology: credit only
+            # itself (no ancestors to walk).
+            result: frozenset[str] = frozenset({zfa_id})
+        else:
+            result = frozenset({zfa_id}) | frozenset(ancestors(zfa_graph, zfa_id))
+        anc_cache[zfa_id] = result
+        return result
+
     # Tally distinct genes per ZFA term (direct expression + DAG ancestors).
     term_to_genes: dict[str, set[str]] = {}
     seen: set[str] = set()
@@ -207,12 +223,10 @@ def resolve_label(
         if not records:
             continue
         # Collect all terms this gene credits: the expressed term and every
-        # is_a+part_of ancestor. Guard against ids absent from the graph.
+        # is_a+part_of ancestor (guarded against ids absent from the graph).
         credited: set[str] = set()
         for rec in records:
-            credited.add(rec.zfa_id)
-            if rec.zfa_id in zfa_graph:
-                credited.update(ancestors(zfa_graph, rec.zfa_id))
+            credited |= _credited(rec.zfa_id)
         for t in credited:
             term_to_genes.setdefault(t, set()).add(sym)
 
@@ -227,21 +241,22 @@ def resolve_label(
         if term_ic < IC_MIN:
             continue
         if t in zfa_graph:
-            depth = len(ancestors(zfa_graph, t))
             name = term_name(zfa_graph, t) or t
         else:
-            depth = 0
             name = t
+        # _credited(t) includes the term itself; ancestor_depth counts only its
+        # ancestors. Reuses the cache, so no term's ancestors are walked twice.
+        ancestor_depth = len(_credited(t)) - 1
         candidates.append(TermVote(
             zfa_id=t,
             zfa_name=name,
             genes=tuple(sorted(genes)),
             ic=term_ic,
-            depth=depth,
+            ancestor_depth=ancestor_depth,
         ))
 
     # Rank most-specific first: IC is the selector (highest IC = most specific
-    # relative to the background); gene count is the gate magnitude; depth
-    # breaks equal-IC ties; id ensures a stable, deterministic output.
-    candidates.sort(key=lambda v: (-v.ic, -len(v.genes), -v.depth, v.zfa_id))
+    # relative to the background); gene count is the gate magnitude;
+    # ancestor_depth breaks equal-IC ties; id ensures stable, deterministic output.
+    candidates.sort(key=lambda v: (-v.ic, -len(v.genes), -v.ancestor_depth, v.zfa_id))
     return candidates

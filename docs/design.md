@@ -28,9 +28,9 @@ nanoGPT / smolagents bar), with a validation leg from day one.
 A label rests on **converging evidence, not one gene**:
 
 1. **Normalize gene symbols** → official ZFIN symbol (resolve aliases + `a`/`b` paralogs) before anything else.
-2. **Score markers against curated tissue panels** → a ranked bucket table; the winning panel is the coarse prior and germ-layer guardrail.
+2. **Score markers against curated tissue panels** → a ranked bucket table; the winning panel is the coarse prior and ontology-anchor guardrail.
 3. **Converge on ZFA anatomy** → for each marker, look up ZFIN in-vivo expression and walk the ZFA ancestor DAG; tally distinct genes per anatomy term; name the cluster the most specific term that clears the convergence and IC gates. Depth falls out of the evidence: a tight endothelial panel resolves to a cell type; a broad neural panel stays at CNS.
-4. **Guardrail** → if the ZFA-voted term contradicts the panel's germ-layer anchor, discard the vote and fall back to the coarse panel bucket. Check stage plausibility (ZFS) as a confidence component.
+4. **Guardrail** → if the ZFA-voted term contradicts the panel's ontology anchor, discard the vote and fall back to the coarse panel bucket. Check stage plausibility (ZFS) as a confidence component.
 5. **Decide** → one dominant, corroborated bucket with convergent anatomy → assign with confidence; otherwise `mixed/unresolved` (honest abstention) or a germ-layer rollup.
 6. **Emit a `Label` evidence packet** → bucket (named ZFA term or coarse fallback), levels (ZFA ancestry chain), depth, panel_bucket (the prior), convergent_genes, confidence, expression_evidence, rationale.
 
@@ -41,7 +41,7 @@ A label rests on **converging evidence, not one gene**:
 
 `label(markers)` is **resolution-agnostic** — it returns the *deepest ZFA anatomy term
 the markers converge on in vivo* and rolls up rather than overcalling. The curated
-panels are a **coarse prior and germ-layer guardrail**, not the naming authority.
+panels are a **coarse prior and ontology-anchor guardrail**, not the naming authority.
 `Label.depth` (`len(levels)`) is a real, evidence-dependent integer — not a hardcoded tier
 ladder. The same function resolves finer on a tighter subcluster and shallower on a
 heterogeneous one; that is the engine being honest, not a failure.
@@ -97,8 +97,8 @@ primitives — while the decision code beneath it stays readable and unit-tested
 
 `Labeler` grades an assigned call on a weighted 0–1 score: **coherence** 0.40 (rank-weighted
 strength of the winner's markers) + **margin** 0.30 (lead over the runner-up) + **grounding**
-0.20 (fraction of convergent_genes / gradable markers — the fraction of markers whose in-vivo
-expression converged on the named anatomy term) + **stage** 0.10 (fraction on-stage for the
+0.20 (fraction of the winning panel's matched markers whose ZFIN expression grounds under the
+named ZFA term, or the panel anchor when the vote fails) + **stage** 0.10 (fraction on-stage for the
 sample). Tiers: ≥ 0.80 `high`, ≥ 0.60 `medium`, else `low`. Two caps keep it honest — a
 germ-layer rollup never exceeds `medium`, and `high` requires real anatomy convergence (the
 guardrail blocking the named term drops grounding and prevents false `high`). The weights are a

@@ -11,11 +11,10 @@ Two sets of tests:
 from __future__ import annotations
 
 import math
-from pathlib import Path
 
 import pytest
 
-from zlabel.data import ZfinExpressionRecord, load_zfa, load_zfin_expression
+from zlabel.data import ZfinExpressionRecord
 from zlabel.resolve import (
     IC_MIN,
     STOPLIST,
@@ -23,27 +22,7 @@ from zlabel.resolve import (
     resolve_label,
 )
 
-FIXTURES = Path(__file__).parent / "fixtures"
-
-
-# ---------------------------------------------------------------------------
-# Shared module-scoped fixtures (same files as test_label.py smoke tests)
-# ---------------------------------------------------------------------------
-
-
-@pytest.fixture(scope="module")
-def zfa_graph():
-    return load_zfa(FIXTURES / "zfa_test.obo")
-
-
-@pytest.fixture(scope="module")
-def expr_map():
-    return load_zfin_expression(FIXTURES / "zfin_expr_test.txt")
-
-
-@pytest.fixture(scope="module")
-def ic(expr_map, zfa_graph):
-    return build_ic(expr_map, zfa_graph)
+# The zfa_graph, expr_map, and ic fixtures are shared via tests/conftest.py.
 
 
 # ---------------------------------------------------------------------------
@@ -119,13 +98,13 @@ def test_resolve_label_muscle_markers_name_muscle_cell(expr_map, zfa_graph, ic):
     assert top.zfa_name == "muscle cell"
     assert set(top.genes) == {"mylpfa", "acta1b", "myog"}
     assert top.ic > IC_MIN
-    assert top.depth >= 1
+    assert top.ancestor_depth >= 1
 
 
 def test_resolve_label_endothelium_names_endothelial_cell_not_cardiovascular(expr_map, zfa_graph, ic):
-    # IC-first, depth tiebreak: endothelial cell (ZFA:0005307) and cardiovascular
-    # system (ZFA:0001262) tie on IC and gene count. Depth breaks the tie:
-    # endothelial cell has more ancestors, so it ranks first (more specific).
+    # IC-first, ancestor_depth tiebreak: endothelial cell (ZFA:0005307) and
+    # cardiovascular system (ZFA:0001262) tie on IC and gene count. ancestor_depth
+    # breaks the tie: endothelial cell has more ancestors, so it ranks first.
     votes = resolve_label(
         ["kdrl", "cdh5", "flt1"],
         expr_map=expr_map, zfa_graph=zfa_graph, ic=ic,
@@ -135,7 +114,7 @@ def test_resolve_label_endothelium_names_endothelial_cell_not_cardiovascular(exp
     assert top.zfa_id == "ZFA:0005307"
     assert top.zfa_name == "endothelial cell"
     assert top.ic > IC_MIN
-    # Cardiovascular system must appear later — depth tiebreak proves IC-first ranking.
+    # Cardiovascular system must appear later — ancestor_depth tiebreak proves IC-first ranking.
     ids = [v.zfa_id for v in votes]
     assert "ZFA:0001262" in ids
     assert ids.index("ZFA:0005307") < ids.index("ZFA:0001262")

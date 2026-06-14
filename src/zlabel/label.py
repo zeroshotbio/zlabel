@@ -14,12 +14,12 @@ The decision follows a three-stage algorithm:
      corroboration) and a rollup cap (max medium). Floor: any assigned label is
      at least low.
 
-Naming: the winning panel acts as a coarse prior and germ-layer guardrail.
+Naming: the winning panel acts as a coarse prior and ontology-anchor guardrail.
 The actual bucket name comes from an IC-weighted convergence vote over the cluster's
 ZFIN in-vivo expression (resolve.resolve_label). The depth of the resulting label
 falls out of the evidence -- a tight endothelial panel resolves to cell type while
 a broad neural cluster stays at CNS. When the vote returns no eligible term, or
-when the voted term contradicts the panel's germ-layer anchor (guardrail), the
+when the voted term contradicts the panel's ontology anchor (guardrail), the
 label falls back to the coarse panel bucket.
 
 State panels (cycling, stress_response) are detected denominator-free and reported
@@ -91,13 +91,6 @@ TIER_MEDIUM: float = 0.60
 # name used when the weighted score would otherwise round down to unresolved.
 
 _ABSTAIN_BUCKET = "mixed/unresolved"
-
-GUARDRAIL_REQUIRE_UNDER_ANCHOR: bool = True
-# When the convergence vote names a ZFA term and the winning panel has an
-# ontology anchor, the named term must sit at or under that anchor. If it
-# doesn't, the voted term contradicts the panel prior -- discard it and fall
-# back to the coarse panel bucket (named=None path). Prevents overcalling a
-# term whose anatomy is inconsistent with the panel's germ layer.
 
 
 # ---------------------------------------------------------------------------
@@ -490,7 +483,7 @@ def _assign_named(
 
     Runs resolve_label over the cluster's normalized markers to find the most
     specific ZFA anatomy term the markers converge on. The winning panel acts as
-    a coarse prior and germ-layer guardrail: if the voted term does not sit at or
+    a coarse prior and ontology-anchor guardrail: if the voted term does not sit at or
     under the panel's ontology anchor, the vote is discarded and the panel bucket
     is used as the fallback (named=None). Depth and levels are derived from the
     named ZFA term when one is found; otherwise the static panel triple is used.
@@ -526,7 +519,7 @@ def _assign_named(
     # Guardrail: the named ZFA term must sit at or under the winning panel's
     # ontology anchor. If it doesn't, the voted anatomy contradicts the panel
     # prior -- discard the vote and fall back to the panel bucket.
-    if named is not None and anchor and GUARDRAIL_REQUIRE_UNDER_ANCHOR:
+    if named is not None and anchor:
         if not grounds_under(zfa_graph, named.zfa_id, anchor):
             named = None
 
@@ -546,7 +539,7 @@ def _assign_named(
         bucket = named.zfa_name
         zfa_id = named.zfa_id
         levels = _levels_chain(zfa_graph, named.zfa_id, named.zfa_name)
-        depth = named.depth
+        depth = len(levels)
         convergent_genes = named.genes
         rationale = (
             f"{named.zfa_name} (IC {named.ic:.2f}) -- "

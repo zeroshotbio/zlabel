@@ -93,10 +93,10 @@ class Label(BaseModel):
         states (tuple[str, ...]): Detected state programs orthogonal to identity
             (e.g. cycling). Reported on every Label, including abstentions.
         panel_bucket (str): The coarse panel bucket name that acted as the prior
-            and germ-layer guardrail (e.g. endothelium, muscle). Empty when
+            and ontology-anchor guardrail (e.g. endothelium, muscle). Empty when
             abstained. Kept visible even when bucket is a named ZFA term.
-        panel_germ_layer (str): The winning panel's germ layer (the guardrail
-            context, e.g. mesoderm). Empty when abstained.
+        panel_germ_layer (str): The winning panel's germ layer, shown for context
+            (e.g. mesoderm). Empty when abstained.
         zfa_id (str | None): The named convergent ZFA term id when the vote
             succeeded (e.g. ZFA:0005307 for endothelial cell). Falls back to the
             sorted-first panel anchor id, or None for rollups and abstentions.

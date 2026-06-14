@@ -72,23 +72,55 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   candidate is always at index 0. Ambiguous and unresolved markers are excluded from
   both numerator and denominator so the score never reflects an uncertain symbol.
 
+## Naming from anatomy (the convergence vote)
+
+- **Convergence vote** — how zlabel *names* a cluster (`resolve.py`). Each marker's in-vivo
+  ZFIN expression points at ZFA anatomy terms; every term and all its ancestors get one vote
+  per distinct gene. The most specific term enough genes agree on wins. Panels propose a coarse
+  prior; this vote does the naming.
+- **IC / information content** — how specific a ZFA term is, measured from the data:
+  `IC = -log2(fraction of all genes that ever express under the term)`. Rare, specific terms
+  (endothelial cell) score high; near-root terms (whole organism) score ~0. IC is the vote's
+  selector — the highest-IC term that clears the gates wins.
+- **The three gates** — a term must clear all three to be a candidate: `CONVERGENCE_MIN`
+  (at least 3 distinct genes vote for it), `STOPLIST` (a few content-free attractors like
+  "whole organism" are never labels), and `IC_MIN` (at least 1.0 bits — screens near-root
+  terms). All three are provisional, calibrated by the Phase 4b eval.
+- **TermVote** — the internal candidate object `resolve.resolve_label` returns, one per
+  surviving term (its ZFA id, name, the genes that voted for it, IC, and ancestor depth). Not
+  a user-facing API; reach it via `zlabel.resolve` if you need it.
+
 ## Decision output
 
 - **Labeler** — the entry point. `Labeler(stage_hpf=48).label([...markers...])` loads the
   ontologies once and returns a `Label`. The one object most users touch.
-- **Label** — the evidence packet for one cluster: the `bucket` it was assigned (or
-  `mixed/unresolved`), the `confidence`, the markers and in-vivo `expression_evidence` behind
-  the call, a one-line `rationale`, and a suggested `next_step`. `.to_yaml()` serialises it.
+- **Label** — the evidence packet for one cluster. `bucket` is the named ZFA anatomy term the
+  markers converged on (or the coarse panel bucket / `mixed/unresolved` when the vote found
+  nothing). It also carries `panel_bucket`, `depth`, `convergent_genes`, the `confidence`, the
+  markers and in-vivo `expression_evidence`, a one-line `rationale`, and a `next_step`.
+  `.to_yaml()` serialises it.
+- **bucket vs. panel_bucket** — `bucket` is the fine call (the named ZFA term, e.g.
+  `muscle cell`); `panel_bucket` is the coarse prior that anchored it (the winning panel, e.g.
+  `muscle`), kept visible so you see both the guardrail anchor and the finer name.
+- **positive_markers vs. convergent_genes vs. expression_evidence** — three easily-confused
+  marker sets. `positive_markers` matched the winning *panel*. `convergent_genes` are the
+  markers whose in-vivo expression *voted for the named ZFA term* (the anatomy vote — may differ
+  from the panel matches). `expression_evidence` is the list of in-vivo records (`ExprHit`)
+  behind the call.
+- **depth** — how specific the label is, derived from the evidence (`len(levels)`, the length of
+  the ZFA ancestry chain), not a fixed tier ladder. A tight endothelial cluster resolves deep
+  (cell type); a mixed neural one stays shallow (CNS). Depth honesty is the thesis.
 - **ExprHit** — one grounded marker's in-vivo evidence: a marker symbol and a ZFA anatomy term
-  it expresses in that sits under the bucket's anchor.
+  it expresses in that sits under the named term (or the bucket's anchor).
 - **Confidence** — the tier of an assigned call: `high`, `medium`, or `low` (`None` when the
   cluster abstains).
 - **abstained** — when the evidence doesn't converge, zlabel declines: `bucket` is
   `mixed/unresolved` and `confidence` is `None`. An honest "not sure" beats a wrong label.
 - **underclustered** — when no single bucket dominates but the near-top contenders share a germ
   layer, zlabel rolls up to that coarser tier instead of guessing the finer one.
-- **convergence cap** — strong panels alone top out at `medium`; `high` is reserved for calls
-  the in-vivo expression (or stage) actually corroborates.
+- **convergence cap** — a confidence ceiling (distinct from the convergence *vote* above):
+  strong panels alone top out at `medium`; `high` is reserved for calls the in-vivo expression
+  (or stage) actually corroborates.
 
 ## How data flows through zlabel
 
@@ -106,5 +138,6 @@ src/zlabel/panels.py    ->  load_panels() · score_markers() -> list[BucketScore
                                         |
                                         v
 src/zlabel/ground.py    ->  expression_lookup() · grounds_under() · stage_plausibility() (Phase 3)
-src/zlabel/label.py     ->  decide() · Labeler.label() -> Label                         (Phase 3)
+src/zlabel/resolve.py   ->  build_ic() · resolve_label() -> list[TermVote]               (Phase 4a)
+src/zlabel/label.py     ->  decide() · Labeler.label() -> Label                         (Phase 3+4a)
 ```
