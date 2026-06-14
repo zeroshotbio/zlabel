@@ -85,7 +85,7 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
 - **The three gates** — a term must clear all three to be a candidate: `CONVERGENCE_MIN`
   (at least 3 distinct genes vote for it), `STOPLIST` (a few content-free attractors like
   "whole organism" are never labels), and `INFORMATION_CONTENT_MIN` (at least 1.0 bits — screens near-root
-  terms). All three are provisional, calibrated by the Phase 4b eval.
+  terms). All three are provisional; Phase 4b measured the baseline — calibration is deferred.
 - **TermVote** — the internal candidate object `resolve.resolve_label` returns, one per
   surviving term (its ZFA id, name, the genes that voted for it, IC, and ancestor depth). Not
   a user-facing API; reach it via `zlabel.resolve` if you need it.

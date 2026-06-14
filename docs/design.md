@@ -74,7 +74,7 @@ scores = zlabel.score_markers(normalized, panels)
 scores[0]   # BucketScore(bucket='muscle', score=0.8105, kind='identity', ...)
 ```
 
-### Phase 4 (current — the resolution engine + eval)
+### Phase 4a + 4b (shipped — the resolution engine + eval)
 
 ```python
 from zlabel import Labeler
@@ -95,12 +95,12 @@ print(label.to_yaml())                           # the evidence packet
 > Depth-6 `posterior hypaxial muscle` from five generic muscle markers is the IC-first
 > over-specification the Phase 4b audit is built to surface (§Validation): a specific term
 > winning on the bare convergence minimum over the broader `muscle` consensus. 4b measures it;
-> retuning the ranking is a later 4c.
+> retuning the ranking is a future calibration pass.
 
 One entry point. The public surface is small — `Labeler`, `Label`, and the Phase 1/2
 primitives — while the decision code beneath it stays readable and unit-tested.
 
-### Confidence rubric (provisional — calibrated in Phase 4b eval)
+### Confidence rubric (provisional — measured in Phase 4b; calibration deferred)
 
 `Labeler` grades an assigned call on a weighted 0–1 score: **coherence** 0.40 (rank-weighted
 strength of the winner's markers) + **margin** 0.30 (lead over the runner-up) + **grounding**
@@ -109,9 +109,9 @@ named ZFA term, or the panel anchor when the vote fails) + **stage** 0.10 (fract
 sample). Tiers: ≥ 0.80 `high`, ≥ 0.60 `medium`, else `low`. Two caps keep it honest — a
 germ-layer rollup never exceeds `medium`, and `high` requires real anatomy convergence (the
 guardrail blocking the named term drops grounding and prevents false `high`). The weights are a
-first cut; Phase 4b eval calibrates them.
+first cut; Phase 4b measured the baseline — calibration is deferred.
 
-## Repo structure (~9 core modules, ~2,600 LOC core)
+## Repo structure (~9 core modules, ~2,800 LOC core)
 
 Files marked [P1] / [P2] shipped; later phases show their planned target.
 
@@ -184,7 +184,7 @@ term winning on the bare `CONVERGENCE_MIN` while a broader parent had more suppo
 untouched; the audit replays the vote tally privately. Daniocell's broad labels cannot validate
 within-bucket fine-naming, so depth correctness there is reported by the structural audit, not
 checked against truth — finer-reference depth validation (ZSCAPE/Zebrahub) and bare-LLM /
-panels-only baselines are deferred to a later 4c.
+panels-only baselines are deferred to a future calibration pass.
 
 ## Build order (7 phases, one PR each)
 

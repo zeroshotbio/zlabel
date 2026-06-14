@@ -148,7 +148,7 @@ class Report:
     conf_total: Counter[str] = field(default_factory=Counter)
     conf_correct: Counter[str] = field(default_factory=Counter)
     audits: list[AuditRecord] = field(default_factory=list)
-    failures: list[tuple[str, str, str, str]] = field(default_factory=list)
+    failures: list[tuple[str, str, str, str]] = field(default_factory=list)  # (cluster_id, gold_tissue, predicted_bucket, kind)
 
 
 def load_benchmark(path: str | Path) -> list[BenchmarkRow]:
