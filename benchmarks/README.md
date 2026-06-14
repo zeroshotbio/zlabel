@@ -55,7 +55,7 @@ coverage/split columns, out of the agreement count.
 
 - No fine-depth truth. Daniocell gives broad `tissue` labels, so within-bucket
   over-specification (e.g. muscle to a specific muscle subtype) is measured by the structural
-  parent-child overcall audit, not validated against truth. Finer-reference depth validation is 4c.
+  parent-child overcall audit, not validated against truth. Finer-reference depth validation is deferred to a future calibration pass.
 - Fallback anchor truncation. For the 6 panels with two ontology anchors, `Label.zfa_id` keeps
   only `sorted(anchor)[0]`; the evaluator recovers the full anchor from `panel_bucket` for
   scoring, but the Label object itself still carries a single id.
