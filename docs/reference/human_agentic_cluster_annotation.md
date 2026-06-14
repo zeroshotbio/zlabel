@@ -282,6 +282,11 @@ These steps should be testable, reproducible, and inspectable without an LLM.
 The agent should operate over structured artifacts. It should not be the source of
 truth for marker expression, ontology membership, or atlas support.
 
+For future orchestration patterns around iterative subclustering depth, see
+[Recursive Subclustering Controller](recursive_subclustering_controller.md). That
+document treats subclustering as a layer above zlabel rather than part of the core
+one-cluster labeler.
+
 ## Anti-patterns
 
 - Using the LLM as a free-text label generator from marker names alone.
