@@ -44,18 +44,23 @@ parsing is a separate, swappable choice.
 
 ## Converging evidence
 
-zlabel combines three signals: (1) curated tissue **panel** scores — how strongly a
-cluster's markers overlap a known bucket, and how far that bucket leads the runner-up;
-(2) **ZFIN in-vivo expression** of those markers, grounded to **ZFA** anatomy — do they
-actually express where the bucket says they should?; and (3) **stage** plausibility — do
-the expression records span the sample's developmental age?
+zlabel combines three signals: (1) curated tissue **panel** scores — the winning panel
+is the **coarse prior and germ-layer guardrail**, not the naming authority; (2) **ZFIN
+in-vivo expression** grounded to **ZFA** anatomy — each marker votes for the ZFA terms it
+expresses in and all their is_a/part_of ancestors; the IC-weighted convergence vote
+(`resolve.py`) names the cluster the most specific term that enough markers agree on;
+and (3) **stage** plausibility — do the expression records span the sample's developmental age?
 
-When the signals agree, confidence is `high`. Panels alone — with nothing in-vivo to
-corroborate, or with anatomy that points elsewhere — top out at `medium` (the **convergence
-cap**: panels propose, grounding and stage confirm). When no single bucket dominates but the
-near-top contenders share a germ layer, zlabel rolls up to that tier (`underclustered`);
-contradictory germ layers give `mixed/unresolved`. It never overcalls. The exact weighting
-is an implementation detail — see [`design.md`](../../docs/design.md) and `label.py`.
+The panels (a v1 starter set, see `docs/reference/cell_labelling_playbook.md §7`) propose
+a coarse prior. ZFA convergence names. The panel anchor acts as a **guardrail**: if the
+voted anatomy term contradicts the panel's germ layer, the vote is discarded and the coarse
+panel bucket is used as fallback (with capped confidence). `Label.depth` is a real,
+evidence-derived integer — endothelium resolves to a cell type, muscle to a tissue, a mixed
+neural panel stays at CNS. Depth honesty is the whole zlabel thesis.
+
+When the signals agree, confidence is `high`. Panels alone top out at `medium` (the
+**convergence cap**). When no bucket dominates but contenders share a germ layer, zlabel
+rolls up to that tier; contradictory germ layers give `mixed/unresolved`. It never overcalls.
 
 ## Additional Information
 

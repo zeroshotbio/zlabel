@@ -68,11 +68,18 @@ class Label(BaseModel):
     evidence fields, but that convention lives in the decision layer, not this packet.
 
     Attributes:
-        bucket (str): The assigned identity bucket (e.g. muscle, endothelium),
-            the rollup germ layer (e.g. mesoderm), or mixed/unresolved.
-        levels (tuple[str, ...]): Lineage hierarchy from broad to specific
-            (germ_layer, tissue, lineage) with empty strings trimmed. Empty tuple
-            when abstained. len(levels) is the granularity signal.
+        bucket (str): The data-derived anatomy label: the most specific ZFA term
+            the cluster's markers converge on in vivo (e.g. endothelial cell,
+            muscle cell). Falls back to the coarse panel bucket (e.g. muscle,
+            endothelium) when the convergence vote produces no eligible term, or
+            to a germ-layer rollup / mixed/unresolved for abstentions and ties.
+        levels (tuple[str, ...]): Ancestry chain from broad to specific, ending
+            at the named ZFA term when the vote succeeded (e.g. musculature
+            system, cell, muscle cell). Falls back to the static panel triple
+            (germ_layer, tissue, lineage) when not named. Empty when abstained.
+            len(levels) is the depth signal -- it now varies with evidence.
+        depth (int): len(levels) echoed as an explicit integer for callers
+            (e.g. the eval harness) that need the depth without recomputing it.
         abstained (bool): True when no decision was made (mixed/unresolved).
         confidence (Confidence | None): Tier name (high, medium, or low). None
             iff abstained.
@@ -85,16 +92,26 @@ class Label(BaseModel):
             none for a clean single-bucket call.
         states (tuple[str, ...]): Detected state programs orthogonal to identity
             (e.g. cycling). Reported on every Label, including abstentions.
-        zfa_id (str | None): The bucket's ontology anchor (sorted-first id when
-            the anchor has several, for determinism). None for germ-layer rollups
-            and abstentions.
+        panel_bucket (str): The coarse panel bucket name that acted as the prior
+            and germ-layer guardrail (e.g. endothelium, muscle). Empty when
+            abstained. Kept visible even when bucket is a named ZFA term.
+        panel_germ_layer (str): The winning panel's germ layer (the guardrail
+            context, e.g. mesoderm). Empty when abstained.
+        zfa_id (str | None): The named convergent ZFA term id when the vote
+            succeeded (e.g. ZFA:0005307 for endothelial cell). Falls back to the
+            sorted-first panel anchor id, or None for rollups and abstentions.
         panel_scores (dict[str, float]): Raw BucketScore.score for every panel
             bucket (a direct echo of the scorer output; the adjusted identity
             scores used inside decide() are internal).
         positive_markers (tuple[str, ...]): Resolved current ZFIN symbols of
-            markers that supported the call.
-        expression_evidence (tuple[ExprHit, ...]): Grounded anatomy hits for the
-            winner's matched markers that expressed under the bucket anchor.
+            markers that matched the winning panel.
+        convergent_genes (tuple[str, ...]): Distinct resolved symbols that voted
+            for the named ZFA term (the anatomy-convergence evidence). Distinct
+            from positive_markers, which are panel-matched markers. Empty when
+            no term was named.
+        expression_evidence (tuple[ExprHit, ...]): Grounded anatomy hits for
+            markers that express at or under the named ZFA term (or the panel
+            anchor when no term was named).
         rationale (str): One-line human-readable reason for the call.
         next_step (str | None): Suggested next action. Subcluster when a bucket
             or rollup was assigned; None when abstained.
@@ -102,15 +119,19 @@ class Label(BaseModel):
 
     bucket: str
     levels: tuple[str, ...]
+    depth: int = 0
     abstained: bool
     confidence: Confidence | None
     confidence_score: float | None
     confidence_components: dict[str, float]
     ambiguity_flag: str = "none"
     states: tuple[str, ...] = ()
+    panel_bucket: str = ""
+    panel_germ_layer: str = ""
     zfa_id: str | None = None
     panel_scores: dict[str, float]
     positive_markers: tuple[str, ...]
+    convergent_genes: tuple[str, ...] = ()
     expression_evidence: tuple[ExprHit, ...]
     rationale: str
     next_step: str | None = None

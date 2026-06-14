@@ -347,7 +347,7 @@ def test_high_blocked_by_contradictory_grounding(zfa):
 
 
 def test_labeler_smoke_muscle_cluster():
-    """Full path: normalize (mylz2 -> mylpfa via GAF), score, ground, decide."""
+    """Full path: normalize (mylz2 -> mylpfa via GAF), score, ground, name from ZFA."""
     lab = Labeler(
         stage_hpf=48.0,
         zfa_path=FIXTURES / "zfa_test.obo",
@@ -358,12 +358,20 @@ def test_labeler_smoke_muscle_cluster():
     # Use the old symbol 'mylz2' to exercise normalization (GAF maps it to mylpfa).
     label = lab.label(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"])
     assert not label.abstained
-    assert label.bucket == "muscle"
+    # The convergence vote names the most specific ZFA term: mylpfa + acta1b + myog
+    # all express under ZFA:0009234 (muscle cell), which has higher IC than
+    # musculature system and clears CONVERGENCE_MIN=3.
+    assert label.bucket == "muscle cell"
+    assert label.panel_bucket == "muscle"   # coarse prior is still visible
+    assert label.zfa_id == "ZFA:0009234"
     assert label.next_step == "subcluster"
+    assert label.depth >= 1
+    assert len(label.levels) == label.depth
+    # Convergent genes are the three that co-expressed in muscle cell.
+    assert set(label.convergent_genes) == {"mylpfa", "acta1b", "myog"}
     # mylz2 normalized to mylpfa via the GAF synonym map before scoring.
     assert "mylpfa" in label.positive_markers
-    # Grounding: mylpfa and myod1 have records in zfin_expr_test.txt expressing
-    # in musculature system / muscle cell — both ground under ZFA:0000548.
+    # Expression evidence: markers expressing at/under the named ZFA term.
     assert len(label.expression_evidence) > 0
     # Stage: Long-pec = 48 hpf; all muscle records are at Long-pec -> plausible.
     assert label.confidence is not None

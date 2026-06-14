@@ -30,6 +30,7 @@ from zlabel.panels import (
     load_panels,
     score_markers,
 )
+from zlabel.resolve import CONVERGENCE_MIN, IC_MIN, STOPLIST, TermVote, build_ic, resolve_label
 
 __version__ = "0.1.0"
 
@@ -65,4 +66,11 @@ __all__ = [
     "Panel",
     "load_panels",
     "score_markers",
+    # resolve (the IC-weighted convergence namer)
+    "CONVERGENCE_MIN",
+    "IC_MIN",
+    "STOPLIST",
+    "TermVote",
+    "build_ic",
+    "resolve_label",
 ]
