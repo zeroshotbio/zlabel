@@ -267,15 +267,25 @@ def resolve_label(
         term_ic = information_content.get(term_id, 0.0)
         passed_information_content = term_ic >= INFORMATION_CONTENT_MIN
         eligible = passed_convergence and passed_stoplist and passed_information_content
-        if eligible:
+        # name, ancestor_depth, and the sorted gene tuple are needed for an eligible
+        # candidate and for every term when tracing -- compute each once here, shared by
+        # both constructors. Guarded so the labeling path (vote_trace is None) still skips
+        # this work for the many non-eligible terms, exactly as before.
+        name = ""
+        ancestor_depth = 0
+        sorted_genes: tuple[str, ...] = ()
+        if eligible or vote_trace is not None:
+            name = _display_name(zfa_ontology, term_id)
             # _term_with_ancestors(term_id) includes the term itself; ancestor_depth counts
             # only its ancestors. Reuses the cache, so no term's ancestors are walked twice.
             ancestor_depth = len(_term_with_ancestors(term_id, zfa_ontology, ancestor_cache)) - 1
+            sorted_genes = tuple(sorted(genes))
+        if eligible:
             candidates.append(
                 TermVote(
                     zfa_id=term_id,
-                    zfa_name=_display_name(zfa_ontology, term_id),
-                    genes=tuple(sorted(genes)),
+                    zfa_name=name,
+                    genes=sorted_genes,
                     information_content=term_ic,
                     ancestor_depth=ancestor_depth,
                 )
@@ -284,11 +294,11 @@ def resolve_label(
             vote_trace.append(
                 TermVoteTrace(
                     zfa_id=term_id,
-                    zfa_name=_display_name(zfa_ontology, term_id),
+                    zfa_name=name,
                     gene_count=gene_count,
-                    genes=tuple(sorted(genes)),
+                    genes=sorted_genes,
                     information_content=term_ic,
-                    ancestor_depth=len(_term_with_ancestors(term_id, zfa_ontology, ancestor_cache)) - 1,
+                    ancestor_depth=ancestor_depth,
                     passed_convergence=passed_convergence,
                     passed_stoplist=passed_stoplist,
                     passed_information_content=passed_information_content,

@@ -291,7 +291,9 @@ class LabelTrace(BaseModel):
             order (descending score).
         branch (str): The decision-ladder branch taken (e.g. clear-winner).
         term_votes (tuple[TermVoteTrace, ...]): Every tallied ZFA term with its
-            gate evaluation, eligible terms first then near-misses.
+            gate evaluation, eligible terms first then near-misses. Empty when the
+            convergence vote was not run (the precheck and rollup branches); check
+            branch first.
         label (Label): The final evidence packet, identical to label()'s return.
     """
 

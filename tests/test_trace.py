@@ -176,6 +176,7 @@ def test_branch_precheck_a_no_identity(zfa_ontology):
     result = _trace_branch(scores, [_norm("zzz", status=STATUS_UNRESOLVED)], zfa_ontology)
     assert result.branch == "precheck-a-no-identity"
     assert result.label.abstained
+    assert result.term_votes == ()  # convergence vote not run on the precheck branch
 
 
 def test_branch_precheck_b_weak_signal(zfa_ontology):
@@ -192,6 +193,7 @@ def test_branch_precheck_b_weak_signal(zfa_ontology):
     result = _trace_branch([muscle], [_norm("myod1")], zfa_ontology)
     assert result.branch == "precheck-b-weak-signal"
     assert result.label.abstained
+    assert result.term_votes == ()  # convergence vote not run on the precheck branch
 
 
 def test_branch_rollup_marks_contenders(zfa_ontology):
@@ -213,6 +215,7 @@ def test_branch_rollup_marks_contenders(zfa_ontology):
     assert result.branch == "germ-layer-rollup"
     contenders = {b.bucket for b in result.panel_scores if b.is_contender}
     assert contenders == {"muscle", "blood_erythroid"}
+    assert result.term_votes == ()  # rollup does not run the convergence vote
 
 
 def test_branch_mixed_contradictory_germ_layers(zfa_ontology):
@@ -284,9 +287,10 @@ def test_trace_gate_table_includes_near_misses(zfa_ontology, expression_map, inf
     assert max(eligible_idx) < min(near_idx)
 
 
-def test_trace_abstain_has_no_selected_term(zfa_ontology, expression_map, information_content):
-    # Two muscle markers: below CONVERGENCE_MIN, so nothing is eligible -> the
-    # gate table still records the near-miss with passed_convergence False.
+def test_trace_no_selected_term_when_below_convergence_min(zfa_ontology, expression_map, information_content):
+    # Two muscle markers: below CONVERGENCE_MIN, so no ZFA term is eligible. The engine
+    # still clears MIN_SIGNAL, so it does NOT abstain -- it falls back to the panel bucket.
+    # The gate table records the near-miss with passed_convergence False.
     muscle = _bucket("muscle", markers=["mylpfa", "acta1b"], total_weight=2.0)
     result = trace(
         [muscle],
@@ -299,6 +303,8 @@ def test_trace_abstain_has_no_selected_term(zfa_ontology, expression_map, inform
         information_content=information_content,
     )
     assert all(not tv.selected for tv in result.term_votes)
+    assert result.label.abstained is False  # falls back to the panel bucket, not an abstention
+    assert result.label.bucket == "muscle"  # coarse panel fallback
     muscle_cell = {tv.zfa_id: tv for tv in result.term_votes}.get("ZFA:0009234")
     assert muscle_cell is not None
     assert muscle_cell.passed_convergence is False  # 2 genes < CONVERGENCE_MIN
