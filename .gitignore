@@ -145,3 +145,8 @@ __marimo__/
 .claude/cache/
 .claude/worktrees/
 .claude/projects/
+
+# Agent skill installs (npx skills) — tooling artifacts, never part of the library
+/.agents/
+/.claude/skills/
+/skills-lock.json

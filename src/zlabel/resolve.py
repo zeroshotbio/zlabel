@@ -38,6 +38,7 @@ import networkx as nx
 
 from zlabel.data import ZfinExpressionRecord, ancestors, term_name
 from zlabel.ground import expression_lookup
+from zlabel.models import TermVoteTrace
 
 # ---------------------------------------------------------------------------
 # Named constants — all provisional; calibrated by the eval PR.
@@ -183,12 +184,28 @@ def build_information_content(
 # ---------------------------------------------------------------------------
 
 
+def _display_name(zfa_ontology: nx.MultiDiGraph, term_id: str) -> str:
+    """Human-readable term name, falling back to the id when name-less or absent.
+
+    Args:
+        zfa_ontology (nx.MultiDiGraph): The loaded ZFA ontology.
+        term_id (str): A ZFA term id.
+
+    Returns:
+        str: The term's name, or the id itself when it has none or is not in the graph.
+    """
+    if term_id in zfa_ontology:
+        return term_name(zfa_ontology, term_id) or term_id
+    return term_id
+
+
 def resolve_label(
     symbols: list[str],
     *,
     expression_map: Mapping[str, list[ZfinExpressionRecord]],
     zfa_ontology: nx.MultiDiGraph,
     information_content: Mapping[str, float],
+    vote_trace: list[TermVoteTrace] | None = None,
 ) -> list[TermVote]:
     """IC-weighted convergence vote: name a cluster from its normalized markers.
 
@@ -208,6 +225,10 @@ def resolve_label(
             data from data.load_zfin_expression.
         zfa_ontology (nx.MultiDiGraph): ZFA ontology from data.load_zfa.
         information_content (Mapping[str, float]): IC model from build_information_content.
+        vote_trace (list[TermVoteTrace] | None): Optional sink for introspection.
+            When provided, a TermVoteTrace is appended for every tallied term,
+            including gate near-misses; when None (the labeling path) the returned
+            candidate list is unchanged and no extra work is done for failing terms.
 
     Returns:
         list[TermVote]: Candidate terms ranked most-specific first (index 0
@@ -235,32 +256,55 @@ def resolve_label(
         for term_id in credited:
             term_to_genes.setdefault(term_id, set()).add(symbol)
 
-    # Build TermVote candidates that clear all three gates.
+    # Build TermVote candidates that clear all three gates. When vote_trace is
+    # provided, also record a TermVoteTrace for every tallied term -- including
+    # near-misses -- so an abstention or fallback can be explained gate by gate.
     candidates: list[TermVote] = []
     for term_id, genes in term_to_genes.items():
-        if len(genes) < CONVERGENCE_MIN:
-            continue
-        if term_id in STOPLIST:
-            continue
+        gene_count = len(genes)
+        passed_convergence = gene_count >= CONVERGENCE_MIN
+        passed_stoplist = term_id not in STOPLIST
         term_ic = information_content.get(term_id, 0.0)
-        if term_ic < INFORMATION_CONTENT_MIN:
-            continue
-        if term_id in zfa_ontology:
-            name = term_name(zfa_ontology, term_id) or term_id
-        else:
-            name = term_id
-        # _term_with_ancestors(term_id) includes the term itself; ancestor_depth counts only
-        # its ancestors. Reuses the cache, so no term's ancestors are walked twice.
-        ancestor_depth = len(_term_with_ancestors(term_id, zfa_ontology, ancestor_cache)) - 1
-        candidates.append(
-            TermVote(
-                zfa_id=term_id,
-                zfa_name=name,
-                genes=tuple(sorted(genes)),
-                information_content=term_ic,
-                ancestor_depth=ancestor_depth,
+        passed_information_content = term_ic >= INFORMATION_CONTENT_MIN
+        eligible = passed_convergence and passed_stoplist and passed_information_content
+        # name, ancestor_depth, and the sorted gene tuple are needed for an eligible
+        # candidate and for every term when tracing -- compute each once here, shared by
+        # both constructors. Guarded so the labeling path (vote_trace is None) still skips
+        # this work for the many non-eligible terms, exactly as before.
+        name = ""
+        ancestor_depth = 0
+        sorted_genes: tuple[str, ...] = ()
+        if eligible or vote_trace is not None:
+            name = _display_name(zfa_ontology, term_id)
+            # _term_with_ancestors(term_id) includes the term itself; ancestor_depth counts
+            # only its ancestors. Reuses the cache, so no term's ancestors are walked twice.
+            ancestor_depth = len(_term_with_ancestors(term_id, zfa_ontology, ancestor_cache)) - 1
+            sorted_genes = tuple(sorted(genes))
+        if eligible:
+            candidates.append(
+                TermVote(
+                    zfa_id=term_id,
+                    zfa_name=name,
+                    genes=sorted_genes,
+                    information_content=term_ic,
+                    ancestor_depth=ancestor_depth,
+                )
             )
-        )
+        if vote_trace is not None:
+            vote_trace.append(
+                TermVoteTrace(
+                    zfa_id=term_id,
+                    zfa_name=name,
+                    gene_count=gene_count,
+                    genes=sorted_genes,
+                    information_content=term_ic,
+                    ancestor_depth=ancestor_depth,
+                    passed_convergence=passed_convergence,
+                    passed_stoplist=passed_stoplist,
+                    passed_information_content=passed_information_content,
+                    eligible=eligible,
+                )
+            )
 
     # Rank most-specific first: IC is the selector (highest IC = most specific
     # relative to the background); gene count is the gate magnitude;

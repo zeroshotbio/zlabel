@@ -166,3 +166,154 @@ class Label(BaseModel):
             str: YAML string representation of the evidence packet.
         """
         return yaml.safe_dump(self.model_dump(), sort_keys=False, allow_unicode=True)
+
+
+# --- Introspection trace ------------------------------------------------------
+# The trace models capture the intermediates a single label() call computes but
+# the Label packet omits. They are the advanced surface: import from zlabel.models,
+# not the top level. Produced by label.trace() / Labeler.trace().
+
+
+class NormalizedMarkerTrace(BaseModel):
+    """One marker's normalization outcome, made visible for introspection.
+
+    Mirrors genes.NormalizedSymbol as a YAML-safe record, adding the marker's
+    1-based input rank and a dropped flag. A dropped marker (ambiguous or
+    unresolved) is silently excluded from scoring and the vote, so surfacing it
+    explains gaps between the input list and the markers the engine actually used.
+
+    Attributes:
+        input (str): The marker symbol as supplied by the caller.
+        status (str): Normalization outcome: resolved, ambiguous, or unresolved.
+        symbols (tuple[str, ...]): Current ZFIN symbol(s), sorted. One when
+            resolved, several when ambiguous, empty when unresolved.
+        note (str | None): Human-readable reason when not resolved, else None.
+        rank (int): 1-based position of the marker in the input list.
+        dropped (bool): True when status is not resolved (excluded from scoring).
+    """
+
+    input: str
+    status: str
+    symbols: tuple[str, ...]
+    note: str | None = None
+    rank: int
+    dropped: bool
+
+
+class BucketScoreTrace(BaseModel):
+    """One panel bucket's score, with the adjusted score and its decision role.
+
+    The panel ladder as decide() ranks it. score is the raw scorer fraction;
+    adjusted_score is the identity-only score decide() actually sorts on (it
+    discounts state-only marker weight). is_winner and is_contender expose which
+    buckets drove the branch the engine took.
+
+    Attributes:
+        bucket (str): The panel bucket name.
+        score (float): Raw overlap fraction from score_markers, in [0, 1].
+        adjusted_score (float): Identity-only adjusted score decide() ranks on
+            (0.0 for buckets that were not ranked, e.g. state or zero-hit panels).
+        germ_layer (str): The bucket's germ layer.
+        kind (str): identity or state.
+        matched_markers (tuple[str, ...]): Resolved symbols that hit this bucket,
+            in rank order.
+        is_winner (bool): True for the single bucket decide() selected.
+        is_contender (bool): True for a bucket within the near-tie contender set.
+    """
+
+    bucket: str
+    score: float
+    adjusted_score: float
+    germ_layer: str
+    kind: str
+    matched_markers: tuple[str, ...]
+    is_winner: bool = False
+    is_contender: bool = False
+
+
+class TermVoteTrace(BaseModel):
+    """One candidate ZFA term in the convergence vote, with its gate evaluation.
+
+    Unlike resolve.TermVote (which the engine keeps only for terms that clear
+    every gate), this is recorded for every tallied term -- including near-misses
+    -- so an abstention or fallback can be explained by which gate a term failed.
+
+    Attributes:
+        zfa_id (str): The candidate ZFA term id.
+        zfa_name (str): Human-readable name, or the raw id when name-less.
+        gene_count (int): Distinct genes that credited this term.
+        genes (tuple[str, ...]): Those gene symbols, sorted.
+        information_content (float): Term IC under the background model (bits);
+            0.0 when the term is absent from the IC model.
+        ancestor_depth (int): Count of is_a+part_of ancestors (specificity proxy).
+        passed_convergence (bool): Whether gene_count >= CONVERGENCE_MIN.
+        passed_stoplist (bool): Whether the term is not a content-free stoplist root.
+        passed_information_content (bool): Whether information_content >= INFORMATION_CONTENT_MIN.
+        grounded_under_anchor (bool): For the selected term only, whether it sits
+            at or under the winning panel's ontology anchor (the guardrail check).
+            False for every non-selected term (the engine checks only the winner).
+        eligible (bool): True when all three resolve gates passed (a would-be TermVote).
+        selected (bool): True for the single term decide() named the cluster.
+    """
+
+    zfa_id: str
+    zfa_name: str
+    gene_count: int
+    genes: tuple[str, ...]
+    information_content: float
+    ancestor_depth: int
+    passed_convergence: bool
+    passed_stoplist: bool
+    passed_information_content: bool
+    grounded_under_anchor: bool = False
+    eligible: bool = False
+    selected: bool = False
+
+
+class LabelTrace(BaseModel):
+    """Faithful step-by-step trace of one label() call, for introspection.
+
+    Produced by label.trace() and Labeler.trace(). It records the intermediates
+    the Label packet omits -- the normalization outcomes, the full panel ladder,
+    the complete convergence vote with per-term gate results, and the decision
+    branch taken -- and embeds the real Label as the single source of truth for
+    the outcome. Every field is a primitive or a trace sub-model, so to_yaml() is
+    lossless. Advanced surface: import it from zlabel.models, not the top level.
+
+    Attributes:
+        markers_in (tuple[str, ...]): The raw marker symbols as supplied.
+        stage_hpf (float | None): Developmental stage used, or None.
+        normalized_markers (tuple[NormalizedMarkerTrace, ...]): Per-marker
+            normalization outcomes, in input order.
+        resolved_symbols (tuple[str, ...]): The resolved current ZFIN symbols
+            scoring and the vote actually used.
+        panel_scores (tuple[BucketScoreTrace, ...]): The panel ladder, in scorer
+            order (descending score).
+        branch (str): The decision-ladder branch taken (e.g. clear-winner).
+        term_votes (tuple[TermVoteTrace, ...]): Every tallied ZFA term with its
+            gate evaluation, eligible terms first then near-misses. Empty when the
+            convergence vote was not run (the precheck and rollup branches); check
+            branch first.
+        label (Label): The final evidence packet, identical to label()'s return.
+    """
+
+    markers_in: tuple[str, ...]
+    stage_hpf: float | None
+    normalized_markers: tuple[NormalizedMarkerTrace, ...]
+    resolved_symbols: tuple[str, ...]
+    panel_scores: tuple[BucketScoreTrace, ...]
+    branch: str
+    term_votes: tuple[TermVoteTrace, ...]
+    label: Label
+
+    def to_yaml(self) -> str:
+        """Serialise the trace to YAML in declaration (pipeline) order.
+
+        model_dump() recurses into the trace sub-models and the embedded Label;
+        tuples serialise as lists. Mirrors Label.to_yaml so consumers get one
+        readable, round-trippable format.
+
+        Returns:
+            str: YAML string representation of the trace.
+        """
+        return yaml.safe_dump(self.model_dump(), sort_keys=False, allow_unicode=True)
