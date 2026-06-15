@@ -60,6 +60,12 @@ from zlabel import Labeler
 lab = Labeler(stage_hpf=48)   # loads ZFA + ZFIN-expr + GAF + panels once
 label = lab.label(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"])
 print(label.to_yaml())        # bucket, confidence, evidence packet, or abstention
+
+# Introspect the same decision (advanced surface): the panel ladder, the full ZFA
+# convergence vote with per-term gate pass/fail (near-misses included), and the
+# branch taken. trace.label is identical to lab.label([...]).
+trace = lab.trace(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"])
+print(trace.to_yaml())
 ```
 
 ```python

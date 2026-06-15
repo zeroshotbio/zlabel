@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import Mapping
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import networkx as nx
@@ -42,9 +43,20 @@ from zlabel.data import (
     load_zfin_expression,
     term_name,
 )
-from zlabel.genes import normalize_markers, resolved_symbols
+from zlabel.genes import STATUS_RESOLVED, NormalizedSymbol, normalize_markers, resolved_symbols
 from zlabel.ground import expression_lookup, grounds_under, stage_plausibility
-from zlabel.models import TIER_HIGH_NAME, TIER_LOW_NAME, TIER_MEDIUM_NAME, Confidence, ExprHit, Label
+from zlabel.models import (
+    TIER_HIGH_NAME,
+    TIER_LOW_NAME,
+    TIER_MEDIUM_NAME,
+    BucketScoreTrace,
+    Confidence,
+    ExprHit,
+    Label,
+    LabelTrace,
+    NormalizedMarkerTrace,
+    TermVoteTrace,
+)
 from zlabel.panels import KIND_IDENTITY, KIND_STATE, BucketScore, MatchedMarker, Panel, load_panels, score_markers
 from zlabel.resolve import STOPLIST, TermVote, build_information_content, resolve_label
 
@@ -91,6 +103,43 @@ TIER_MEDIUM: float = 0.60
 # name used when the weighted score would otherwise round down to unresolved.
 
 _ABSTAIN_BUCKET = "mixed/unresolved"
+
+# Decision-ladder branch names, recorded in a LabelTrace so introspection can
+# show which path the engine took (and, for abstentions, why).
+BRANCH_PRECHECK_A = "precheck-a-no-identity"
+BRANCH_PRECHECK_B = "precheck-b-weak-signal"
+BRANCH_CLEAR_WINNER = "clear-winner"
+BRANCH_ROLLUP = "germ-layer-rollup"
+BRANCH_MIXED = "mixed-abstain"
+
+
+@dataclass
+class _Recorder:
+    """Mutable scratch sink for trace(): the intermediates decide() computes.
+
+    Threaded through decide() (and resolve_label) as a keyword-only argument that
+    defaults to None, so the labeling path is byte-for-byte unchanged when not
+    tracing. Every field is written only after the value is already computed for
+    the real decision, so the recorder never alters behavior. trace() converts a
+    finished recorder into the pydantic LabelTrace.
+
+    Attributes:
+        branch (str): Which decision-ladder branch was taken (a BRANCH_ constant).
+        adj_by_bucket (dict[str, float]): Adjusted identity score per ranked bucket.
+        winner_bucket (str | None): The bucket decide() selected, if any.
+        contender_buckets (tuple[str, ...]): Buckets in the near-tie set, if any.
+        term_votes (list[TermVoteTrace]): Every tallied ZFA term; resolve_label fills this.
+        selected_zfa_id (str | None): The named term id, if one survived the guardrail.
+        grounded_winner (bool): Whether the selected term grounds under the panel anchor.
+    """
+
+    branch: str = ""
+    adj_by_bucket: dict[str, float] = field(default_factory=dict)
+    winner_bucket: str | None = None
+    contender_buckets: tuple[str, ...] = ()
+    term_votes: list[TermVoteTrace] = field(default_factory=list)
+    selected_zfa_id: str | None = None
+    grounded_winner: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -367,6 +416,7 @@ def decide(
     stage_hpf: float | None,
     symbols: list[str] | None = None,
     information_content: Mapping[str, float] | None = None,
+    recorder: _Recorder | None = None,
 ) -> Label:
     """Converging-evidence decision: turn a score table into a Label.
 
@@ -398,6 +448,9 @@ def decide(
             When None, the vote is skipped and the panel bucket is used directly.
         information_content (Mapping[str, float] | None): IC model from resolve.build_information_content. Required
             alongside symbols for the convergence vote.
+        recorder (_Recorder | None): Optional trace sink. When None (the default
+            and the labeling path) decide() is unchanged; when provided, the
+            intermediates are recorded for trace() with no effect on the result.
 
     Returns:
         Label: Evidence packet with bucket, confidence, expression evidence, etc.
@@ -424,8 +477,13 @@ def decide(
         key=lambda bucket_score: (-_adj(bucket_score, identity_denom), bucket_score.bucket),
     )
 
+    if recorder is not None:
+        recorder.adj_by_bucket = {bucket_score.bucket: _adj(bucket_score, identity_denom) for bucket_score in identity}
+
     # --- Precheck A: no identity evidence at all ---
     if not identity:
+        if recorder is not None:
+            recorder.branch = BRANCH_PRECHECK_A
         return _abstain("provisional", states, panel_scores)
 
     top = identity[0]
@@ -434,6 +492,8 @@ def decide(
 
     # --- Precheck B: signal too weak ---
     if top_adj < MIN_SIGNAL:
+        if recorder is not None:
+            recorder.branch = BRANCH_PRECHECK_B
         return _abstain("provisional", states, panel_scores)
 
     # --- C / D: dominance test ---
@@ -441,6 +501,9 @@ def decide(
     if len(identity) == 1 or gap >= DOMINANCE_GAP:
         # Clear winner: name from ZFA convergence vote when symbols/information_content are
         # provided; fall back to the coarse panel bucket otherwise.
+        if recorder is not None:
+            recorder.branch = BRANCH_CLEAR_WINNER
+            recorder.winner_bucket = top.bucket
         return _assign_named(
             top=top,
             top_adj=top_adj,
@@ -453,6 +516,7 @@ def decide(
             panel_scores=panel_scores,
             symbols=symbols or [],
             information_content=information_content or {},
+            recorder=recorder,
         )
 
     # Near-tie: collect contenders within DOMINANCE_GAP of the top.
@@ -461,9 +525,14 @@ def decide(
     ]
     germ_layers = {bucket_score.germ_layer for bucket_score in contenders if bucket_score.germ_layer}
 
+    if recorder is not None:
+        recorder.contender_buckets = tuple(bucket_score.bucket for bucket_score in contenders)
+
     if len(germ_layers) == 1:
         # All contenders share a germ layer — assign at germ-layer tier.
         germ_layer = next(iter(germ_layers))
+        if recorder is not None:
+            recorder.branch = BRANCH_ROLLUP
         return _assign_rollup(
             germ_layer=germ_layer,
             contenders=contenders,
@@ -478,6 +547,8 @@ def decide(
         )
 
     # Contradictory germ layers -> mixed.
+    if recorder is not None:
+        recorder.branch = BRANCH_MIXED
     return _abstain("mixed", states, panel_scores)
 
 
@@ -494,6 +565,7 @@ def _assign_named(
     panel_scores: dict[str, float],
     symbols: list[str],
     information_content: Mapping[str, float],
+    recorder: _Recorder | None = None,
 ) -> Label:
     """Build a Label for a clear single-bucket assignment, named from ZFA convergence.
 
@@ -521,6 +593,9 @@ def _assign_named(
         symbols (list[str]): Already-normalized current ZFIN symbols of all
             cluster markers, in rank order. May be empty.
         information_content (Mapping[str, float]): IC model from build_information_content. May be empty.
+        recorder (_Recorder | None): Optional trace sink. When provided, the full
+            convergence vote (with gate near-misses) and the selected term are
+            recorded for trace(); None leaves behavior unchanged.
 
     Returns:
         Label: Assigned evidence packet with the data-derived ZFA bucket when
@@ -530,16 +605,24 @@ def _assign_named(
 
     # Run the convergence vote; take the top candidate as the named term.
     votes = resolve_label(
-        symbols, expression_map=expression_map, zfa_ontology=zfa_ontology, information_content=information_content
+        symbols,
+        expression_map=expression_map,
+        zfa_ontology=zfa_ontology,
+        information_content=information_content,
+        vote_trace=recorder.term_votes if recorder is not None else None,
     )
     named: TermVote | None = votes[0] if votes else None
 
     # Guardrail: the named ZFA term must sit at or under the winning panel's
     # ontology anchor. If it doesn't, the voted anatomy contradicts the panel
     # prior -- discard the vote and fall back to the panel bucket.
-    if named is not None and anchor:
-        if not grounds_under(zfa_ontology, named.zfa_id, anchor):
-            named = None
+    grounded_winner = named is not None and ((not anchor) or grounds_under(zfa_ontology, named.zfa_id, anchor))
+    if named is not None and anchor and not grounded_winner:
+        named = None
+
+    if recorder is not None:
+        recorder.selected_zfa_id = named.zfa_id if named is not None else None
+        recorder.grounded_winner = grounded_winner
 
     # Grounding evidence: when a term was named, check markers against that
     # term as anchor (measures how many panel markers express in the named
@@ -676,6 +759,144 @@ def _assign_rollup(
 
 
 # ---------------------------------------------------------------------------
+# Introspection trace
+# ---------------------------------------------------------------------------
+
+
+def trace(
+    scores: list[BucketScore],
+    normalized_markers: list[NormalizedSymbol],
+    *,
+    anchors: Mapping[str, frozenset[str]],
+    expression_map: Mapping[str, list[ZfinExpressionRecord]],
+    zfa_ontology: nx.MultiDiGraph,
+    stage_hpf: float | None,
+    symbols: list[str] | None = None,
+    information_content: Mapping[str, float] | None = None,
+) -> LabelTrace:
+    """Run decide() with a recorder and return a faithful LabelTrace.
+
+    Parallels decide(): the same inputs plus the normalized markers (which decide()
+    does not receive), so a caller with shared resources can trace at an arbitrary
+    stage. The embedded LabelTrace.label is exactly what decide() returns for the
+    same inputs -- the trace records the decision, it does not re-decide.
+
+    Args:
+        scores (list[BucketScore]): From score_markers.
+        normalized_markers (list[NormalizedSymbol]): From genes.normalize_markers;
+            supplies the normalization outcomes and the resolved-symbol view.
+        anchors (Mapping[str, frozenset[str]]): Bucket name to ZFA anchor ids.
+        expression_map (Mapping[str, list[ZfinExpressionRecord]]): ZFIN expression data.
+        zfa_ontology (nx.MultiDiGraph): ZFA ontology graph.
+        stage_hpf (float | None): Dataset developmental stage in hpf, or None.
+        symbols (list[str] | None): Resolved current ZFIN symbols in rank order.
+        information_content (Mapping[str, float] | None): IC model for the vote.
+
+    Returns:
+        LabelTrace: The decision plus its intermediates (normalization, panel
+        ladder, convergence vote with gates, branch) and the embedded Label.
+    """
+    recorder = _Recorder()
+    label = decide(
+        scores,
+        anchors=anchors,
+        expression_map=expression_map,
+        zfa_ontology=zfa_ontology,
+        stage_hpf=stage_hpf,
+        symbols=symbols,
+        information_content=information_content,
+        recorder=recorder,
+    )
+    return _assemble_trace(normalized_markers, scores, recorder, label, stage_hpf)
+
+
+def _ordered_term_votes(recorder: _Recorder) -> tuple[TermVoteTrace, ...]:
+    """Stamp the selected term and order eligible terms before near-misses.
+
+    The winner (recorder.selected_zfa_id) is marked selected with its guardrail
+    result; every other term keeps selected False. Eligible terms come first,
+    ranked as resolve_label ranks them (descending IC, gene count, ancestor depth,
+    then id); near-misses follow, by gene count then IC. Deterministic output.
+
+    Args:
+        recorder (_Recorder): The trace sink, with term_votes already collected.
+
+    Returns:
+        tuple[TermVoteTrace, ...]: The vote rows, stamped and ordered.
+    """
+    stamped = [
+        term_vote.model_copy(update={"selected": True, "grounded_under_anchor": recorder.grounded_winner})
+        if term_vote.zfa_id == recorder.selected_zfa_id
+        else term_vote
+        for term_vote in recorder.term_votes
+    ]
+    eligible = sorted(
+        (term_vote for term_vote in stamped if term_vote.eligible),
+        key=lambda tv: (-tv.information_content, -tv.gene_count, -tv.ancestor_depth, tv.zfa_id),
+    )
+    near_miss = sorted(
+        (term_vote for term_vote in stamped if not term_vote.eligible),
+        key=lambda tv: (-tv.gene_count, -tv.information_content, tv.zfa_id),
+    )
+    return tuple(eligible + near_miss)
+
+
+def _assemble_trace(
+    normalized_markers: list[NormalizedSymbol],
+    scores: list[BucketScore],
+    recorder: _Recorder,
+    label: Label,
+    stage_hpf: float | None,
+) -> LabelTrace:
+    """Convert a finished decision and its recorder into a LabelTrace.
+
+    Args:
+        normalized_markers (list[NormalizedSymbol]): The cluster's normalized markers.
+        scores (list[BucketScore]): The panel score table decide() ranked.
+        recorder (_Recorder): The trace sink decide()/resolve_label filled.
+        label (Label): The decision decide() returned (embedded verbatim).
+        stage_hpf (float | None): Dataset stage in hpf, or None.
+
+    Returns:
+        LabelTrace: The assembled, YAML-serialisable trace.
+    """
+    normalized = tuple(
+        NormalizedMarkerTrace(
+            input=normalized_marker.input,
+            status=normalized_marker.status,
+            symbols=tuple(sorted(normalized_marker.symbols)),
+            note=normalized_marker.note,
+            rank=rank,
+            dropped=normalized_marker.status != STATUS_RESOLVED,
+        )
+        for rank, normalized_marker in enumerate(normalized_markers, start=1)
+    )
+    panel = tuple(
+        BucketScoreTrace(
+            bucket=bucket_score.bucket,
+            score=bucket_score.score,
+            adjusted_score=recorder.adj_by_bucket.get(bucket_score.bucket, 0.0),
+            germ_layer=bucket_score.germ_layer,
+            kind=bucket_score.kind,
+            matched_markers=tuple(matched_marker.symbol for matched_marker in bucket_score.matched_markers),
+            is_winner=bucket_score.bucket == recorder.winner_bucket,
+            is_contender=bucket_score.bucket in recorder.contender_buckets,
+        )
+        for bucket_score in scores
+    )
+    return LabelTrace(
+        markers_in=tuple(normalized_marker.input for normalized_marker in normalized_markers),
+        stage_hpf=stage_hpf,
+        normalized_markers=normalized,
+        resolved_symbols=tuple(resolved_symbols(normalized_markers)),
+        panel_scores=panel,
+        branch=recorder.branch,
+        term_votes=_ordered_term_votes(recorder),
+        label=label,
+    )
+
+
+# ---------------------------------------------------------------------------
 # Labeler facade
 # ---------------------------------------------------------------------------
 
@@ -769,6 +990,36 @@ class Labeler:
         scores = score_markers(normalized_markers, self._panels)
         return decide(
             scores,
+            anchors=self._anchors,
+            expression_map=self._expression_map,
+            zfa_ontology=self._zfa_ontology,
+            stage_hpf=self.stage_hpf,
+            symbols=symbols,
+            information_content=self._information_content,
+        )
+
+    def trace(self, markers: list[str]) -> LabelTrace:
+        """Label one cluster and return a faithful LabelTrace for introspection.
+
+        Same inputs and decision as label(), plus the recorded intermediates:
+        the normalization outcomes, the panel ladder, the full convergence vote
+        with gate near-misses, and the branch taken. The embedded LabelTrace.label
+        is identical to label(markers).
+
+        Args:
+            markers (list[str]): Marker gene symbols ordered by significance
+                (rank 1 = most significant = index 0). May use old ZFIN names.
+
+        Returns:
+            LabelTrace: The decision plus its step-by-step intermediates.
+        """
+        normalized_markers = normalize_markers(markers, self._synonyms)
+        symbols = resolved_symbols(normalized_markers)
+        scores = score_markers(normalized_markers, self._panels)
+        # trace() here is the module-level function above, not this method.
+        return trace(
+            scores,
+            normalized_markers,
             anchors=self._anchors,
             expression_map=self._expression_map,
             zfa_ontology=self._zfa_ontology,

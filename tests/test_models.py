@@ -5,7 +5,17 @@ from typing import Any
 import pytest
 import yaml
 
-from zlabel.models import TIER_HIGH_NAME, TIER_LOW_NAME, TIER_MEDIUM_NAME, ExprHit, Label
+from zlabel.models import (
+    TIER_HIGH_NAME,
+    TIER_LOW_NAME,
+    TIER_MEDIUM_NAME,
+    BucketScoreTrace,
+    ExprHit,
+    Label,
+    LabelTrace,
+    NormalizedMarkerTrace,
+    TermVoteTrace,
+)
 
 
 def _make_valid_label(**overrides: Any) -> Label:
@@ -232,3 +242,113 @@ def test_to_yaml_new_field_order():
     # convergent_genes comes after positive_markers, before expression_evidence
     assert yaml_str.index("convergent_genes:") > yaml_str.index("positive_markers:")
     assert yaml_str.index("convergent_genes:") < yaml_str.index("expression_evidence:")
+
+
+# --- Trace models (introspection) --------------------------------------------
+
+
+def _make_label_trace(**overrides: Any) -> LabelTrace:
+    """Build a minimal LabelTrace mirroring the muscle worked example."""
+    defaults = dict(
+        markers_in=("mylz2", "acta1b", "myog"),
+        stage_hpf=48.0,
+        normalized_markers=(
+            NormalizedMarkerTrace(
+                input="mylz2", status="resolved", symbols=("mylpfa",), note=None, rank=1, dropped=False
+            ),
+            NormalizedMarkerTrace(
+                input="acta1b", status="resolved", symbols=("acta1b",), note=None, rank=2, dropped=False
+            ),
+            NormalizedMarkerTrace(input="myog", status="resolved", symbols=("myog",), note=None, rank=3, dropped=False),
+        ),
+        resolved_symbols=("mylpfa", "acta1b", "myog"),
+        panel_scores=(
+            BucketScoreTrace(
+                bucket="muscle",
+                score=1.0,
+                adjusted_score=1.0,
+                germ_layer="mesoderm",
+                kind="identity",
+                matched_markers=("mylpfa", "acta1b", "myog"),
+                is_winner=True,
+                is_contender=False,
+            ),
+        ),
+        branch="clear-winner",
+        term_votes=(
+            TermVoteTrace(
+                zfa_id="ZFA:0009234",
+                zfa_name="muscle cell",
+                gene_count=3,
+                genes=("acta1b", "mylpfa", "myog"),
+                information_content=1.22,
+                ancestor_depth=3,
+                passed_convergence=True,
+                passed_stoplist=True,
+                passed_information_content=True,
+                grounded_under_anchor=True,
+                eligible=True,
+                selected=True,
+            ),
+        ),
+        label=_make_valid_label(),
+    )
+    defaults.update(overrides)
+    return LabelTrace(**defaults)  # type: ignore[arg-type]
+
+
+def test_normalized_marker_trace_fields():
+    nmt = NormalizedMarkerTrace(
+        input="hbae1", status="ambiguous", symbols=("hbae1.1", "hbae1.2"), note="2 paralogs", rank=4, dropped=True
+    )
+    assert nmt.input == "hbae1"
+    assert nmt.dropped is True
+    assert nmt.symbols == ("hbae1.1", "hbae1.2")
+
+
+def test_term_vote_trace_gate_fields():
+    # A near-miss: enough genes, not stoplisted, but IC below the gate -> not eligible.
+    near_miss = TermVoteTrace(
+        zfa_id="ZFA:0000548",
+        zfa_name="musculature system",
+        gene_count=4,
+        genes=("acta1b", "myod1", "mylpfa", "myog"),
+        information_content=0.81,
+        ancestor_depth=1,
+        passed_convergence=True,
+        passed_stoplist=True,
+        passed_information_content=False,
+        grounded_under_anchor=False,
+        eligible=False,
+        selected=False,
+    )
+    assert near_miss.passed_convergence is True
+    assert near_miss.passed_information_content is False
+    assert near_miss.eligible is False
+
+
+def test_label_trace_constructs_and_embeds_label():
+    trace = _make_label_trace()
+    assert trace.branch == "clear-winner"
+    assert trace.label.bucket == "muscle"  # the embedded Label is the real packet
+    assert trace.term_votes[0].selected is True
+
+
+def test_label_trace_to_yaml_round_trips():
+    trace = _make_label_trace()
+    raw = yaml.safe_load(trace.to_yaml())
+    assert raw["branch"] == "clear-winner"
+    assert raw["markers_in"] == ["mylz2", "acta1b", "myog"]
+    # Nested models serialise as dicts recursively.
+    assert raw["term_votes"][0]["zfa_id"] == "ZFA:0009234"
+    assert raw["label"]["bucket"] == "muscle"
+
+
+def test_label_trace_to_yaml_field_order():
+    trace = _make_label_trace()
+    yaml_str = trace.to_yaml()
+    # Declaration order follows the pipeline: markers_in -> ... -> term_votes -> label.
+    assert yaml_str.index("markers_in:") < yaml_str.index("panel_scores:")
+    assert yaml_str.index("panel_scores:") < yaml_str.index("branch:")
+    assert yaml_str.index("branch:") < yaml_str.index("term_votes:")
+    assert yaml_str.index("term_votes:") < yaml_str.index("\nlabel:")

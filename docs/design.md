@@ -111,6 +111,19 @@ germ-layer rollup never exceeds `medium`, and `high` requires real anatomy conve
 guardrail blocking the named term drops grounding and prevents false `high`). The weights are a
 first cut; Phase 4b measured the baseline — calibration is deferred.
 
+### Introspection: `trace()` (advanced surface)
+
+`Labeler.trace(markers)` (and the module-level `label.trace(...)` over shared resources, for a
+caller that varies stage per request) returns a `LabelTrace`: the same decision as `label()` plus
+the intermediates the `Label` omits — the normalization outcomes (which markers were dropped), the
+full panel ladder, the **complete ZFA convergence vote with per-term gate pass/fail, near-misses
+included**, and the decision branch taken. It is opt-in and faithful: it threads a `recorder`
+through the real `decide()` / `resolve_label` (no second decision path), so `trace.label` is
+identical to `label(markers)` and the labeling path is unchanged when not tracing. `LabelTrace`
+lives on the advanced surface (`zlabel.models`), not the top-level API — it exists to *explain* a
+call (e.g. why a low-resolution cluster abstained, or what it nearly named), which is what a
+companion introspection UI consumes.
+
 ## Repo structure (~9 core modules, ~2,800 LOC core)
 
 Files marked [P1] / [P2] shipped; later phases show their planned target.
