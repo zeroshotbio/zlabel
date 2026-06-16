@@ -71,10 +71,10 @@ class Label(BaseModel):
         bucket (str): The data-derived anatomy label: the most specific ZFA term
             the cluster's markers converge on in vivo (e.g. endothelial cell,
             muscle cell). Falls back to the coarse panel bucket (e.g. muscle,
-            endothelium) when the convergence vote produces no eligible term, or
-            to a germ-layer rollup / mixed/unresolved for abstentions and ties.
+            endothelium) when the descent finds no supported anchor, or to a
+            germ-layer rollup / mixed/unresolved for abstentions and ties.
         levels (tuple[str, ...]): Ancestry chain from broad to specific, ending
-            at the named ZFA term when the vote succeeded (e.g. musculature
+            at the named ZFA term when the descent named one (e.g. musculature
             system, cell, muscle cell). Falls back to the static panel triple
             (germ_layer, tissue, lineage) when not named. Empty when abstained.
             len(levels) is the depth signal -- it now varies with evidence.
@@ -93,7 +93,7 @@ class Label(BaseModel):
         states (tuple[str, ...]): Detected state programs orthogonal to identity
             (e.g. cycling). Reported on every Label, including abstentions.
         panel_bucket (str): The coarse panel bucket name that acted as the prior
-            and ontology-anchor guardrail (e.g. endothelium, muscle). Empty when
+            and the descent anchor (e.g. endothelium, muscle). Empty when
             abstained. Kept visible even when bucket is a named ZFA term.
         panel_germ_layer (str): The winning panel's germ layer, shown for context
             (e.g. mesoderm). Empty when abstained.
@@ -232,7 +232,7 @@ class BucketScoreTrace(BaseModel):
 
 
 class TermVoteTrace(BaseModel):
-    """One candidate ZFA term in the convergence vote, with its gate evaluation.
+    """One candidate ZFA term in the convergence descent, with its gate evaluation.
 
     Unlike resolve.TermVote (which the engine keeps only for terms that clear
     every gate), this is recorded for every tallied term -- including near-misses
@@ -283,7 +283,7 @@ class LabelTrace(BaseModel):
 
     Produced by label.trace() and Labeler.trace(). It records the intermediates
     the Label packet omits -- the normalization outcomes, the full panel ladder,
-    the complete convergence vote with per-term gate results, and the decision
+    the complete convergence descent with per-term gate results, and the decision
     branch taken -- and embeds the real Label as the single source of truth for
     the outcome. Every field is a primitive or a trace sub-model, so to_yaml() is
     lossless. Advanced surface: import it from zlabel.models, not the top level.
@@ -294,14 +294,14 @@ class LabelTrace(BaseModel):
         normalized_markers (tuple[NormalizedMarkerTrace, ...]): Per-marker
             normalization outcomes, in input order.
         resolved_symbols (tuple[str, ...]): The resolved current ZFIN symbols
-            scoring and the vote actually used.
+            scoring and the descent actually used.
         panel_scores (tuple[BucketScoreTrace, ...]): The panel ladder, in scorer
             order (descending score).
         branch (str): The decision-ladder branch taken (e.g. clear-winner).
-        term_votes (tuple[TermVoteTrace, ...]): Every tallied ZFA term with its
-            gate evaluation, eligible terms first then near-misses. Empty when the
-            convergence vote was not run (the precheck and rollup branches); check
-            branch first.
+        term_votes (tuple[TermVoteTrace, ...]): Every tallied ZFA term with its gate
+            evaluation. Descent-path terms come first, anchor to terminal (ascending
+            ancestor depth); the rest follow by descending support. Empty when the
+            descent was not run (the precheck and rollup branches); check branch first.
         label (Label): The final evidence packet, identical to label()'s return.
     """
 

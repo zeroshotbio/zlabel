@@ -148,6 +148,27 @@ def test_resolve_label_descent_stops_at_anchor_when_child_thin(zfa_ontology):
     assert votes[0].zfa_id == "ZFA:0001262", "should stop at the anchor, not overcall the 1-gene child"
 
 
+def test_resolve_label_support_tie_stops_at_parent(zfa_ontology):
+    # The unique-winner stop: when the markers spread equally across sibling subtypes, the descent
+    # stops at the parent rather than picking one arbitrarily. Three genes each express in BOTH
+    # arterial and venous endothelial cell, so the two siblings tie at 3 -- each clears the support
+    # floor (>= 0.6 of endothelial cell's 3), so it is the TIE, not the floor, that halts the walk.
+    expr = {
+        gene: [_rec("ZFA:0009073", "arterial endothelial cell"), _rec("ZFA:0005304", "venous endothelial cell")]
+        for gene in ("a", "b", "c")
+    }
+    fresh_ic = build_information_content(expr, zfa_ontology)
+    votes = resolve_label(
+        ["a", "b", "c"],
+        expression_map=expr,
+        zfa_ontology=zfa_ontology,
+        information_content=fresh_ic,
+        anchor=ENDOTHELIUM_ANCHOR,
+    )
+    assert len(votes) == 1
+    assert votes[0].zfa_id == "ZFA:0005307", "tied siblings -> stop at endothelial cell, not a subtype"
+
+
 def test_resolve_label_unsupported_anchor_returns_empty(expression_map, zfa_ontology, information_content):
     # 2 muscle genes -> the muscle anchor has only 2 supporting genes, below CONVERGENCE_MIN=3, so no
     # descent seed exists: the cluster does not converge under this panel and we fall back (empty).

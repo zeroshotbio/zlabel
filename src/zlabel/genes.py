@@ -137,7 +137,7 @@ def resolved_symbols(normalized_markers: list[NormalizedSymbol]) -> list[str]:
     """Return the single current symbol of each resolved marker, in input order.
 
     The resolved markers (ambiguous and unresolved are dropped) are exactly what panel
-    scoring and the convergence vote operate on; each carries exactly one symbol. A small
+    scoring and the convergence descent operate on; each carries exactly one symbol. A small
     convenience so callers do not re-implement the same filter-and-unwrap.
 
     Args:

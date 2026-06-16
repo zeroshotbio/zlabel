@@ -123,7 +123,7 @@ def _term_with_ancestors(
 ) -> frozenset[str]:
     """The credited set for a gene expressing in zfa_id: the term plus all its ancestors.
 
-    The unit of DAG ancestor credit shared by the IC model, the convergence vote, and the
+    The unit of DAG ancestor credit shared by the IC model, the convergence descent, and the
     eval's tally replay. Memoized in cache so each id is walked at most once per pass; an id
     absent from the loaded ontology (older or retired) credits only itself.
 
