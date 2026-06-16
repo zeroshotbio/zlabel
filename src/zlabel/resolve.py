@@ -1,26 +1,33 @@
-"""IC-weighted convergence namer for zlabel.
+"""Anchor-rooted, support-weighted (TF-IDF) convergence namer for zlabel.
 
-Given a cluster's already-normalized marker genes, resolves the most
-specific ZFA anatomy term the markers converge on in vivo (via ZFIN
-curated expression). The label depth falls out of the evidence: a tight
-endothelial panel resolves to a cell type, a broad neural panel resolves
-to CNS, a mixed cluster abstains. Panels demote to a coarse prior and
-ontology-anchor guardrail upstream (in label.py).
+Given a cluster's already-normalized marker genes and the winning panel's
+ontology anchor, resolves the most specific ZFA anatomy term the markers
+converge on in vivo (via ZFIN curated expression) by descending from the
+anchor. The label depth falls out of the evidence: a tight endothelial panel
+resolves to a cell type, a broad neural panel resolves to CNS, a mixed cluster
+abstains. Panels supply the coarse prior and the anchor (in label.py).
 
-The algorithm:
+The algorithm (anchor-rooted descent):
   1. For each distinct normalized gene, look up its ZFIN expression
      records and walk the is_a+part_of ZFA ancestors (DAG ancestor
      credit: a gene expressing in muscle cell also votes for musculature
      system and its parents).
   2. Tally distinct genes per ZFA term across all markers.
-  3. Keep terms that clear all three gates:
-       - distinct gene count >= CONVERGENCE_MIN
-       - term not in STOPLIST (content-free attractors removed)
-       - IC >= INFORMATION_CONTENT_MIN (near-root terms down-weighted)
-  4. Rank surviving terms most-specific first: descending IC (the
-     selector), then descending gene count (gate magnitude), then
-     descending ancestor_depth (specificity tiebreak), then id (stable output).
-  5. Return the ranked list; empty means nothing converged.
+  3. Seed at the winning panel's ontology anchor (the most-supported anchor id
+     with at least CONVERGENCE_MIN genes) and descend the graph: at each step
+     take the child the most genes support (TF-IDF: support x IC, support the
+     dominant signal), as long as it keeps at least CONVERGENCE_MIN genes AND
+     DESCENT_SUPPORT_FRACTION of its parent's support AND uniquely leads its
+     siblings (a support tie means the markers spread across subtypes -> stop).
+     Stop at the deepest such well-supported term.
+  4. Return that terminal term (a one-element list); empty when the anchor
+     itself is unsupported (the cluster does not converge under this panel).
+
+Naming descends from the anchor, so the result is at or under it by construction --
+the old post-hoc panel guardrail is folded into the walk, and contradiction is
+impossible. STOPLIST roots are never seeded or entered. IC is no longer a hard gate
+(the relative-support floor plays that role); it weights the per-step choice toward
+specificity and is still reported in the trace.
 
 The background IC model (build_information_content) is computed once from the loaded ZFIN
 corpus at Labeler init. It is entirely data-derived -- no hardcoded
@@ -36,12 +43,12 @@ from dataclasses import dataclass
 
 import networkx as nx
 
-from zlabel.data import ZfinExpressionRecord, ancestors, term_name
+from zlabel.data import ZfinExpressionRecord, ancestors, children, term_name
 from zlabel.ground import expression_lookup
 from zlabel.models import TermVoteTrace
 
 # ---------------------------------------------------------------------------
-# Named constants — all provisional; calibrated by the eval PR.
+# Named constants -- all provisional; calibrated by the eval PR.
 # ---------------------------------------------------------------------------
 
 CONVERGENCE_MIN: int = 3
@@ -50,10 +57,17 @@ CONVERGENCE_MIN: int = 3
 # Provisional.
 
 INFORMATION_CONTENT_MIN: float = 1.0
-# Minimum information content (in bits, -log2 scale) a term must have to
-# be eligible. Screens near-root attractors that survive the stoplist:
-# INFORMATION_CONTENT_MIN=1.0 means the term must be credited by fewer than half of all
-# genes in the corpus. Provisional.
+# Minimum information content (in bits, -log2 scale) for a term to count as eligible
+# in the trace. No longer a naming gate (the descent's support floors are) -- kept so
+# the trace can still report which terms are corpus-specific. Provisional.
+
+DESCENT_SUPPORT_FRACTION: float = 0.6
+# In the anchor-rooted descent, a child term must retain at least this share of its
+# parent's distinct-gene support to be descended into. The relative-support floor that
+# stops the walk before a coincidental few-gene leaf -- the thin-overcall fix. Chosen on
+# principle (a clear majority of the parent's genes must still back the more specific
+# call); the eval confirms it kills overcalls without collapsing names onto the anchor.
+# Provisional.
 
 STOPLIST: frozenset[str] = frozenset(
     {
@@ -64,11 +78,9 @@ STOPLIST: frozenset[str] = frozenset(
         "ZFA:0001439",  # anatomical system
     }
 )
-# Content-free attractor terms that are never a useful label even at high
-# gene counts. INFORMATION_CONTENT_MIN is the second safety net; the stoplist handles terms
-# that could otherwise win before the IC gate applies. head (ZFA:0000035)
-# is deliberately absent -- it is a legitimate region label and never wins
-# on the worked examples.
+# Content-free attractor terms that are never a useful label and are never seeded or
+# descended into. head (ZFA:0000035) is deliberately absent -- it is a legitimate region
+# label and the support floors govern it.
 
 
 # ---------------------------------------------------------------------------
@@ -111,7 +123,7 @@ def _term_with_ancestors(
 ) -> frozenset[str]:
     """The credited set for a gene expressing in zfa_id: the term plus all its ancestors.
 
-    The unit of DAG ancestor credit shared by the IC model, the convergence vote, and the
+    The unit of DAG ancestor credit shared by the IC model, the convergence descent, and the
     eval's tally replay. Memoized in cache so each id is walked at most once per pass; an id
     absent from the loaded ontology (older or retired) credits only itself.
 
@@ -180,7 +192,7 @@ def build_information_content(
 
 
 # ---------------------------------------------------------------------------
-# Convergence vote
+# Convergence descent
 # ---------------------------------------------------------------------------
 
 
@@ -199,23 +211,93 @@ def _display_name(zfa_ontology: nx.MultiDiGraph, term_id: str) -> str:
     return term_id
 
 
+def _descend(
+    anchor: frozenset[str],
+    term_to_genes: dict[str, set[str]],
+    information_content: Mapping[str, float],
+    zfa_ontology: nx.MultiDiGraph,
+    ancestor_cache: dict[str, frozenset[str]],
+) -> tuple[str | None, list[str]]:
+    """Seed at the best-supported anchor id and descend into the best-scored supported child.
+
+    The naming half of the vote. Roots at the panel anchor (a reliable broad term) and walks
+    DOWN the is_a+part_of graph, at each step taking the child the most genes support (scored
+    by support x IC, support dominant) as long as it keeps at least CONVERGENCE_MIN genes AND
+    DESCENT_SUPPORT_FRACTION of its parent's support, AND it uniquely leads its siblings on support.
+    The relative-support floor stops the walk before a coincidental few-gene leaf; the unique-winner
+    rule stops it when two children tie on support (the markers then spread across sibling subtypes
+    rather than converging on one, so the parent is the right level). STOPLIST roots are never seeded
+    or entered; the walk never goes above the seed, so the terminal is at or under the anchor.
+
+    Args:
+        anchor (frozenset[str]): The winning panel's ontology anchor ids (the descent roots).
+        term_to_genes (dict[str, set[str]]): The per-term distinct-gene tally.
+        information_content (Mapping[str, float]): IC model (the IDF half of the score).
+        zfa_ontology (nx.MultiDiGraph): ZFA ontology graph.
+        ancestor_cache (dict[str, frozenset[str]]): Per-pass memo for depth lookups.
+
+    Returns:
+        tuple[str | None, list[str]]: The terminal term id and the seed-to-terminal path, or
+        (None, []) when no anchor id is in the tally with at least CONVERGENCE_MIN support
+        (the cluster does not converge under this panel; the caller then falls back).
+    """
+
+    def support(term_id: str) -> int:
+        return len(term_to_genes.get(term_id, ()))
+
+    def depth(term_id: str) -> int:
+        return len(_term_with_ancestors(term_id, zfa_ontology, ancestor_cache)) - 1
+
+    def score(term_id: str) -> float:
+        return support(term_id) * information_content.get(term_id, 0.0)
+
+    seeds = [a for a in anchor if a in zfa_ontology and a not in STOPLIST and support(a) >= CONVERGENCE_MIN]
+    if not seeds:
+        return None, []
+    # Most-supported anchor id; on a support tie prefer the rarer, then the broader (shallower) root.
+    current = sorted(seeds, key=lambda a: (-support(a), -information_content.get(a, 0.0), depth(a), a))[0]
+    path = [current]
+    visited = {current}
+    while True:
+        supported = [
+            child
+            for child in children(zfa_ontology, current)
+            if child in term_to_genes
+            and child not in STOPLIST
+            and child not in visited
+            and support(child) >= CONVERGENCE_MIN
+            and support(child) >= DESCENT_SUPPORT_FRACTION * support(current)
+        ]
+        if not supported:
+            return current, path
+        # Rank by support (then IC, specificity, id). Descend ONLY when the markers converge on a
+        # single subtype: if the top two children tie on support, the cluster spreads across
+        # siblings, so the current term is the right level -- stop rather than pick one arbitrarily.
+        ranked = sorted(supported, key=lambda c: (-support(c), -score(c), -depth(c), c))
+        if len(ranked) >= 2 and support(ranked[1]) == support(ranked[0]):
+            return current, path
+        current = ranked[0]
+        visited.add(current)
+        path.append(current)
+
+
 def resolve_label(
     symbols: list[str],
     *,
     expression_map: Mapping[str, list[ZfinExpressionRecord]],
     zfa_ontology: nx.MultiDiGraph,
     information_content: Mapping[str, float],
+    anchor: frozenset[str] = frozenset(),
     vote_trace: list[TermVoteTrace] | None = None,
 ) -> list[TermVote]:
-    """IC-weighted convergence vote: name a cluster from its normalized markers.
+    """Anchor-rooted, support-weighted convergence namer: name a cluster from its markers.
 
-    symbols must be already-normalized current ZFIN symbols (caller normalizes
-    first using genes.normalize_symbol; keep only STATUS_RESOLVED). Each
-    distinct gene votes for every ZFA term it expresses in and all that term's
-    is_a+part_of ancestors (DAG ancestor credit). Terms that clear
-    CONVERGENCE_MIN distinct genes, are not in STOPLIST, and have IC >= INFORMATION_CONTENT_MIN
-    are returned ranked most-specific first (descending IC, then gene count,
-    then ancestor_depth, then id). Empty list means nothing converged.
+    symbols must be already-normalized current ZFIN symbols (caller normalizes first using
+    genes.normalize_symbol; keep only STATUS_RESOLVED). Each distinct gene votes for every ZFA
+    term it expresses in and all that term's is_a+part_of ancestors (DAG ancestor credit). The
+    cluster is then named by descending from the winning panel's ontology anchor along
+    well-supported child paths (see _descend): the result is the deepest term that keeps a clear
+    majority of its parent's support, at or under the anchor by construction.
 
     Args:
         symbols (list[str]): Already-normalized current ZFIN symbols in rank
@@ -225,14 +307,16 @@ def resolve_label(
             data from data.load_zfin_expression.
         zfa_ontology (nx.MultiDiGraph): ZFA ontology from data.load_zfa.
         information_content (Mapping[str, float]): IC model from build_information_content.
+        anchor (frozenset[str]): The winning panel's ontology anchor ids -- the descent roots.
+            Empty (the default, e.g. pure decide() tests) means no descent and an empty result.
         vote_trace (list[TermVoteTrace] | None): Optional sink for introspection.
-            When provided, a TermVoteTrace is appended for every tallied term,
-            including gate near-misses; when None (the labeling path) the returned
-            candidate list is unchanged and no extra work is done for failing terms.
+            When provided, a TermVoteTrace is appended for every tallied term, with its
+            (still-computed) gates plus the descent annotations on_descent_path and
+            support_fraction; when None (the labeling path) no per-term work is done.
 
     Returns:
-        list[TermVote]: Candidate terms ranked most-specific first (index 0
-        is the best label). Empty when no term clears all three gates.
+        list[TermVote]: A one-element list with the named terminal term, or empty when no
+        anchor id is supported (the cluster does not converge under this panel -> fallback).
     """
     # Memoize ancestor walks across this vote (each id walked at most once).
     ancestor_cache: dict[str, frozenset[str]] = {}
@@ -240,7 +324,6 @@ def resolve_label(
     # Tally distinct genes per ZFA term (direct expression + DAG ancestors).
     term_to_genes: dict[str, set[str]] = {}
     seen: set[str] = set()
-
     for symbol in symbols:
         if symbol in seen:
             continue  # each gene votes at most once
@@ -256,58 +339,56 @@ def resolve_label(
         for term_id in credited:
             term_to_genes.setdefault(term_id, set()).add(symbol)
 
-    # Build TermVote candidates that clear all three gates. When vote_trace is
-    # provided, also record a TermVoteTrace for every tallied term -- including
-    # near-misses -- so an abstention or fallback can be explained gate by gate.
-    candidates: list[TermVote] = []
-    for term_id, genes in term_to_genes.items():
-        gene_count = len(genes)
-        passed_convergence = gene_count >= CONVERGENCE_MIN
-        passed_stoplist = term_id not in STOPLIST
-        term_ic = information_content.get(term_id, 0.0)
-        passed_information_content = term_ic >= INFORMATION_CONTENT_MIN
-        eligible = passed_convergence and passed_stoplist and passed_information_content
-        # name, ancestor_depth, and the sorted gene tuple are needed for an eligible
-        # candidate and for every term when tracing -- compute each once here, shared by
-        # both constructors. Guarded so the labeling path (vote_trace is None) still skips
-        # this work for the many non-eligible terms, exactly as before.
-        name = ""
-        ancestor_depth = 0
-        sorted_genes: tuple[str, ...] = ()
-        if eligible or vote_trace is not None:
-            name = _display_name(zfa_ontology, term_id)
-            # _term_with_ancestors(term_id) includes the term itself; ancestor_depth counts
-            # only its ancestors. Reuses the cache, so no term's ancestors are walked twice.
-            ancestor_depth = len(_term_with_ancestors(term_id, zfa_ontology, ancestor_cache)) - 1
-            sorted_genes = tuple(sorted(genes))
-        if eligible:
-            candidates.append(
-                TermVote(
-                    zfa_id=term_id,
-                    zfa_name=name,
-                    genes=sorted_genes,
-                    information_content=term_ic,
-                    ancestor_depth=ancestor_depth,
-                )
-            )
-        if vote_trace is not None:
+    # Name by descending from the panel anchor along well-supported child paths.
+    terminal, path = _descend(anchor, term_to_genes, information_content, zfa_ontology, ancestor_cache)
+    path_position = {term_id: index for index, term_id in enumerate(path)}
+
+    # Trace (when requested): record every tallied term with its gates plus the descent
+    # annotations, so the walk -- and why a deeper term was not entered -- can be explained.
+    # The three gates no longer filter naming (the descent's support floors do); they remain in
+    # the trace as transparency, so passed_information_content is now informational only.
+    if vote_trace is not None:
+        max_support = max((len(genes) for genes in term_to_genes.values()), default=1)
+        for term_id, genes in term_to_genes.items():
+            gene_count = len(genes)
+            passed_convergence = gene_count >= CONVERGENCE_MIN
+            passed_stoplist = term_id not in STOPLIST
+            term_ic = information_content.get(term_id, 0.0)
+            passed_information_content = term_ic >= INFORMATION_CONTENT_MIN
+            eligible = passed_convergence and passed_stoplist and passed_information_content
+            on_path = term_id in path_position
+            if on_path and path_position[term_id] > 0:
+                parent_support = len(term_to_genes[path[path_position[term_id] - 1]])
+                support_fraction = gene_count / parent_support if parent_support else 1.0
+            elif on_path:
+                support_fraction = 1.0
+            else:
+                support_fraction = gene_count / max_support
             vote_trace.append(
                 TermVoteTrace(
                     zfa_id=term_id,
-                    zfa_name=name,
+                    zfa_name=_display_name(zfa_ontology, term_id),
                     gene_count=gene_count,
-                    genes=sorted_genes,
+                    genes=tuple(sorted(genes)),
                     information_content=term_ic,
-                    ancestor_depth=ancestor_depth,
+                    ancestor_depth=len(_term_with_ancestors(term_id, zfa_ontology, ancestor_cache)) - 1,
                     passed_convergence=passed_convergence,
                     passed_stoplist=passed_stoplist,
                     passed_information_content=passed_information_content,
                     eligible=eligible,
+                    support_fraction=round(support_fraction, 4),
+                    on_descent_path=on_path,
                 )
             )
 
-    # Rank most-specific first: IC is the selector (highest IC = most specific
-    # relative to the background); gene count is the gate magnitude;
-    # ancestor_depth breaks equal-IC ties; id ensures stable, deterministic output.
-    candidates.sort(key=lambda vote: (-vote.information_content, -len(vote.genes), -vote.ancestor_depth, vote.zfa_id))
-    return candidates
+    if terminal is None:
+        return []
+    return [
+        TermVote(
+            zfa_id=terminal,
+            zfa_name=_display_name(zfa_ontology, terminal),
+            genes=tuple(sorted(term_to_genes[terminal])),
+            information_content=information_content.get(terminal, 0.0),
+            ancestor_depth=len(_term_with_ancestors(terminal, zfa_ontology, ancestor_cache)) - 1,
+        )
+    ]

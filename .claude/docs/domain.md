@@ -45,16 +45,16 @@ parsing is a separate, swappable choice.
 ## Converging evidence
 
 zlabel combines three signals: (1) curated tissue **panel** scores — the winning panel
-is the **coarse prior and ontology-anchor guardrail**, not the naming authority; (2) **ZFIN
+is the **coarse prior and the anchor the namer descends from**, not the naming authority; (2) **ZFIN
 in-vivo expression** grounded to **ZFA** anatomy — each marker votes for the ZFA terms it
-expresses in and all their is_a/part_of ancestors; the IC-weighted convergence vote
-(`resolve.py`) names the cluster the most specific term that enough markers agree on;
+expresses in and all their is_a/part_of ancestors; the support-weighted descent
+(`resolve.py`) seeds at the panel anchor and rolls down to the deepest term the markers converge on;
 and (3) **stage** plausibility — do the expression records span the sample's developmental age?
 
 The panels (a v1 starter set, see `docs/reference/cell_labelling_playbook.md §7`) propose
-a coarse prior. ZFA convergence names. The panel anchor acts as a **guardrail**: if the
-voted anatomy term contradicts the panel's ontology anchor, the vote is discarded and the coarse
-panel bucket is used as fallback (with capped confidence). `Label.depth` is a real,
+a coarse prior and the descent anchor. ZFA convergence names. Because the name is descended *from*
+the anchor it always sits at or under it — the old guardrail is folded into the walk; an anchor the
+markers do not support falls back to the coarse panel bucket (with capped confidence). `Label.depth` is a real,
 evidence-derived integer — endothelium resolves to a cell type, muscle to a tissue, a mixed
 neural panel stays at CNS. Depth honesty is the whole zlabel thesis.
 

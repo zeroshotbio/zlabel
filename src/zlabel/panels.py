@@ -220,7 +220,7 @@ def score_markers(
 
     The caller normalizes once (genes.normalize_markers) and passes the result
     here, so a cluster's markers are normalized a single time and shared with the
-    convergence vote rather than re-normalized per consumer.
+    convergence descent rather than re-normalized per consumer.
 
     The returned list contains one BucketScore per panel, sorted by
     (-score, bucket). The top candidate is always at index 0. All panels are

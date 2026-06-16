@@ -13,6 +13,7 @@ from zlabel import (
     ALL_RELATION_EDGE_TYPES,
     DEFAULT_ANCESTOR_EDGE_TYPES,
     ancestors,
+    children,
     get_term,
     load_gene_synonym_map,
     load_zfa,
@@ -28,6 +29,7 @@ CELL = "ZFA:0009000"
 CARDIOVASCULAR_SYSTEM = "ZFA:0001262"
 ENDOTHELIAL_CELL = "ZFA:0005307"
 ARTERIAL_EC = "ZFA:0009073"
+VENOUS_EC = "ZFA:0005304"
 NAMELESS_TERM = "ZFA:0000001"  # a stub term with no name: field
 
 
@@ -90,6 +92,28 @@ def test_ancestors_of_root_is_empty(zfa_ontology):
 def test_ancestors_unknown_id_raises(zfa_ontology):
     with pytest.raises(KeyError):
         ancestors(zfa_ontology, "ZFA:9999999")
+
+
+def test_children_is_the_inverse_of_ancestors(zfa_ontology):
+    # endothelial cell's is_a children are the arterial/venous EC; cardiovascular system's part_of
+    # child is endothelial cell. children walks the same edges as ancestors, one hop the other way.
+    assert set(children(zfa_ontology, ENDOTHELIAL_CELL)) == {ARTERIAL_EC, VENOUS_EC}
+    assert children(zfa_ontology, CARDIOVASCULAR_SYSTEM) == [ENDOTHELIAL_CELL]
+
+
+def test_children_sorted_and_excludes_develops_from(zfa_ontology):
+    # Deterministic sorted output; develops_from (a separate axis) is not followed by default,
+    # even though arterial/venous EC also develops_from endothelial cell.
+    assert children(zfa_ontology, ENDOTHELIAL_CELL) == sorted({ARTERIAL_EC, VENOUS_EC})
+
+
+def test_children_of_leaf_is_empty(zfa_ontology):
+    assert children(zfa_ontology, ARTERIAL_EC) == []
+
+
+def test_children_unknown_id_raises(zfa_ontology):
+    with pytest.raises(KeyError):
+        children(zfa_ontology, "ZFA:9999999")
 
 
 def test_load_zfa_missing_file_raises():

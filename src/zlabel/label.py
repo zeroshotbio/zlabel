@@ -14,13 +14,12 @@ The decision follows a three-stage algorithm:
      corroboration) and a rollup cap (max medium). Floor: any assigned label is
      at least low.
 
-Naming: the winning panel acts as a coarse prior and ontology-anchor guardrail.
-The actual bucket name comes from an IC-weighted convergence vote over the cluster's
-ZFIN in-vivo expression (resolve.resolve_label). The depth of the resulting label
-falls out of the evidence -- a tight endothelial panel resolves to cell type while
-a broad neural cluster stays at CNS. When the vote returns no eligible term, or
-when the voted term contradicts the panel's ontology anchor (guardrail), the
-label falls back to the coarse panel bucket.
+Naming: the winning panel is a coarse prior, and its ontology anchor is the root the
+namer descends from. The bucket name comes from a support-weighted anchor-rooted descent over
+the cluster's ZFIN in-vivo expression (resolve.resolve_label). The depth of the resulting label
+falls out of the evidence -- a tight endothelial panel resolves to cell type while a broad
+neural cluster stays at CNS. A named term is always at or under the anchor by construction (no
+separate guardrail check); when no anchor id is supported the label falls back to the coarse panel bucket.
 
 State panels (cycling, stress_response) are detected denominator-free and reported
 on every Label -- including abstentions -- without affecting the identity call.
@@ -129,8 +128,9 @@ class _Recorder:
         winner_bucket (str | None): The bucket decide() selected, if any.
         contender_buckets (tuple[str, ...]): Buckets in the near-tie set, if any.
         term_votes (list[TermVoteTrace]): Every tallied ZFA term; resolve_label fills this.
-        selected_zfa_id (str | None): The named term id, if one survived the guardrail.
-        grounded_winner (bool): Whether the selected term grounds under the panel anchor.
+        selected_zfa_id (str | None): The named term id, if the descent named one (None on fallback).
+        grounded_winner (bool): Whether the named term grounds under the panel anchor. Always True
+            when a term is named -- the descent stays at or under the anchor by construction.
     """
 
     branch: str = ""
@@ -427,7 +427,7 @@ def decide(
       A. No resolved markers or no identity panel hit at all -> abstain (provisional).
       B. Top adjusted identity score < MIN_SIGNAL -> abstain (provisional).
       C. Top score dominates (gap >= DOMINANCE_GAP, or only one identity bucket) ->
-         name from ZFA convergence vote (symbols + information_content required) or fall back to the
+         name from ZFA convergence descent (symbols + information_content required) or fall back to the
          panel bucket; emit the named label.
       D. Near-tie: contenders within DOMINANCE_GAP of the top.
          All share a non-empty germ layer -> assign at germ-layer tier (underclustered).
@@ -444,10 +444,10 @@ def decide(
         stage_hpf (float | None): Dataset developmental stage in hpf, or None.
         symbols (list[str] | None): Already-normalized current ZFIN symbols of the
             cluster's markers, in rank order. When provided (with information_content), drives the
-            IC-weighted convergence vote that names the bucket from ZFA anatomy.
-            When None, the vote is skipped and the panel bucket is used directly.
+            anchor-rooted convergence descent that names the bucket from ZFA anatomy.
+            When None, the descent is skipped and the panel bucket is used directly.
         information_content (Mapping[str, float] | None): IC model from resolve.build_information_content. Required
-            alongside symbols for the convergence vote.
+            alongside symbols for the convergence descent.
         recorder (_Recorder | None): Optional trace sink. When None (the default
             and the labeling path) decide() is unchanged; when provided, the
             intermediates are recorded for trace() with no effect on the result.
@@ -499,7 +499,7 @@ def decide(
     # --- C / D: dominance test ---
     gap = top_adj - second_adj
     if len(identity) == 1 or gap >= DOMINANCE_GAP:
-        # Clear winner: name from ZFA convergence vote when symbols/information_content are
+        # Clear winner: name from ZFA convergence descent when symbols/information_content are
         # provided; fall back to the coarse panel bucket otherwise.
         if recorder is not None:
             recorder.branch = BRANCH_CLEAR_WINNER
@@ -569,12 +569,12 @@ def _assign_named(
 ) -> Label:
     """Build a Label for a clear single-bucket assignment, named from ZFA convergence.
 
-    Runs resolve_label over the cluster's normalized markers to find the most
-    specific ZFA anatomy term the markers converge on. The winning panel acts as
-    a coarse prior and ontology-anchor guardrail: if the voted term does not sit at or
-    under the panel's ontology anchor, the vote is discarded and the panel bucket
-    is used as the fallback (named=None). Depth and levels are derived from the
-    named ZFA term when one is found; otherwise the static panel triple is used.
+    Runs resolve_label to descend from the winning panel's ontology anchor to the most specific
+    ZFA term the markers converge on. Because the descent stays at or under the anchor by
+    construction, a named term is always grounded -- there is no separate guardrail check. When no
+    anchor id is supported (no descent seed) resolve_label returns nothing (named=None) and the
+    coarse panel bucket is used as the fallback. Depth and levels are derived from the named ZFA
+    term when one is found; otherwise the static panel triple is used.
 
     When symbols is empty or information_content is empty (pure decide() tests that omit them),
     resolve_label returns nothing and the behavior is identical to the old
@@ -594,7 +594,7 @@ def _assign_named(
             cluster markers, in rank order. May be empty.
         information_content (Mapping[str, float]): IC model from build_information_content. May be empty.
         recorder (_Recorder | None): Optional trace sink. When provided, the full
-            convergence vote (with gate near-misses) and the selected term are
+            convergence descent (with gate near-misses) and the selected term are
             recorded for trace(); None leaves behavior unchanged.
 
     Returns:
@@ -603,26 +603,22 @@ def _assign_named(
     """
     anchor = anchors.get(top.bucket, frozenset())
 
-    # Run the convergence vote; take the top candidate as the named term.
+    # Name by descending from the panel's ontology anchor (resolve_label). The descent stays at
+    # or under the anchor by construction, so the old post-hoc guardrail is folded in: a named
+    # term is always grounded, and an unsupported anchor yields no term -> fall back to the bucket.
     votes = resolve_label(
         symbols,
         expression_map=expression_map,
         zfa_ontology=zfa_ontology,
         information_content=information_content,
+        anchor=anchor,
         vote_trace=recorder.term_votes if recorder is not None else None,
     )
     named: TermVote | None = votes[0] if votes else None
 
-    # Guardrail: the named ZFA term must sit at or under the winning panel's
-    # ontology anchor. If it doesn't, the voted anatomy contradicts the panel
-    # prior -- discard the vote and fall back to the panel bucket.
-    grounded_winner = named is not None and ((not anchor) or grounds_under(zfa_ontology, named.zfa_id, anchor))
-    if named is not None and anchor and not grounded_winner:
-        named = None
-
     if recorder is not None:
         recorder.selected_zfa_id = named.zfa_id if named is not None else None
-        recorder.grounded_winner = grounded_winner
+        recorder.grounded_winner = named is not None
 
     # Grounding evidence: when a term was named, check markers against that
     # term as anchor (measures how many panel markers express in the named
@@ -794,7 +790,7 @@ def trace(
 
     Returns:
         LabelTrace: The decision plus its intermediates (normalization, panel
-        ladder, convergence vote with gates, branch) and the embedded Label.
+        ladder, convergence descent with gates, branch) and the embedded Label.
     """
     recorder = _Recorder()
     label = decide(
@@ -811,12 +807,12 @@ def trace(
 
 
 def _ordered_term_votes(recorder: _Recorder) -> tuple[TermVoteTrace, ...]:
-    """Stamp the selected term and order eligible terms before near-misses.
+    """Stamp the named terminal and order the descent path (broad->specific) before the rest.
 
-    The winner (recorder.selected_zfa_id) is marked selected with its guardrail
-    result; every other term keeps selected False. Eligible terms come first,
-    ranked as resolve_label ranks them (descending IC, gene count, ancestor depth,
-    then id); near-misses follow, by gene count then IC. Deterministic output.
+    The terminal (recorder.selected_zfa_id) is marked selected and grounded (it sits under the
+    anchor by construction); the descent-path terms come first, ordered anchor-to-terminal
+    (ascending ancestor depth); every other tallied term follows by descending support. The
+    output reads as the walk and is deterministic.
 
     Args:
         recorder (_Recorder): The trace sink, with term_votes already collected.
@@ -830,15 +826,15 @@ def _ordered_term_votes(recorder: _Recorder) -> tuple[TermVoteTrace, ...]:
         else term_vote
         for term_vote in recorder.term_votes
     ]
-    eligible = sorted(
-        (term_vote for term_vote in stamped if term_vote.eligible),
-        key=lambda tv: (-tv.information_content, -tv.gene_count, -tv.ancestor_depth, tv.zfa_id),
+    on_path = sorted(
+        (term_vote for term_vote in stamped if term_vote.on_descent_path),
+        key=lambda tv: (tv.ancestor_depth, tv.zfa_id),
     )
-    near_miss = sorted(
-        (term_vote for term_vote in stamped if not term_vote.eligible),
+    off_path = sorted(
+        (term_vote for term_vote in stamped if not term_vote.on_descent_path),
         key=lambda tv: (-tv.gene_count, -tv.information_content, tv.zfa_id),
     )
-    return tuple(eligible + near_miss)
+    return tuple(on_path + off_path)
 
 
 def _assemble_trace(
@@ -981,7 +977,7 @@ class Labeler:
             Label: Evidence packet with bucket, confidence, grounding evidence,
             and next_step.
         """
-        # Normalize once: the panel scorer and the convergence vote both consume
+        # Normalize once: the panel scorer and the convergence descent both consume
         # the same normalized markers. resolve_label requires already-normalized
         # symbols; without this, aliases like fli1a -> fli1 (314 expression
         # records) would be missed.
@@ -1002,7 +998,7 @@ class Labeler:
         """Label one cluster and return a faithful LabelTrace for introspection.
 
         Same inputs and decision as label(), plus the recorded intermediates:
-        the normalization outcomes, the panel ladder, the full convergence vote
+        the normalization outcomes, the panel ladder, the full convergence descent
         with gate near-misses, and the branch taken. The embedded LabelTrace.label
         is identical to label(markers).
 

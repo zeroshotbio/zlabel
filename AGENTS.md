@@ -20,18 +20,18 @@ to its agent/schema machinery. **zlabel imports zero daniotype code.**
 
 ## Architecture (one line)
 
-Normalize gene symbols → score markers against curated tissue panels (a coarse prior) →
-name the cluster from an IC-weighted convergence vote over ZFIN in-vivo expression + ZFA
-anatomy (`resolve.py`), guard-railed by the winning panel's ontology anchor and checked
-against ZFS stage → emit a `(label, depth, confidence, evidence)` packet, abstaining when
+Normalize gene symbols → score markers against curated tissue panels (a coarse prior + anchor) →
+name the cluster by descending from the winning panel's ZFA ontology anchor along well-supported
+child paths (`resolve.py`, support-weighted: the markers must keep converging on a single subtype),
+checked against ZFS stage → emit a `(label, depth, confidence, evidence)` packet, abstaining when
 evidence does not converge.
 
 ## The annotation loop (what `label()` does)
 
 1. **Normalize** every marker to its official ZFIN symbol (aliases + `a`/`b` paralogs).
 2. **Score** markers against curated tissue/lineage panels → a ranked bucket table (a coarse prior, not the namer).
-3. **Converge** on ZFA anatomy: each marker's in-vivo ZFIN expression votes for the terms it (and its ancestors) cover; the most specific term enough markers share names the cluster (`resolve.py`).
-4. **Guardrail**: if the voted term contradicts the winning panel's ontology anchor, fall back to the coarse panel bucket. Plausible for the stage (ZFS)?
+3. **Descend** on ZFA anatomy: each marker's in-vivo ZFIN expression votes for the terms it (and its ancestors) cover; seed at the panel's ontology anchor and roll down into the best-supported child while the markers converge on a single subtype — the deepest such term names the cluster (`resolve.py`).
+4. **Guardrail (intrinsic) + stage**: the name is descended from the anchor, so it always sits under it (no separate contradiction check); an unsupported anchor falls back to the coarse panel bucket. Plausible for the stage (ZFS)?
 5. **Decide**: assign with confidence, else abstain (`mixed/unresolved`) or roll up.
 6. **Emit** a `Label` evidence packet.
 

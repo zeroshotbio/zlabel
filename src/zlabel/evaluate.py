@@ -3,8 +3,8 @@
 Reads a benchmark CSV (cluster_id, markers, broad_tissue, ...), labels each cluster with
 the current engine, and scores broad agreement in ZFA-ancestry space against a reviewed,
 fail-closed tissue-to-ZFA crosswalk. Reports coverage, the named/fallback/rollup/abstain
-split, confidence-by-correctness, and a structural parent-child overcall audit -- the
-signal for whether IC-first naming overcalls on real clusters.
+split, confidence-by-correctness, and a structural parent-child overcall audit -- a regression
+guard that the anchor-rooted descent does not overcall on real clusters.
 
 This module is read-only over the engine: it reuses the public loaders, normalize_markers,
 score_markers, and decide() unchanged. It loads the ontologies once and labels each row at its
@@ -41,8 +41,8 @@ from zlabel.panels import KIND_IDENTITY, Panel, load_panels, score_markers
 from zlabel.resolve import CONVERGENCE_MIN, STOPLIST, _term_with_ancestors, build_information_content
 
 # Prediction classes (how the engine resolved a cluster).
-NAMED = "named"  # the convergence vote named a ZFA term
-FALLBACK = "fallback"  # vote found nothing / guardrail fired -> coarse panel bucket
+NAMED = "named"  # the convergence descent named a ZFA term
+FALLBACK = "fallback"  # anchor unsupported (no descent seed) -> coarse panel bucket
 ROLLUP = "rollup"  # near-tie within a shared germ layer -> germ-layer tier
 ABSTAIN = "abstain"  # mixed / no signal
 
@@ -334,9 +334,8 @@ def _audit_from_tally(
     """Compare a named winner's support to its best-supported ancestor (the overcall signal).
 
     A thin-support overcall is a winner that cleared exactly CONVERGENCE_MIN genes while a
-    broader ancestor (content-free stoplist roots excluded; often IC-filtered out of the engine's
-    candidates) had strictly more support -- the IC-first sort preferring specificity over
-    consensus. Pure over the tally.
+    broader ancestor (content-free stoplist roots excluded) had strictly more support -- the
+    overcall the anchor-rooted descent's support floor is built to prevent. Pure over the tally.
 
     Args:
         cluster_id (str): The cluster id.
@@ -513,7 +512,7 @@ def render_report(report: Report, top_n: int = 15) -> str:
     agree = report.correct[NAMED] + report.correct[FALLBACK]
     covered = assigned + report.counts[ROLLUP]
 
-    lines = ["# Daniocell baseline report (IC-first engine)", ""]
+    lines = ["# Daniocell baseline report (anchor-rooted descent engine)", ""]
     lines += [f"- clusters: {report.total}  ·  scored: {scored}  ·  not_scored: {report.not_scored}", ""]
     lines += ["## Broad agreement (named + fallback, scored against the gold tissue)"]
     lines += [f"- agreement: {_pct(agree, assigned)}", ""]
