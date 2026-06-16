@@ -603,26 +603,22 @@ def _assign_named(
     """
     anchor = anchors.get(top.bucket, frozenset())
 
-    # Run the convergence vote; take the top candidate as the named term.
+    # Name by descending from the panel's ontology anchor (resolve_label). The descent stays at
+    # or under the anchor by construction, so the old post-hoc guardrail is folded in: a named
+    # term is always grounded, and an unsupported anchor yields no term -> fall back to the bucket.
     votes = resolve_label(
         symbols,
         expression_map=expression_map,
         zfa_ontology=zfa_ontology,
         information_content=information_content,
+        anchor=anchor,
         vote_trace=recorder.term_votes if recorder is not None else None,
     )
     named: TermVote | None = votes[0] if votes else None
 
-    # Guardrail: the named ZFA term must sit at or under the winning panel's
-    # ontology anchor. If it doesn't, the voted anatomy contradicts the panel
-    # prior -- discard the vote and fall back to the panel bucket.
-    grounded_winner = named is not None and ((not anchor) or grounds_under(zfa_ontology, named.zfa_id, anchor))
-    if named is not None and anchor and not grounded_winner:
-        named = None
-
     if recorder is not None:
         recorder.selected_zfa_id = named.zfa_id if named is not None else None
-        recorder.grounded_winner = grounded_winner
+        recorder.grounded_winner = named is not None
 
     # Grounding evidence: when a term was named, check markers against that
     # term as anchor (measures how many panel markers express in the named
@@ -811,12 +807,12 @@ def trace(
 
 
 def _ordered_term_votes(recorder: _Recorder) -> tuple[TermVoteTrace, ...]:
-    """Stamp the selected term and order eligible terms before near-misses.
+    """Stamp the named terminal and order the descent path (broad->specific) before the rest.
 
-    The winner (recorder.selected_zfa_id) is marked selected with its guardrail
-    result; every other term keeps selected False. Eligible terms come first,
-    ranked as resolve_label ranks them (descending IC, gene count, ancestor depth,
-    then id); near-misses follow, by gene count then IC. Deterministic output.
+    The terminal (recorder.selected_zfa_id) is marked selected and grounded (it sits under the
+    anchor by construction); the descent-path terms come first, ordered anchor-to-terminal
+    (ascending ancestor depth); every other tallied term follows by descending support. The
+    output reads as the walk and is deterministic.
 
     Args:
         recorder (_Recorder): The trace sink, with term_votes already collected.
@@ -830,15 +826,15 @@ def _ordered_term_votes(recorder: _Recorder) -> tuple[TermVoteTrace, ...]:
         else term_vote
         for term_vote in recorder.term_votes
     ]
-    eligible = sorted(
-        (term_vote for term_vote in stamped if term_vote.eligible),
-        key=lambda tv: (-tv.information_content, -tv.gene_count, -tv.ancestor_depth, tv.zfa_id),
+    on_path = sorted(
+        (term_vote for term_vote in stamped if term_vote.on_descent_path),
+        key=lambda tv: (tv.ancestor_depth, tv.zfa_id),
     )
-    near_miss = sorted(
-        (term_vote for term_vote in stamped if not term_vote.eligible),
+    off_path = sorted(
+        (term_vote for term_vote in stamped if not term_vote.on_descent_path),
         key=lambda tv: (-tv.gene_count, -tv.information_content, tv.zfa_id),
     )
-    return tuple(eligible + near_miss)
+    return tuple(on_path + off_path)
 
 
 def _assemble_trace(

@@ -249,11 +249,17 @@ class TermVoteTrace(BaseModel):
         passed_convergence (bool): Whether gene_count >= CONVERGENCE_MIN.
         passed_stoplist (bool): Whether the term is not a content-free stoplist root.
         passed_information_content (bool): Whether information_content >= INFORMATION_CONTENT_MIN.
-        grounded_under_anchor (bool): For the selected term only, whether it sits
-            at or under the winning panel's ontology anchor (the guardrail check).
-            False for every non-selected term (the engine checks only the winner).
-        eligible (bool): True when all three resolve gates passed (a would-be TermVote).
-        selected (bool): True for the single term decide() named the cluster.
+        grounded_under_anchor (bool): True for the selected (descent terminal) term, which
+            sits at or under the winning panel's anchor by construction. False for every other
+            term (the descent only ever names at or under the anchor).
+        eligible (bool): True when all three resolve gates passed. With the anchor-rooted
+            descent these gates no longer drive naming (the descent's support floors do); kept
+            as transparency, so passed_information_content is informational, not a naming gate.
+        selected (bool): True for the single term the descent named the cluster.
+        support_fraction (float): For a term on the descent path, its distinct-gene support as a
+            share of its parent's on the path (the seed is 1.0); for other terms, its support as
+            a share of the most-supported term. The consensus signal the descent stops on.
+        on_descent_path (bool): True for the terms on the anchor-to-terminal descent path.
     """
 
     zfa_id: str
@@ -268,6 +274,8 @@ class TermVoteTrace(BaseModel):
     grounded_under_anchor: bool = False
     eligible: bool = False
     selected: bool = False
+    support_fraction: float = 0.0
+    on_descent_path: bool = False
 
 
 class LabelTrace(BaseModel):

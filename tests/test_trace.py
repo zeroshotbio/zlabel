@@ -270,21 +270,25 @@ def test_trace_gate_table_includes_near_misses(zfa_ontology, expression_map, inf
     assert selected.gene_count == 3
     assert sum(tv.selected for tv in result.term_votes) == 1  # exactly one selected
 
-    # Near-miss: musculature system has enough genes but fails the IC gate.
+    # The anchor (musculature system) is the descent seed: on the path, but not the terminal. It
+    # clears convergence yet fails the IC gate (eligible=False) -- which no longer blocks naming.
     musculature = votes["ZFA:0000548"]
     assert musculature.passed_convergence is True
     assert musculature.passed_information_content is False
     assert musculature.eligible is False
     assert musculature.selected is False
+    assert musculature.on_descent_path is True
 
     # Near-miss: whole organism is tallied but fails the stoplist gate.
     assert votes["ZFA:0001094"].passed_stoplist is False
 
-    # Eligible terms are ordered before near-misses.
-    eligible_idx = [i for i, tv in enumerate(result.term_votes) if tv.eligible]
-    near_idx = [i for i, tv in enumerate(result.term_votes) if not tv.eligible]
-    assert eligible_idx and near_idx
-    assert max(eligible_idx) < min(near_idx)
+    # The descent path (anchor -> terminal) is ordered first, broad to specific.
+    path_ids = [tv.zfa_id for tv in result.term_votes if tv.on_descent_path]
+    assert path_ids == ["ZFA:0000548", "ZFA:0009234"]  # musculature system -> muscle cell
+    path_idx = [i for i, tv in enumerate(result.term_votes) if tv.on_descent_path]
+    off_idx = [i for i, tv in enumerate(result.term_votes) if not tv.on_descent_path]
+    assert off_idx and max(path_idx) < min(off_idx)
+    assert result.term_votes[path_idx[-1]].selected is True  # the terminal is the last path term
 
 
 def test_trace_no_selected_term_when_below_convergence_min(zfa_ontology, expression_map, information_content):

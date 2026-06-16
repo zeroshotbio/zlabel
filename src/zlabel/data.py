@@ -131,6 +131,35 @@ def ancestors(
     return result
 
 
+def children(
+    graph: nx.MultiDiGraph,
+    term_id: str,
+    edge_types: Iterable[str] = DEFAULT_ANCESTOR_EDGE_TYPES,
+) -> list[str]:
+    """Direct is_a/part_of children of a term -- the one-hop inverse of ancestors.
+
+    A child is a node c with an edge c -> term_id whose relationship is in edge_types
+    (the same child-to-parent edges ancestors walks, read one hop the other way). Only
+    direct children, not the full descendant closure. The convergence descent uses it to
+    step from a broad anchor toward the more specific terms the markers support.
+
+    Args:
+        graph (nx.MultiDiGraph): Loaded ZFA graph.
+        term_id (str): OBO term id whose children to list.
+        edge_types (Iterable[str]): Relationship types to follow. Defaults to is_a + part_of.
+
+    Returns:
+        list[str]: Direct child term ids, sorted for deterministic output.
+
+    Raises:
+        KeyError: If term_id is not in the graph.
+    """
+    if term_id not in graph:
+        raise KeyError(term_id)
+    allowed = frozenset(edge_types)
+    return sorted({child for child, _, rel in graph.in_edges(term_id, keys=True) if rel in allowed})
+
+
 # --- ZFIN wildtype expression: gene -> in-vivo anatomy (ZFA) + stage (ZFS) ----
 #
 # The curated wildtype-expression_fish.txt ZFIN distributes is the labeler's

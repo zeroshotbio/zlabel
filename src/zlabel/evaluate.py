@@ -513,7 +513,7 @@ def render_report(report: Report, top_n: int = 15) -> str:
     agree = report.correct[NAMED] + report.correct[FALLBACK]
     covered = assigned + report.counts[ROLLUP]
 
-    lines = ["# Daniocell baseline report (IC-first engine)", ""]
+    lines = ["# Daniocell baseline report (anchor-rooted descent engine)", ""]
     lines += [f"- clusters: {report.total}  ·  scored: {scored}  ·  not_scored: {report.not_scored}", ""]
     lines += ["## Broad agreement (named + fallback, scored against the gold tissue)"]
     lines += [f"- agreement: {_pct(agree, assigned)}", ""]

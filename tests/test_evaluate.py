@@ -14,7 +14,7 @@ import build_daniocell_eval as build_eval
 import pytest
 
 from zlabel import Label, evaluate
-from zlabel.resolve import CONVERGENCE_MIN, INFORMATION_CONTENT_MIN, STOPLIST, resolve_label
+from zlabel.resolve import resolve_label
 
 REPO = Path(__file__).parent.parent
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -99,26 +99,22 @@ def test_crosswalk_fails_closed_on_unknown_tissue():
 
 
 def test_replay_tally_matches_resolve_label(zfa_ontology, expression_map, information_content):
+    # The audit replays the same per-term gene tally the namer builds. Pin the named terminal's
+    # gene set against the replayed tally, plus a known ancestor, so the two cannot drift.
     tally = evaluate._replay_tally(MUSCLE_SYMBOLS, expression_map, zfa_ontology)
     votes = resolve_label(
         MUSCLE_SYMBOLS,
         expression_map=expression_map,
         zfa_ontology=zfa_ontology,
         information_content=information_content,
+        anchor=frozenset({"ZFA:0000548"}),  # musculature system -- the muscle panel anchor
     )
-    assert votes, "consistency test needs at least one vote candidate to be non-vacuous"
-    # every engine candidate carries the same gene set in the raw tally
+    assert votes, "muscle markers should descend to a named term under the muscle anchor"
     for vote in votes:
         assert set(tally[vote.zfa_id]) == set(vote.genes)
-    # and the raw tally, put through the same three gates, yields exactly the engine's ids
-    gated = {
-        term_id
-        for term_id, genes in tally.items()
-        if len(genes) >= CONVERGENCE_MIN
-        and term_id not in STOPLIST
-        and information_content.get(term_id, 0.0) >= INFORMATION_CONTENT_MIN
-    }
-    assert gated == {vote.zfa_id for vote in votes}
+    # The replay credits ancestors too -- the descent and the audit share the gene-credit unit.
+    assert set(tally["ZFA:0009234"]) == {"mylpfa", "acta1b", "myog"}  # muscle cell
+    assert set(tally["ZFA:0000548"]) == {"mylpfa", "acta1b", "myog"}  # musculature system (ancestor credit)
 
 
 # ---------------------------------------------------------------------------
