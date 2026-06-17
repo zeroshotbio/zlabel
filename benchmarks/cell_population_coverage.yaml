@@ -1,0 +1,104 @@
+# Cell-population coverage checklist -- the completeness proof for panels.yaml.
+#
+# zlabel's panel set must be COMPLETE: every cell population in the major zebrafish
+# atlases (Daniocell, Zebrahub, ZSCAPE; the internal ChemFish / MiniFin / MegaFin
+# inherit by projection onto these) must map to a panel whose signature resolves to
+# the correct ZFA anchor. The test is signature -> correct anchor, NOT label-string
+# parity: bucket names are scientist-sensible, not copies of atlas vocabulary.
+#
+# This file is the human-readable, machine-checkable record of that coverage. Each
+# population names a scientist-sensible cell type, a short signature cue, the zlabel
+# bucket it maps to, and the expected ZFA anchor (a subset of that bucket's
+# ontology_anchor). tests/test_coverage.py asserts every bucket exists and every
+# anchor is consistent with panels.yaml; scripts/audit_panels.py separately proves
+# each bucket actually converges on its anchor from real ZFIN expression.
+#
+# The population list is enumerated here (using the atlases as an informal
+# completeness reference) -- not fetched as an atlas string gold set. Regional and
+# developmental labels are resolved to lineage buckets; a few populations are
+# deferred because no marker set meets the >=3-grounding bar with current ZFIN
+# curation. Last reviewed 2026-06-16.
+
+populations:
+  # --- ectoderm: neural / sensory / surface ---
+  - {name: CNS neuron, signature: [elavl3, neurod1], bucket: neural, anchor: [ZFA:0000396]}
+  - {name: neural progenitor, signature: [sox2, sox3], bucket: neural, anchor: [ZFA:0000396]}
+  - {name: spinal cord, signature: [elavl3, neurod1], bucket: neural, anchor: [ZFA:0000396]}
+  - {name: glia (astrocyte/oligodendrocyte/radial glia), signature: [gfap, olig2, mbpa], bucket: glia, anchor: [ZFA:0009073]}
+  - {name: Schwann cell, signature: [sox10, mbpa], bucket: glia, anchor: [ZFA:0009073]}
+  - {name: microglia, signature: [mpeg1.1, csf1ra], bucket: immune_myeloid, anchor: [ZFA:0001159]}
+  - {name: neural crest (cranial/trunk), signature: [sox10, foxd3], bucket: neural_crest, anchor: [ZFA:0000045]}
+  - {name: retina (photoreceptor/RGC/bipolar/amacrine), signature: [rho, crx, gnat2], bucket: eye, anchor: [ZFA:0000107]}
+  - {name: lens, signature: [cryaa, mipa], bucket: eye, anchor: [ZFA:0000107]}
+  - {name: retinal pigmented epithelium, signature: [rpe65a], bucket: eye, anchor: [ZFA:0000107]}
+  - {name: inner ear / otic (hair + support), signature: [otomp, oc90, atoh1a], bucket: otic, anchor: [ZFA:0000051]}
+  - {name: lateral line (hair cell/neuromast), signature: [atoh1a, cldnb, six1b], bucket: lateral_line, anchor: [ZFA:0000034]}
+  - {name: taste bud, signature: [atoh1a, six1b], bucket: lateral_line, anchor: [ZFA:0001074]}
+  - {name: olfactory sensory neuron, signature: [ompb, s100z], bucket: olfactory, anchor: [ZFA:0001149]}
+  - {name: epidermis (basal/suprabasal), signature: [krt4, tp63], bucket: epidermis, anchor: [ZFA:0000105]}
+  - {name: periderm / EVL, signature: [krt4, cldne], bucket: epidermis, anchor: [ZFA:0000105]}
+  - {name: mucous / goblet cell, signature: [agr2, krt8], bucket: epidermis, anchor: [ZFA:0000105]}
+  - {name: ionocyte, signature: [foxi3a, trpv6], bucket: ionocyte, anchor: [ZFA:0005323]}
+  - {name: melanophore, signature: [mitfa, dct], bucket: pigment, anchor: [ZFA:0009090]}
+  - {name: xanthophore, signature: [gch2, xdh], bucket: pigment, anchor: [ZFA:0009090]}
+  - {name: iridophore, signature: [gch2], bucket: pigment, anchor: [ZFA:0009090]}
+
+  # --- mesoderm ---
+  - {name: skeletal muscle (fast/slow/myoblast), signature: [myod1, mylpfa, acta1b], bucket: muscle, anchor: [ZFA:0000548]}
+  - {name: cardiomyocyte (atrial/ventricular), signature: [myl7, myh6, nppa], bucket: cardiac, anchor: [ZFA:0000114]}
+  - {name: mural cell / pericyte / vascular smooth muscle, signature: [pdgfrb, notch3], bucket: mural, anchor: [ZFA:0005944]}
+  - {name: endothelium (arterial/venous/lymphatic), signature: [kdrl, cdh5], bucket: endothelium, anchor: [ZFA:0005249]}
+  - {name: erythrocyte / erythroid, signature: [gata1a, hbae1.1], bucket: blood_erythroid, anchor: [ZFA:0000007]}
+  - {name: hematopoietic progenitor / thrombocyte, signature: [gata1a, slc4a1a], bucket: blood_erythroid, anchor: [ZFA:0005023]}
+  - {name: myeloid / macrophage / neutrophil, signature: [mpeg1.1, lyz], bucket: immune_myeloid, anchor: [ZFA:0001159]}
+  - {name: lymphocyte (T / B / NK), signature: [lck, rag1], bucket: blood_lymphoid, anchor: [ZFA:0009250]}
+  - {name: pronephros / kidney (podocyte/tubule/duct), signature: [pax2a, cdh17], bucket: pronephros, anchor: [ZFA:0000151]}
+  - {name: mesenchyme / fibroblast / connective, signature: [dcn, prrx1a], bucket: mesenchyme, anchor: [ZFA:0000393]}
+  - {name: head mesenchyme, signature: [prrx1a, twist1a], bucket: mesenchyme, anchor: [ZFA:0000393]}
+  - {name: cartilage / chondrocyte, signature: [sox9a, col2a1a], bucket: cartilage, anchor: [ZFA:0001501]}
+  - {name: osteoblast / bone, signature: [sp7, bglap], bucket: osteoblast, anchor: [ZFA:0009031]}
+  - {name: notochord, signature: [tbxta, shha, noto], bucket: notochord, anchor: [ZFA:0000135]}
+  - {name: fin (bud/fold/mesenchyme), signature: [tbx5a, fgf24], bucket: fin, anchor: [ZFA:0000108]}
+
+  # --- endoderm ---
+  - {name: endoderm (early) / foregut, signature: [sox32, foxa2], bucket: endoderm_gut, anchor: [ZFA:0000339]}
+  - {name: liver / hepatocyte, signature: [fabp10a, cp], bucket: liver, anchor: [ZFA:0000123]}
+  - {name: pancreas (exocrine + endocrine islet), signature: [ins, prss1], bucket: pancreas, anchor: [ZFA:0000140]}
+  - {name: intestine / enterocyte, signature: [fabp2, cdx1b], bucket: intestine, anchor: [ZFA:0001338]}
+
+  # --- germline ---
+  - {name: primordial germ cell / germ line, signature: [ddx4, nanos3], bucket: germline, anchor: [ZFA:0009016]}
+
+  # --- endocrine ---
+  - {name: pituitary / adenohypophysis, signature: [pomca, prl], bucket: pituitary, anchor: [ZFA:0001282]}
+  - {name: interrenal / adrenal (steroidogenic), signature: [nr5a1a, star], bucket: interrenal, anchor: [ZFA:0001345]}
+  - {name: pineal / epiphysis, signature: [exorh, aanat2], bucket: pineal, anchor: [ZFA:0000019]}
+
+  # --- transcriptional states (orthogonal to identity) ---
+  - {name: cycling / proliferating, signature: [mki67, pcna], bucket: cycling, anchor: []}
+  - {name: stress / heat-shock / immediate-early, signature: [hsp70l, fosab], bucket: stress_response, anchor: []}
+
+# Regional and developmental labels are not their own buckets; they resolve to the
+# constituent lineage bucket(s) a scientist would assign by signature.
+regional_to_lineage:
+  "pharyngeal arch": [neural_crest, cartilage, muscle, mesenchyme]
+  "paraxial mesoderm / presomitic mesoderm": [muscle, mesenchyme]
+  "sclerotome": [osteoblast, cartilage, mesenchyme]
+  "cephalic / head mesoderm": [mesenchyme, muscle]
+  "axial (notochord + hatching gland + prechordal)": [notochord]
+
+# Deferred: no marker set meets the >=3-grounding bar under the ZFA term with current
+# ZFIN curation. Such clusters abstain (mixed/unresolved) until curation improves or
+# the LLM namer (Phase 7) handles them. Tracked here so the gap is explicit, not silent.
+deferred:
+  "hatching gland": "only ctslb grounds under ZFA:0000026; the hatching enzymes (he1.x) are not curated under the hatching-gland term"
+  "thyroid": "ZFA:0001072 thyroid follicle has sparse wildtype-expression curation; tg/slc5a5 do not reach the grounding bar"
+
+# Undifferentiated populations are intentionally unlabeled (the engine abstains).
+not_scored:
+  - "blastomere / blastula (undifferentiated)"
+
+# Internal Zeroshot atlases (ChemFish, MiniFin, MegaFin) carry no native vocabulary;
+# they are annotated by projection onto the public atlases above, so this coverage
+# covers them. Drop their label lists here if/when they need direct validation.
+internal_atlases: "ChemFish / MiniFin / MegaFin inherit coverage via projection onto Daniocell / Zebrahub / ZSCAPE"

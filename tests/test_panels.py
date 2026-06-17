@@ -151,6 +151,8 @@ def test_production_panels_yaml_loads_and_is_well_formed():
     assert panels
     buckets = [panel.bucket for panel in panels]
     assert len(buckets) == len(set(buckets))  # no duplicate bucket names
+    # Spot-check the atlas-coverage buckets are present (a dropped bucket is a regression).
+    assert {"neural", "glia", "eye", "otic", "ionocyte", "pronephros", "cardiac", "liver"}.issubset(buckets)
     assert {panel.kind for panel in panels} == {KIND_IDENTITY, KIND_STATE}
     for panel in panels:
         assert all(marker == marker.lower() for marker in panel.markers)
