@@ -15,7 +15,7 @@ import zlabel
 from zlabel.panels import KIND_IDENTITY, KIND_STATE, load_panels
 
 PANELS_YAML = Path(zlabel.__file__).parent / "panels.yaml"
-COVERAGE_YAML = Path(zlabel.__file__).resolve().parents[2] / "benchmarks" / "cell_population_coverage.yaml"
+COVERAGE_YAML = Path(__file__).resolve().parent.parent / "benchmarks" / "cell_population_coverage.yaml"
 
 _PANELS = {panel.bucket: panel for panel in load_panels(PANELS_YAML)}
 _COVERAGE = yaml.safe_load(COVERAGE_YAML.read_text(encoding="utf-8"))

@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup setup-core setup-upgrade format lint lint-docstrings type test verify notebook
+.PHONY: help setup setup-core setup-upgrade format lint lint-docstrings type test verify audit notebook
 
 help:  ## Show this help
 	@awk 'BEGIN {FS = ":.*## "; print "Usage: make <target>\n"} /^##@/ {printf "\n%s\n", substr($$0, 5)} /^[a-zA-Z0-9_.-]+:.*## / {printf "  %-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -34,6 +34,9 @@ test:  ## pytest
 	uv run pytest -vv
 
 verify: lint lint-docstrings type test  ## The PR gate: lint + docstrings + types + tests
+
+audit:  ## Curation gate: audit panels.yaml markers vs ZFIN data (needs data/ontologies; not in CI)
+	uv run python scripts/audit_panels.py
 
 ##@ Development
 notebook:  ## Start JupyterLab on port 8888 (no token; run make setup first)

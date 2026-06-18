@@ -425,7 +425,7 @@ notochord:
   markers:
     - tbxta    # T-box TF a (was ntl/no tail); notochord master TF
     - shha     # sonic hedgehog signaling molecule a; notochord signaling center
-    - col2a1a  # collagen type II alpha 1a; notochord sheath ECM
+    - col2a1a  # collagen type II alpha 1a; notochord sheath ECM (shared with cartilage)
     - col8a1a  # collagen type VIII alpha 1a; notochord sheath ECM
     - noto     # notochord homeobox; notochord-specific TF
 

@@ -112,7 +112,7 @@ Retina (photoreceptors, interneurons, RGC), lens, and RPE — the highest-covera
 | atoh1a | hair-cell fate | also lateral line |
 
 ### lateral_line — lateral line system / taste bud (ZFA:0000034 / ZFA:0001074) · grounding 5/5
-Mechano/chemosensory hair-cell systems. Shares hair-cell markers with otic; the anchor (lateral line vs inner ear) and the cluster's expression disambiguate.
+Mechano/chemosensory hair-cell systems. Shares hair-cell markers with otic; the anchor (lateral line vs inner ear) and the cluster's expression disambiguate. A taste-bud cluster also scores here (shared placodal markers) and is named at the lateral-line anchor (or a ZFA child) — an honest depth-fallback, not a literal taste-bud call; ZFA places taste bud in the gustatory system, but no separate bucket is warranted at this broad altitude.
 
 | marker | role | note |
 |---|---|---|
