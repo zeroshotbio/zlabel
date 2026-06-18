@@ -50,7 +50,13 @@ The panels themselves are a versioned **v1 starter set** (see `docs/reference/
 cell_labelling_playbook.md §7`): *"These are starter panels for first-pass annotation.
 They must be versioned and adapted to stage, genome build, sequencing chemistry, and
 atlas source. Do not treat this table as a final marker authority."* They will be
-replaced by a curated gold standard as the eval matures.
+replaced by a curated gold standard as the eval matures. The starter set has since been
+expanded to a complete, atlas-spanning broad taxonomy (~30 buckets covering Daniocell /
+Zebrahub / ZSCAPE populations); see
+[`docs/reference/panels_and_markers_reference.md`](reference/panels_and_markers_reference.md)
+for the per-marker rationale, anchors, and evidence, and
+[`benchmarks/cell_population_coverage.yaml`](../benchmarks/cell_population_coverage.yaml)
+for the coverage proof.
 
 What v1 deterministic *won't* do: **open-ended de-novo naming of types with no
 expression footprint.** That is the LLM's job (§LLM).
@@ -68,7 +74,7 @@ synonyms = zlabel.load_gene_synonym_map("data/ontologies/zfin.gaf")
 result = zlabel.normalize_symbol("flk1", synonyms)
 # NormalizedSymbol(input='flk1', status='resolved', symbols=frozenset({'kdrl'}), note=None)
 
-panels = zlabel.load_panels("src/zlabel/panels.yaml")   # 14 curated buckets
+panels = zlabel.load_panels("src/zlabel/panels.yaml")   # curated buckets (see panels_and_markers_reference.md)
 normalized = zlabel.normalize_markers(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"], synonyms)
 scores = zlabel.score_markers(normalized, panels)
 scores[0]   # BucketScore(bucket='muscle', score=0.8105, kind='identity', ...)

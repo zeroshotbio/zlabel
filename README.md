@@ -41,7 +41,7 @@ A label rests on **converging evidence, not one gene**. The full design is in
 Built in [7 phases, one PR each](.claude/docs/workflow.md):
 
 - [x] **Phase 1** — Skeleton + data (`zlabel.data` loaders for ZFA, ZFIN expression, GAF synonyms; fixture tests)
-- [x] **Phase 2** — Genes + panels (`normalize_symbol`, `panels.yaml` with 14 curated buckets, `score_markers`)
+- [x] **Phase 2** — Genes + panels (`normalize_symbol`, `panels.yaml` with curated buckets, `score_markers`)
 - [x] **Phase 3** — Ground + label (`ground.py` lookups → converging-evidence decision → `Label`)
 - [x] **Phase 4a** — Resolution engine (`resolve.py` IC-weighted ZFA convergence namer; panels demote to a coarse prior + guardrail)
 - [x] **Phase 4b** — Eval (`build_daniocell_eval.py` + `evaluate.py` + the Daniocell crosswalk; broad agreement, coverage, named/fallback/abstain split, parent-child overcall audit)
@@ -120,6 +120,7 @@ Run `make` (or `make help`) to see everything. The essentials:
 
 - [`docs/glossary.md`](docs/glossary.md) — terms, data authorities, and data flow (ELI5).
 - [`docs/design.md`](docs/design.md) — authoritative design + rationale.
+- [`docs/reference/panels_and_markers_reference.md`](docs/reference/panels_and_markers_reference.md) — every panel bucket, its markers, ZFA anchor, and evidence (the companion to `panels.yaml`).
 - [`AGENTS.md`](AGENTS.md) — rules + architecture for contributors (human or AI).
 - [`.claude/docs/`](.claude/docs/) — domain primer, build workflow, git conventions.
 - [`notebooks/build-demos/`](notebooks/build-demos/) — executable build walkthroughs (one per completed phase).
