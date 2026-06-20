@@ -16,6 +16,14 @@ objects are not).
 - `daniocell_tissue_crosswalk.yaml` — the gold-side, fail-closed `{tissue -> broad ZFA
   anchor(s)}` scoring map, reviewed like code.
 - `daniocell_baseline_report.md` — the generated baseline report (regenerate; do not hand-edit).
+- `daniocell_umap.json` — a 2-D UMAP overview asset for the zlabel-scope companion: one centroid
+  (x, y) + true cell count per cluster, plus a downsampled cell cloud. A VIEW of the substrate for
+  the cluster-overview map; it never feeds the labeler and is not used in scoring. See Rebuild.
+  Shape (coordinates rounded to 3 dp):
+    - `provenance` — `{source, n_cells_total, n_cells_embedded, n_clusters, max_per_cluster, n_hvg, n_pcs, seed}`.
+    - `bounds` — `{xmin, xmax, ymin, ymax}`: the coordinate extent of the embedded cells.
+    - `clusters` — `[{cluster_id, x, y, n_cells}, ...]`: one centroid per `clust` (n_cells is the true size).
+    - `cloud` — `[[x, y, cluster_id], ...]`: positional triples (not keyed) for the faint background cells.
 
 ## Source
 
@@ -31,7 +39,13 @@ The builder NEVER downloads by default. Provide local paths, or opt in to a one-
 uv sync --extra eval   # scanpy + anndata (builder only)
 uv run python scripts/build_daniocell_eval.py --download --cache-dir data/daniocell
 uv run python -m zlabel.evaluate benchmarks/daniocell_eval.csv
+uv run --extra eval python scripts/build_daniocell_umap.py   # the companion's UMAP overview asset
 ```
+
+The UMAP asset is a stratified-subsample embedding (at most 150 cells per cluster) for stable
+centroids at tractable cost; reported `n_cells` is the true cluster size. It is panel-independent —
+the companion re-colors it from the current outcomes on restart, so it needs rebuilding only if the
+Daniocell source changes, not when panels or the engine change.
 
 ## Parameters (deterministic)
 

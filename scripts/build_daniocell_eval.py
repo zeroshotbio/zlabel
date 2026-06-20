@@ -33,7 +33,7 @@ from typing import Any
 
 # Daniocell GEO GSE223922 supplementary files.
 _GEO_BASE = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE223nnn/GSE223922/suppl/"
-_FILES = {
+FILES = {
     "counts": "GSE223922_Sur2023_counts.mtx.gz",
     "genes": "GSE223922_Sur2023_counts_rows_genes.txt.gz",
     "cells": "GSE223922_Sur2023_counts_cols_cells.txt.gz",
@@ -185,8 +185,8 @@ def compute_markers(counts: Path, genes: Path, cells: Path, cell_to_clust: dict[
     from scipy.io import mmread
     from scipy.sparse import csr_matrix
 
-    gene_names = _read_lines(genes)
-    cell_names = _read_lines(cells)
+    gene_names = read_lines(genes)
+    cell_names = read_lines(cells)
     sys.stderr.write(f"loading counts matrix ({counts.name}) ...\n")
     # mmread yields a genes x cells COO matrix; .T is a cheap axis swap, then a single CSR copy
     # gives the cells x genes layout AnnData wants (one fewer full sparse copy than csr-then-T).
@@ -210,7 +210,7 @@ def compute_markers(counts: Path, genes: Path, cells: Path, cell_to_clust: dict[
     return out
 
 
-def _read_lines(path: Path) -> list[str]:
+def read_lines(path: Path) -> list[str]:
     """Read a gzip text file into a list of stripped lines."""
     with gzip.open(path, "rt", encoding="utf-8") as handle:
         return [line.strip() for line in handle]
@@ -231,9 +231,9 @@ def _resolve_inputs(cache_dir: Path, explicit: dict[str, str | None], download: 
         SystemExit: When inputs are missing and download is False (fail closed).
     """
     paths: dict[str, Path] = {}
-    for key in _FILES:
+    for key in FILES:
         override = explicit.get(key)
-        paths[key] = Path(override) if override else cache_dir / _FILES[key]
+        paths[key] = Path(override) if override else cache_dir / FILES[key]
     missing = [key for key, path in paths.items() if not path.exists()]
     if missing and not download:
         raise SystemExit(
@@ -243,7 +243,7 @@ def _resolve_inputs(cache_dir: Path, explicit: dict[str, str | None], download: 
     if missing:
         cache_dir.mkdir(parents=True, exist_ok=True)
         for key in missing:
-            url = _GEO_BASE + _FILES[key]
+            url = _GEO_BASE + FILES[key]
             sys.stderr.write(f"downloading {url} -> {paths[key]}\n")
             urllib.request.urlretrieve(url, paths[key])
     return paths
@@ -262,11 +262,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--cache-dir", default="data/daniocell", help="dir holding the GEO files")
     parser.add_argument("--download", action="store_true", help="fetch missing GEO files once (opt-in)")
     parser.add_argument("--out", default="benchmarks/daniocell_eval.csv")
-    for key in _FILES:
+    for key in FILES:
         parser.add_argument(f"--{key}", default=None, help=f"explicit path to the {key} file")
     args = parser.parse_args(argv)
 
-    explicit = {key: getattr(args, key) for key in _FILES}
+    explicit = {key: getattr(args, key) for key in FILES}
     paths = _resolve_inputs(Path(args.cache_dir), explicit, args.download)
 
     per_cluster, cell_to_clust = read_metadata(paths["metadata"])
