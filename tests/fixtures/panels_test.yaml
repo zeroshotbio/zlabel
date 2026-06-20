@@ -17,9 +17,6 @@ muscle:
   ontology_anchor:
     - ZFA:0000548  # musculature system (verified in zfa_test.obo)
   markers: [mylpfa, acta1b, tnnt3a, myod1, myog]
-  subpanels:
-    myoblast: [myod1, myog]
-    fast: [mylpfa, tnnt3a]
 
 blood_erythroid:
   germ_layer: mesoderm

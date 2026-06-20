@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import math
 import os
-from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -56,11 +55,6 @@ class Panel:
         ontology_anchor (frozenset[str]): ZFA ids the bucket's markers should
             express under. Used by Phase 3 grounding to compute the grounding
             confidence component. Empty for state panels.
-        subpanels (Mapping[str, frozenset[str]]): Optional named sub-panels
-            (e.g. muscle.fast, muscle.slow). Loaded but not yet scored; reserved
-            for subcluster resolution in a later phase.
-            Excluded from __hash__ because dict (the runtime type) is not
-            hashable; equality still includes subpanels.
     """
 
     bucket: str
@@ -71,7 +65,6 @@ class Panel:
     cite: str
     kind: str
     ontology_anchor: frozenset[str] = field(default_factory=frozenset)
-    subpanels: Mapping[str, frozenset[str]] = field(hash=False, default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -138,7 +131,7 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
 
     Expects a top-level mapping from bucket name to a dict with keys
     germ_layer, tissue, lineage, kind, markers, cite, and an optional
-    subpanels mapping. Markers are lowercased at load time. Raises ValueError
+    ontology_anchor list. Markers are lowercased at load time. Raises ValueError
     for an unrecognized kind or an empty marker list.
 
     Args:
@@ -177,12 +170,6 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
             raise ValueError(f"panel {bucket!r} has no markers")
         markers = frozenset(marker.lower() for marker in markers_raw)
 
-        # Subpanels load into the same frozenset convention; not scored here.
-        subpanels_raw: dict[str, list[str]] = entry.get("subpanels", {})  # type: ignore[assignment]
-        subpanels: dict[str, frozenset[str]] = {
-            name: frozenset(marker.lower() for marker in sub_markers) for name, sub_markers in subpanels_raw.items()
-        }
-
         # Anchor must be a list of ids; a bare scalar (ontology_anchor: ZFA:0000548)
         # would otherwise become a frozenset of characters instead of failing.
         anchor_raw = entry.get("ontology_anchor", [])
@@ -200,7 +187,6 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
                 cite=str(entry.get("cite", "")),
                 kind=kind,
                 ontology_anchor=ontology_anchor,
-                subpanels=subpanels,
             )
         )
     return panels
