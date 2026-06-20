@@ -15,6 +15,10 @@ Anchor existence is checked separately by scripts/verify_anchors.py; this script
 assumes the ids are real and focuses on the markers. State panels carry no anchor,
 so only their resolution is checked.
 
+For each identity panel the report also shows its structural tier (organ_system,
+organ, tissue, cell_type, or other), derived from the anchor's placement in ZFA --
+the rung used in docs/reference/panels_and_markers_reference.md.
+
 Run before committing panel changes (needs scripts/setup_data.sh data):
     uv run python scripts/audit_panels.py
 
@@ -39,6 +43,15 @@ DATA = ROOT / "data" / "ontologies"
 GAF = DATA / "zfin.gaf"
 EXPR = DATA / "zfin_wildtype_expression.txt"
 ZFA = DATA / "zfa.obo"
+
+# ZFA upper classes that define the structural ladder, most specific first. A panel's
+# tier is the most specific rung any of its anchors reaches; "other" if none (e.g. fin).
+TIER_CLASSES: tuple[tuple[str, frozenset[str]], ...] = (
+    ("cell_type", frozenset({"ZFA:0009000"})),  # cell
+    ("tissue", frozenset({"ZFA:0001477"})),  # portion of tissue
+    ("organ", frozenset({"ZFA:0000496", "ZFA:0001490"})),  # (cavitated) compound organ
+    ("organ_system", frozenset({"ZFA:0001439"})),  # anatomical system
+)
 
 
 def main() -> int:
@@ -75,6 +88,24 @@ def main() -> int:
                 return True
         return False
 
+    def anchor_tier(anchor_id: str) -> str:
+        # The anchor's structural rung: its most specific ZFA upper-class ancestor.
+        if anchor_id not in zfa:
+            return "other"
+        lineage = set(ancestors(zfa, anchor_id))
+        lineage.add(anchor_id)
+        for tier, classes in TIER_CLASSES:
+            if lineage & classes:
+                return tier
+        return "other"
+
+    tier_rank = {tier: rank for rank, (tier, _) in enumerate(TIER_CLASSES)}
+
+    def panel_tier(anchors: frozenset[str]) -> str:
+        # A panel's rung is the most specific tier any of its anchors reaches.
+        tiers = [anchor_tier(a) for a in anchors]
+        return min(tiers, key=lambda t: tier_rank.get(t, len(TIER_CLASSES))) if tiers else "other"
+
     dead: list[str] = []
     thin: list[str] = []
     print(f"Auditing {len(panels)} panels against {DATA.name} (CONVERGENCE_MIN={CONVERGENCE_MIN}):\n")
@@ -95,7 +126,8 @@ def main() -> int:
             if grounding < CONVERGENCE_MIN:
                 thin.append(f"{panel.bucket} ({grounding} grounding)")
             flag = "OK " if ok else "FAIL"
-            print(f"  [{flag}] {panel.bucket:18s} {grounding}/{len(panel.markers)} ground", end="")
+            tier = panel_tier(panel.ontology_anchor)
+            print(f"  [{flag}] {panel.bucket:18s} {grounding}/{len(panel.markers)} ground  ·  {tier:12s}", end="")
         else:
             flag = "OK " if not panel_dead else "FAIL"
             print(f"  [{flag}] {panel.bucket:18s} state ({len(panel.markers)} markers)", end="")
