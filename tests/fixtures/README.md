@@ -42,14 +42,11 @@ tested separately with inline rows in `tests/test_data.py`, not from these files
 A four-bucket panel subset in the `panels.yaml` schema, used by `tests/test_panels.py`
 to exercise `load_panels` and `score_markers` offline:
 
-- `muscle` (identity) — 5 markers: `mylz2, acta1b, tnnt3a, myod1, myog`; includes
-  `myoblast: [myod1, myog]` and `fast: [mylz2, tnnt3a]` subpanels to test subpanel
-  loading without scoring. (Uses `mylz2` directly; the synthetic synonym map treats
-  it as a current symbol — the real GAF maps it to `mylpfa`.)
+- `muscle` (identity) — 5 markers: `mylpfa, acta1b, tnnt3a, myod1, myog`.
 - `blood_erythroid` (identity) — 3 markers: `gata1a, hbae1.1, hbbe1.1`.
 - `endothelium` (identity) — 3 markers: `kdrl, fli1a, cdh5`.
 - `cycling` (state) — 3 markers: `mki67, pcna, top2a`.
 
 The muscle + blood + endothelium combination drives the keystone scorer trace:
-`["mylz2","acta1b","tnnt3a","myod1","myog","hbae1.1","kdrl"]` should score muscle
+`["mylpfa","acta1b","tnnt3a","myod1","myog","hbae1.1","kdrl"]` should score muscle
 ≈ 0.81, blood_erythroid ≈ 0.098, endothelium ≈ 0.092, cycling = 0.0.

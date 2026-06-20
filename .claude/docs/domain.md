@@ -7,11 +7,11 @@ Enough zebrafish single-cell biology to work in this repo. The design of record 
 
 Label one scRNA-seq **cluster** of whole-organism zebrafish (*Danio rerio*) cells
 from its **marker genes**. Whole-organism, low-resolution atlases are labeled
-**broad-first**: assign each cluster to a high-level tissue / germ-layer / lineage
-bucket (neural, epidermis, muscle, blood, immune, endothelium, endoderm/gut,
-mesenchyme/cartilage, notochord, pigment, germline, cycling, or mixed/unresolved),
-then subcluster and re-label finer. A good label rests on **converging evidence**,
-not a single gene.
+**broad-first**: assign each cluster to one of the curated panel buckets — 33 in all
+(31 identity lineages spanning every germ layer, plus 2 orthogonal state programs; see
+`docs/reference/panels_and_markers_reference.md`) — or to mixed/unresolved when the
+evidence does not converge, then subcluster and re-label finer. A good label rests on
+**converging evidence**, not a single gene.
 
 ## scRNA-seq in a paragraph
 

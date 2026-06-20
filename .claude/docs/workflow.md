@@ -29,7 +29,7 @@ zlabel is built in **seven phases**. Every phase follows the same loop:
 2. **Genes + panels** — `genes.normalize_symbol`, `panels.yaml` (curated buckets, each cited), the overlap scorer + tests.
 3. **Ground + label** — pure grounding lookups, then the converging-evidence decision in `label.py` → `Label`; unit-test the worked examples.
 4. Split into two PRs:
-   - **4a (engine)** — `resolve.py` IC-weighted ZFA convergence namer; panels demote to coarse prior + guardrail; `Label` gains depth, panel_bucket, convergent_genes.
+   - **4a (engine)** — `resolve.py` support-weighted, anchor-rooted ZFA convergence namer (descends from the winning panel's anchor; the guardrail is intrinsic); panels supply the coarse prior + anchor; `Label` gains depth, panel_bucket, convergent_genes.
    - **4b (eval, shipped)** — `build_daniocell_eval.py` + `evaluate.py` + the Daniocell crosswalk; broad agreement, coverage, the named/fallback/abstain split, and the parent-child overcall audit (the proof it works).
 5. **CLI + notebook 01** — `zlabel label` / `zlabel eval`; the one-cluster walkthrough.
 6. **Notebooks 02/03** — scanpy clustering → markers → zlabel, then a real 48 hpf end-to-end (one-off demos).

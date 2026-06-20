@@ -51,8 +51,8 @@ cell_labelling_playbook.md §7`): *"These are starter panels for first-pass anno
 They must be versioned and adapted to stage, genome build, sequencing chemistry, and
 atlas source. Do not treat this table as a final marker authority."* They will be
 replaced by a curated gold standard as the eval matures. The starter set has since been
-expanded to a complete, atlas-spanning broad taxonomy (~30 buckets covering Daniocell /
-Zebrahub / ZSCAPE populations); see
+expanded to a complete, atlas-spanning broad taxonomy (33 buckets — 31 identity + 2
+state — covering Daniocell / Zebrahub / ZSCAPE populations); see
 [`docs/reference/panels_and_markers_reference.md`](reference/panels_and_markers_reference.md)
 for the per-marker rationale, anchors, and evidence, and
 [`benchmarks/cell_population_coverage.yaml`](../benchmarks/cell_population_coverage.yaml)
@@ -75,7 +75,7 @@ result = zlabel.normalize_symbol("flk1", synonyms)
 # NormalizedSymbol(input='flk1', status='resolved', symbols=frozenset({'kdrl'}), note=None)
 
 panels = zlabel.load_panels("src/zlabel/panels.yaml")   # curated buckets (see panels_and_markers_reference.md)
-normalized = zlabel.normalize_markers(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"], synonyms)
+normalized = zlabel.normalize_markers(["mylpfa", "acta1b", "tnnt3a", "myod1", "myog"], synonyms)
 scores = zlabel.score_markers(normalized, panels)
 scores[0]   # BucketScore(bucket='muscle', score=0.8105, kind='identity', ...)
 ```
@@ -86,7 +86,7 @@ scores[0]   # BucketScore(bucket='muscle', score=0.8105, kind='identity', ...)
 from zlabel import Labeler
 
 labeler = Labeler(stage_hpf=48)                  # loads ZFA + ZFIN-expr + GAF + panels once
-label = labeler.label(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"])
+label = labeler.label(["mylpfa", "acta1b", "tnnt3a", "myod1", "myog"])
 # Label(bucket="musculature system",              # named ZFA term, descended from the muscle anchor
 #       depth=1, zfa_id="ZFA:0000548",            # the honest broad level -- generic muscle markers
 #       levels=("musculature system",),           # with no single subtype they all converge on
@@ -99,9 +99,9 @@ print(label.to_yaml())                           # the evidence packet
 > [!NOTE]
 > Five generic muscle markers name `musculature system`, not a subtype: the anchor-rooted descent
 > (§Resolution) walks down only while the markers converge on a *single* child, and here they spread
-> across muscle subtypes, so it stops at the broad muscle level. The old IC-first engine over-specified
-> this to a depth-6 term; the descent's support floor + unique-winner stop are the fix — the Phase 4b
-> overcall audit fell from 6/7 thin calls to 1/39. Fine-naming on a richer truth set is still future work.
+> across muscle subtypes, so it stops at the broad muscle level. The support floor + unique-winner stop
+> keep the descent from over-specifying — the Phase 4b overcall audit finds 1 thin call in 36 named
+> clusters. Fine-naming on a richer truth set is still future work.
 
 One entry point. The public surface is small — `Labeler`, `Label`, and the Phase 1/2
 primitives — while the decision code beneath it stays readable and unit-tested.
@@ -122,7 +122,7 @@ first cut; Phase 4b measured the baseline — calibration is deferred.
 `Labeler.trace(markers)` (and the module-level `label.trace(...)` over shared resources, for a
 caller that varies stage per request) returns a `LabelTrace`: the same decision as `label()` plus
 the intermediates the `Label` omits — the normalization outcomes (which markers were dropped), the
-full panel ladder, the **complete ZFA convergence vote with per-term gate pass/fail, near-misses
+full panel ladder, the **complete ZFA convergence descent with per-term gate pass/fail, near-misses
 included**, and the decision branch taken. It is opt-in and faithful: it threads a `recorder`
 through the real `decide()` / `resolve_label` (no second decision path), so `trace.label` is
 identical to `label(markers)` and the labeling path is unchanged when not tracing. `LabelTrace`
@@ -145,7 +145,7 @@ zlabel/
   src/zlabel/
     data.py     # LIFT (pure): load ZFA via obonet; parse ZFIN-expr TSV; load GAF synonym map  [P1]
     genes.py    # normalize_symbol() via GAF alias/paralog resolution                           [P2]
-    panels.yaml # THE MODEL: curated buckets -> {germ_layer, tissue, lineage, kind, markers[], cite, subpanels?}  [P2]
+    panels.yaml # THE MODEL: curated buckets -> {germ_layer, tissue, lineage, kind, markers[], cite, ontology_anchor[]}  [P2]
     panels.py   # load panels + rank-weighted overlap score (readable, no heavy dep)            [P2]
     ground.py   # pure fns: expression_lookup / grounds_under / stage_plausibility              [P3 shipped]
     label.py    # converging-evidence decision -> Label  (the heart)                           [P3+4a shipped]
@@ -198,10 +198,10 @@ derived CSV plus a reviewed, fail-closed `{tissue -> broad ZFA anchor}` crosswal
 under `benchmarks/` (the ~2.5 GB source is not). `evaluate.py` runs the engine over it and scores
 **broad agreement** in ZFA-ancestry space (`grounds_under`), reporting **coverage**, the
 **named/fallback/rollup/abstain** split, **confidence-by-correctness**, and a structural
-**parent-child overcall audit** — now a regression guard that the descent does not overcall (a
-specific term winning on the bare `CONVERGENCE_MIN` while a broader parent had more support); it fell
-from 6/7 thin calls under the old IC-first sort to 1/39 under the descent. The engine is untouched by
-the eval; the audit replays the vote tally privately. Daniocell's broad labels cannot validate
+**parent-child overcall audit** — a regression guard that the descent does not overcall (a
+specific term winning on the bare `CONVERGENCE_MIN` while a broader parent had more support): 1 thin
+call in 36 named clusters. The engine is untouched by the eval; the audit replays the vote tally
+privately. Daniocell's broad labels cannot validate
 within-bucket fine-naming, so depth correctness there is reported by the structural audit, not
 checked against truth — finer-reference depth validation (ZSCAPE/Zebrahub) and bare-LLM /
 panels-only baselines are deferred to a future calibration pass.
@@ -215,7 +215,7 @@ discipline and the review bar.
 2. **Genes + panels** — `normalize_symbol`, `panels.yaml`, the overlap scorer + tests.
 3. **Ground + label** — grounding lookups, then the decision in `label.py` → `Label`; unit-test the worked examples.
 4. **Resolution engine + eval** — split into two PRs:
-   - **4a (engine)** — `resolve.py` ZFA convergence namer (initially an IC-weighted vote, since recalibrated to the support-weighted anchor-rooted descent that folds the guardrail in); `label.py`/`models.py` wired to name from ZFA; panels supply the coarse prior + the descent anchor.
+   - **4a (engine)** — `resolve.py` support-weighted, anchor-rooted ZFA convergence namer (descends from the panel anchor, folding the guardrail into the walk); `label.py`/`models.py` wired to name from ZFA; panels supply the coarse prior + the descent anchor.
    - **4b (eval, shipped)** — `build_daniocell_eval.py` + `evaluate.py` + the Daniocell crosswalk; broad agreement, coverage, the named/fallback/abstain split, and the parent-child overcall audit. *The proof it works.*
 5. **CLI + notebook 01** — `zlabel label/eval`; the one-cluster walkthrough.
 6. **Notebooks 02/03** — scanpy clustering → markers → zlabel, then end-to-end.

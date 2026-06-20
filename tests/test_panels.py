@@ -68,14 +68,6 @@ def test_load_panels_kind_state(test_panels):
     assert "cycling" in state_buckets
 
 
-def test_load_panels_subpanels_loaded(test_panels):
-    # Subpanels load in Phase 2 even though they are not scored yet.
-    muscle = next(panel for panel in test_panels if panel.bucket == "muscle")
-    assert "myoblast" in muscle.subpanels
-    assert isinstance(muscle.subpanels["myoblast"], frozenset)
-    assert "myod1" in muscle.subpanels["myoblast"]
-
-
 def test_load_panels_ontology_anchor_loaded(test_panels):
     # muscle and endothelium fixtures both carry anchors; blood_erythroid has
     # no ontology_anchor key and should default to an empty frozenset.
