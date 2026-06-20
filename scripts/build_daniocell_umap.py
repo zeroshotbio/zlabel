@@ -27,7 +27,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from build_daniocell_eval import _FILES, read_metadata
+from build_daniocell_eval import FILES, read_lines, read_metadata
 
 SEED = 0
 MAX_PER_CLUSTER = 150  # stratified subsample cap; a smaller cluster keeps all its cells
@@ -35,12 +35,6 @@ CLOUD_POINTS = 12000  # downsampled background cloud size
 N_HVG = 2000
 N_PCS = 50
 _COORD_DP = 3  # round coords to keep the committed JSON small
-
-
-def _read_lines(path: Path) -> list[str]:
-    """Read a gzip text file into a list of stripped lines."""
-    with gzip.open(path, "rt", encoding="utf-8") as handle:
-        return [line.strip() for line in handle]
 
 
 def _resolve(cache_dir: Path) -> dict[str, Path]:
@@ -56,7 +50,7 @@ def _resolve(cache_dir: Path) -> dict[str, Path]:
         SystemExit: When an input is missing (this builder never downloads; the eval builder's
             --download fetches them once).
     """
-    paths = {key: cache_dir / name for key, name in _FILES.items()}
+    paths = {key: cache_dir / name for key, name in FILES.items()}
     missing = [key for key, path in paths.items() if not path.exists()]
     if missing:
         raise SystemExit(
@@ -85,8 +79,8 @@ def load_counts(counts: Path, genes: Path, cells: Path, cell_to_clust: dict[str,
     from scipy.io import mmread
     from scipy.sparse import csr_matrix
 
-    gene_names = _read_lines(genes)
-    cell_names = _read_lines(cells)
+    gene_names = read_lines(genes)
+    cell_names = read_lines(cells)
     sys.stderr.write(f"loading counts matrix ({counts.name}) ...\n")
     with gzip.open(counts, "rb") as handle:
         matrix = csr_matrix(mmread(handle).T)

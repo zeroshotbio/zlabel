@@ -19,6 +19,11 @@ objects are not).
 - `daniocell_umap.json` — a 2-D UMAP overview asset for the zlabel-scope companion: one centroid
   (x, y) + true cell count per cluster, plus a downsampled cell cloud. A VIEW of the substrate for
   the cluster-overview map; it never feeds the labeler and is not used in scoring. See Rebuild.
+  Shape (coordinates rounded to 3 dp):
+    - `provenance` — `{source, n_cells_total, n_cells_embedded, n_clusters, max_per_cluster, n_hvg, n_pcs, seed}`.
+    - `bounds` — `{xmin, xmax, ymin, ymax}`: the coordinate extent of the embedded cells.
+    - `clusters` — `[{cluster_id, x, y, n_cells}, ...]`: one centroid per `clust` (n_cells is the true size).
+    - `cloud` — `[[x, y, cluster_id], ...]`: positional triples (not keyed) for the faint background cells.
 
 ## Source
 
