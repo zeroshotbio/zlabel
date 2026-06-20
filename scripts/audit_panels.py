@@ -49,7 +49,7 @@ ZFA = DATA / "zfa.obo"
 TIER_CLASSES: tuple[tuple[str, frozenset[str]], ...] = (
     ("cell_type", frozenset({"ZFA:0009000"})),  # cell
     ("tissue", frozenset({"ZFA:0001477"})),  # portion of tissue
-    ("organ", frozenset({"ZFA:0000496", "ZFA:0001490"})),  # (cavitated) compound organ
+    ("organ", frozenset({"ZFA:0000496", "ZFA:0001490"})),  # compound organ / cavitated compound organ
     ("organ_system", frozenset({"ZFA:0001439"})),  # anatomical system
 )
 

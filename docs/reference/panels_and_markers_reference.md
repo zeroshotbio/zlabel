@@ -127,10 +127,10 @@ state is recorded separately.
 
 - **glia** is anchored below the nervous system so glial clusters resolve to glia
   rather than rolling up to the CNS.
-- **lateral_line** shares its hair-cell markers (`atoh1a`, `eya1`) with `otic`; the
-  anchors disambiguate. A taste-bud cluster also scores here and is named at the
-  lateral-line anchor — an honest depth-fallback, since ZFA places taste bud in the
-  gustatory system but no separate bucket is warranted at this altitude.
+- **lateral_line** covers both the lateral line and taste buds — `taste bud`
+  (`ZFA:0001074`) is one of its anchors — which share hair-cell and placodal markers
+  (`atoh1a`, `eya1`, `six1b`) with `otic`. A cluster grounds under whichever anchor
+  its expression supports; there is no separate taste-bud bucket at this broad altitude.
 - **mural** sits on a sparsely curated ZFA term, so its contractile markers (`tagln`,
   `acta2`, `desma`, `cspg4`) mainly aid scoring rather than grounding the descent.
 - **mesenchyme** keeps the type-I collagens (`col1a1a`, `col1a2`) for scoring; they
