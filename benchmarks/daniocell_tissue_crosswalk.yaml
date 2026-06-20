@@ -13,7 +13,7 @@
 
 tissues:
   axia:                                 # axial (notochord, prechordal plate, hatching gland)
-    anchors: [ZFA:0001204]              # axial mesoderm
+    anchors: [ZFA:0001204, ZFA:0000135] # axial mesoderm + notochord (not reachable under it)
   blas:                                 # blastomeres -- undifferentiated, not a tissue
     not_scored: true
   ceph:                                 # cephalic / head mesoderm + mesenchyme
