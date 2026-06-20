@@ -28,8 +28,8 @@ entry point — rules, architecture, commands, and build context in one file.
 
 1. **Normalize** each marker to its official ZFIN symbol (aliases + `a`/`b` paralogs).
 2. **Score** markers against curated tissue/lineage panels → a ranked bucket table (a coarse prior, not the namer).
-3. **Converge** on ZFA anatomy — each marker's in-vivo ZFIN expression votes for the terms it covers; the most specific term enough markers share names the cluster.
-4. **Guardrail** — if that term contradicts the winning panel's ontology anchor, fall back to the coarse panel bucket; check stage plausibility (ZFS).
+3. **Descend** from the winning panel's ZFA anchor — each marker's in-vivo ZFIN expression votes for the anatomy terms it covers; the namer rolls down into the best-supported child while the markers keep converging on one subtype, stopping at the deepest term they still agree on.
+4. **Guardrail (intrinsic) + stage** — the name is descended from the anchor, so it always sits at or under it; an anchor the markers don't support falls back to the coarse panel bucket. Check stage plausibility (ZFS).
 5. **Decide** — assign with confidence, or abstain / roll up to a coarser tier when nothing dominates.
 6. **Emit** a `Label` evidence packet (named term, depth, the `panel_bucket` prior, convergent genes, confidence, evidence).
 
@@ -43,7 +43,7 @@ Built in [7 phases, one PR each](.claude/docs/workflow.md):
 - [x] **Phase 1** — Skeleton + data (`zlabel.data` loaders for ZFA, ZFIN expression, GAF synonyms; fixture tests)
 - [x] **Phase 2** — Genes + panels (`normalize_symbol`, `panels.yaml` with curated buckets, `score_markers`)
 - [x] **Phase 3** — Ground + label (`ground.py` lookups → converging-evidence decision → `Label`)
-- [x] **Phase 4a** — Resolution engine (`resolve.py` IC-weighted ZFA convergence namer; panels demote to a coarse prior + guardrail)
+- [x] **Phase 4a** — Resolution engine (`resolve.py` support-weighted, anchor-rooted ZFA convergence namer; panels supply the coarse prior + anchor, and the guardrail is intrinsic to the descent)
 - [x] **Phase 4b** — Eval (`build_daniocell_eval.py` + `evaluate.py` + the Daniocell crosswalk; broad agreement, coverage, named/fallback/abstain split, parent-child overcall audit)
 - [ ] **Phase 5** — CLI + notebook 01 (`zlabel label/eval`; the one-cluster walkthrough)
 - [ ] **Phase 6** — Notebooks 02/03 (scanpy clustering → markers → zlabel; end-to-end 48 hpf)
@@ -58,13 +58,13 @@ Phases 1–4a ship, plus the Phase 4b Daniocell evaluation harness. All loaders 
 from zlabel import Labeler
 
 lab = Labeler(stage_hpf=48)   # loads ZFA + ZFIN-expr + GAF + panels once
-label = lab.label(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"])
+label = lab.label(["mylpfa", "acta1b", "tnnt3a", "myod1", "myog"])
 print(label.to_yaml())        # bucket, confidence, evidence packet, or abstention
 
 # Introspect the same decision (advanced surface): the panel ladder, the full ZFA
-# convergence vote with per-term gate pass/fail (near-misses included), and the
+# convergence descent with per-term gate pass/fail (near-misses included), and the
 # branch taken. trace.label is identical to lab.label([...]).
-trace = lab.trace(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"])
+trace = lab.trace(["mylpfa", "acta1b", "tnnt3a", "myod1", "myog"])
 print(trace.to_yaml())
 ```
 
@@ -84,11 +84,10 @@ result = zlabel.normalize_symbol("flk1", synonyms)
 # NormalizedSymbol(input='flk1', status='resolved', symbols=frozenset({'kdrl'}), note=None)
 
 panels = zlabel.load_panels("src/zlabel/panels.yaml")
-# 14 panels (12 identity + 2 state): neural, epidermis, muscle, blood_erythroid,
-# immune_myeloid, endothelium, endoderm_gut, mesenchyme, cartilage, notochord,
-# pigment, germline, cycling, stress_response
+# 33 panels (31 identity lineages + 2 state programs) spanning every germ layer;
+# see docs/reference/panels_and_markers_reference.md for the full bucket list.
 
-markers = ["mylz2", "acta1b", "tnnt3a", "myod1", "myog", "hbae1.1", "kdrl"]
+markers = ["mylpfa", "acta1b", "tnnt3a", "myod1", "myog", "hbae1.1", "kdrl"]
 normalized = zlabel.normalize_markers(markers, synonyms)   # normalize once, then score
 scores = zlabel.score_markers(normalized, panels)
 scores[0]   # BucketScore(bucket='muscle', score=0.8105, kind='identity', ...)

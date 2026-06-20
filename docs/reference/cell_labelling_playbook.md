@@ -95,7 +95,7 @@ For a deeper split of deterministic steps, agentic judgment, and human review ch
 
 For each Leiden cluster, create a compact evidence packet before attempting a final label. The evidence packet should be saved even if the cluster remains unresolved.
 
-| `cluster_id: Leiden_4n_cells: 12847sample_context:  organism: Danio rerio  stage: 48 hpf  tissue_scope: whole organism  condition: wild typemarker_evidence:  top_positive_markers: [mylz2, mylpfa, acta1b, tnnt3a, myod1, myog, ckma]  high_pct_in_cluster: [mylz2, acta1b, tnnt3a]  low_pct_outside_cluster: [mylz2, tnnt3a]signature_scores:  muscle: 0.91  paraxial_mesoderm: 0.52  neural: 0.18  blood_erythroid: 0.05reference_hits:  ZCL: skeletal muscle / muscle, score 0.83  Daniocell: muscle, score 0.88  Zebrahub: myotome / muscle lineage, score 0.81candidate_label: skeletal muscle lineageconfidence: highnext_action: subcluster to separate myoblasts, fast/slow muscle, mature myofibers` |
+| `cluster_id: Leiden_4n_cells: 12847sample_context:  organism: Danio rerio  stage: 48 hpf  tissue_scope: whole organism  condition: wild typemarker_evidence:  top_positive_markers: [mylpfa, acta1b, tnnt3a, myod1, myog, ckma]  high_pct_in_cluster: [mylpfa, acta1b, tnnt3a]  low_pct_outside_cluster: [mylpfa, tnnt3a]signature_scores:  muscle: 0.91  paraxial_mesoderm: 0.52  neural: 0.18  blood_erythroid: 0.05reference_hits:  ZCL: skeletal muscle / muscle, score 0.83  Daniocell: muscle, score 0.88  Zebrahub: myotome / muscle lineage, score 0.81candidate_label: skeletal muscle lineageconfidence: highnext_action: subcluster to separate myoblasts, fast/slow muscle, mature myofibers` |
 | :---- |
 
 ## **5.2 Decide whether the cluster is technical, state-driven, mixed, or biological**
@@ -114,11 +114,11 @@ For each Leiden cluster, create a compact evidence packet before attempting a fi
 
 | Evidence type | Example for a muscle candidate | Interpretation |
 | :---- | :---- | :---- |
-| Positive structural markers | mylz2, acta1b, tnnt3a, tnnc2 | Supports differentiated muscle program. |
+| Positive structural markers | mylpfa, acta1b, tnnt3a, tnnc2.2 | Supports differentiated muscle program. |
 | Positive regulatory markers | myod1, myog | Supports myogenic lineage/differentiation. |
 | Negative neural markers | elavl3, neurod1, sox3 low | Argues against neural identity. |
-| Negative blood markers | gata1a, hbae1.1, hbbe1.1 low | Argues against erythroid/blood identity. |
-| Negative endothelial markers | kdrl, fli1a, cdh5 low | Argues against vascular/endothelial identity. |
+| Negative blood markers | gata1a, hbae1.1, hbbe2 low | Argues against erythroid/blood identity. |
+| Negative endothelial markers | kdrl, fli1, cdh5 low | Argues against vascular/endothelial identity. |
 
 ## **5.4 Use deterministic ZFIN/ZFA convergence naming**
 
@@ -166,18 +166,18 @@ The following additions are useful but should be treated as experimental until b
 | Broad label | Starter positive markers | Ontology anchor | Subclustering notes |
 | :---- | :---- | :---- | :---- |
 | Neural / neuroectoderm | elavl3, neurod1, tubb5, sox3, sox2, her4.1, ascl1a | CL neuron/neural progenitor when specific; ZFA nervous system terms | Subcluster into progenitors, neurons, glia, sensory neurons, brain regions. |
-| Epidermis / epithelial surface | krt4, krt5, tp63, cldne, epcam-like epithelial genes | ZFA epidermis/epithelium terms; CL epithelial cell if appropriate | Separate periderm, basal epidermis, ionocytes, mucous/secretory cells later. |
-| Muscle / myogenic lineage | myod1, myog, mylz2, mylpfa, acta1b, tnnt3a, tnnc2, ckma | ZFA muscle / myotome terms; CL muscle cell if cell-level evidence is strong | Subcluster into myoblasts, fast/slow muscle, mature fibers. |
-| Blood / erythroid | gata1a, hbae1.1, hbbe1.1, alas2, klf1a, hemgn | ZFA blood; CL erythroid cell if specific | Separate primitive erythroid, erythroblast, mature erythroid depending on stage. |
-| Immune / myeloid | lcp1, mpeg1.1, coro1a, spi1b, mfap4, lyz, csf1ra | CL macrophage/leukocyte when specific; ZFA immune system context | Macrophage, neutrophil, dendritic-like, lymphoid require finer review. |
-| Endothelium / vasculature | kdrl, fli1a, etv2, cdh5, pecam1, flt1 | CL endothelial cell; ZFA blood vessel / vascular terms | Separate arterial, venous, lymphatic, hemogenic endothelium later. |
+| Epidermis / epithelial surface | krt4, krt5, tp63, cldne, krt8, cldnb | ZFA epidermis/epithelium terms; CL epithelial cell if appropriate | Separate periderm, basal epidermis, ionocytes, mucous/secretory cells later. |
+| Muscle / myogenic lineage | myod1, myog, mylpfa, acta1b, tnnt3a, tnnc2.2, ckma | ZFA muscle / myotome terms; CL muscle cell if cell-level evidence is strong | Subcluster into myoblasts, fast/slow muscle, mature fibers. |
+| Blood / erythroid | gata1a, hbae1.1, hbbe2, alas2, klf1, slc4a1a | ZFA blood; CL erythroid cell if specific | Separate primitive erythroid, erythroblast, mature erythroid depending on stage. |
+| Immune / myeloid | lcp1, mpeg1.1, coro1a, spi1b, mfap4.1, lyz, csf1ra | CL macrophage/leukocyte when specific; ZFA immune system context | Macrophage, neutrophil, dendritic-like, lymphoid require finer review. |
+| Endothelium / vasculature | kdrl, fli1, etsrp, cdh5, pecam1a, flt1 | CL endothelial cell; ZFA blood vessel / vascular terms | Separate arterial, venous, lymphatic, hemogenic endothelium later. |
 | Endoderm / gut-liver-pancreas lineage | sox17, foxa2, gata5, gata6, sox32, hhex, pdx1 depending on stage | ZFA endoderm/gut/liver/pancreas terms | Stage matters strongly; early endoderm versus organ epithelium should not be conflated. |
-| Mesenchyme / fibroblast-like / connective tissue | col1a1a, col1a2, dcn, twist1a, prrx1a, osr2, fn1 | ZFA mesenchyme/connective tissue terms; CL fibroblast when specific | Often broad and heterogeneous; subcluster required. |
+| Mesenchyme / fibroblast-like / connective tissue | col1a1a, col1a2, dcn, twist1a, prrx1a, osr2, fn1a | ZFA mesenchyme/connective tissue terms; CL fibroblast when specific | Often broad and heterogeneous; subcluster required. |
 | Cartilage / chondrogenic | sox9a, sox9b, col2a1a, acana, matn1, runx2b | ZFA cartilage/skeleton terms; CL chondrocyte if specific | Separate neural crest-derived cartilage, chondrocytes, osteogenic states later. |
-| Notochord | tbxta/ntl, shha, col2a1a, col8a1a, noto-related markers | ZFA notochord | Stage-dependent and sometimes overlaps with axial mesoderm markers. |
+| Notochord | tbxta, shha, col2a1a, col8a1a, noto | ZFA notochord | Stage-dependent and sometimes overlaps with axial mesoderm markers. |
 | Pigment / neural crest derivatives | mitfa, dct, tyrp1b, pmela, xdh, gch2 depending on subtype | ZFA pigment cell terms; CL melanocyte/xanthophore/iridophore when specific | Subcluster pigment lineages carefully; markers differ by subtype. |
-| Germline | ddx4/vasa, nanos3, dazl, piwil1, tdrd genes | CL germ cell; ZFA germline/gonad context if relevant | Often rare; validate against stage and sample preparation. |
-| Proliferative / cycling state | mki67, pcna, top2a, hmgb2, stmn1, histone genes | GO cell-cycle terms; not a final cell identity | Keep as state overlay; infer identity from non-cell-cycle markers. |
+| Germline | ddx4, nanos3, dazl, piwil1, tdrd7a | CL germ cell; ZFA germline/gonad context if relevant | Often rare; validate against stage and sample preparation. |
+| Proliferative / cycling state | mki67, pcna, top2a, hmgb2a, stmn1a, histone genes | GO cell-cycle terms; not a final cell identity | Keep as state overlay; infer identity from non-cell-cycle markers. |
 | Stress / injury / interferon state | hsp genes, fos/jun, interferon-stimulated genes, inflammatory genes | GO/ZECO state/condition annotations | Do not label as a cell type unless identity markers also support it. |
 
 # **8\. Selecting and weighting reference atlases**
@@ -237,11 +237,11 @@ Treat these as explicit research questions until measured: whether IC weighting 
 
 | Scenario | Top markers | First-pass label | Confidence | Review note |
 | :---- | :---- | :---- | :---- | :---- |
-| Muscle cluster | mylz2, mylpfa, acta1b, tnnt3a, myod1, myog, ckma | muscle / skeletal muscle lineage | High | Do not call fast/slow/mature until subclustering supports it. |
-| Erythroid cluster | gata1a, hbae1.1, hbbe1.1, alas2, klf1a, hemgn | blood / erythroid lineage | High | Primitive versus definitive erythroid requires stage-aware refinement. |
+| Muscle cluster | mylpfa, acta1b, tnnt3a, myod1, myog, ckma | muscle / skeletal muscle lineage | High | Do not call fast/slow/mature until subclustering supports it. |
+| Erythroid cluster | gata1a, hbae1.1, hbbe2, alas2, klf1, slc4a1a | blood / erythroid lineage | High | Primitive versus definitive erythroid requires stage-aware refinement. |
 | Neural cluster | elavl3, neurod1, tubb5, sox3, her4.1, ascl1a | neural / neuroectoderm | Medium-high | May contain neural progenitors, neurons, glia, or brain-region substructure. |
-| Endoderm/epithelium cluster | foxa2, sox17, gata6, claudins, epcam-like genes | endoderm / epithelial lineage | Medium | Use stage and atlas context to decide early endoderm versus organ epithelium. |
-| Cycling cluster | mki67, pcna, top2a, hmgb2, histone genes | cycling state; identity unresolved or parent lineage if markers exist | Low for identity | Overlay cell-cycle state onto broad lineage after excluding doublets. |
+| Endoderm/epithelium cluster | foxa2, sox17, gata6, cldnb, krt8 | endoderm / epithelial lineage | Medium | Use stage and atlas context to decide early endoderm versus organ epithelium. |
+| Cycling cluster | mki67, pcna, top2a, hmgb2a, histone genes | cycling state; identity unresolved or parent lineage if markers exist | Low for identity | Overlay cell-cycle state onto broad lineage after excluding doublets. |
 | Mixed cluster | gata1a \+ kdrl \+ elavl3 or other incompatible programs | mixed / probable doublet / underclustered | Low | Subcluster, check doublet scores, and inspect per-cell coexpression. |
 
 # **12\. Standard output schema**

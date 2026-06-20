@@ -63,39 +63,46 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
 ## Panels and scoring
 
 - **Panel** — one entry in `panels.yaml`. Has a `bucket` name (e.g. `muscle`), a
-  `kind` (`identity` or `state`), a frozenset of curated marker symbols, and optional
-  `subpanels` for finer resolution on subclusters. Domain knowledge lives here; the
-  scorer just does arithmetic over it.
+  `kind` (`identity` or `state`), a frozenset of curated marker symbols, and (for
+  identity panels) an `ontology_anchor` the namer descends from. Domain knowledge
+  lives here; the scorer just does arithmetic over it.
 - **BucketScore** — the output of `score_markers` for one panel: the `bucket` name, a
   `score` in [0, 1] computed by rank-weighted overlap (`w(r) = 1 / log2(r + 1)` so
   the most significant markers drive the score), and the matched markers. The top
   candidate is always at index 0. Ambiguous and unresolved markers are excluded from
   both numerator and denominator so the score never reflects an uncertain symbol.
 
-## Naming from anatomy (the convergence vote)
+## Naming from anatomy (the anchor-rooted descent)
 
-- **Convergence vote** — how zlabel *names* a cluster (`resolve.py`). Each marker's in-vivo
-  ZFIN expression points at ZFA anatomy terms; every term and all its ancestors get one vote
-  per distinct gene. The most specific term enough genes agree on wins. Panels propose a coarse
-  prior; this vote does the naming.
-- **IC / information content** — how specific a ZFA term is, measured from the data:
-  `IC = -log2(fraction of all genes that ever express under the term)`. Rare, specific terms
-  (endothelial cell) score high; near-root terms (whole organism) score ~0. IC is the vote's
-  selector — the highest-IC term that clears the gates wins.
-- **The three gates** — a term must clear all three to be a candidate: `CONVERGENCE_MIN`
-  (at least 3 distinct genes vote for it), `STOPLIST` (a few content-free attractors like
-  "whole organism" are never labels), and `INFORMATION_CONTENT_MIN` (at least 1.0 bits — screens near-root
-  terms). All three are provisional; Phase 4b measured the baseline — calibration is deferred.
-- **TermVote** — the internal candidate object `resolve.resolve_label` returns, one per
-  surviving term (its ZFA id, name, the genes that voted for it, IC, and ancestor depth). Not
-  a user-facing API; reach it via `zlabel.resolve` if you need it.
+- **Convergence descent** — how zlabel *names* a cluster (`resolve.py`). Each marker's in-vivo
+  ZFIN expression points at ZFA anatomy terms; every term and all its `is_a`/`part_of` ancestors
+  get one vote per distinct gene. The namer then seeds at the winning panel's `ontology_anchor`
+  and rolls *down* the graph, at each step taking the child the most genes support, and stops at
+  the deepest term the markers still agree on. Panels propose the coarse prior and the anchor;
+  this descent does the naming.
+- **Support-weighted (TF-IDF)** — each descent step picks the child by support × IC, with support
+  (the count of distinct genes backing it) the dominant signal. **IC** (information content,
+  `IC = -log2(fraction of all genes that ever express under the term)`) measures how specific a
+  term is — rare terms like endothelial cell score high, near-root terms ~0 — and here it only
+  tilts the per-step choice toward specificity; it is no longer a hard gate.
+- **When the descent stops** — a child is entered only while it keeps at least `CONVERGENCE_MIN`
+  distinct genes (3), retains at least `DESCENT_SUPPORT_FRACTION` (0.6) of its parent's support,
+  and uniquely leads its siblings (a support tie means the markers spread across subtypes, so the
+  walk stops). `STOPLIST` roots (content-free attractors like "whole organism") are never seeded
+  or entered. The thresholds are provisional; Phase 4b measured the baseline — calibration is
+  deferred. Because the name descends *from* the anchor it always sits at or under it, so the
+  panel guardrail needs no separate contradiction check.
+- **TermVote** — the candidate object `resolve.resolve_label` returns: the named terminal term
+  (a one-element list, or empty when nothing converges), with its ZFA id, name, the genes that
+  backed it, IC, and ancestor depth. Not a user-facing API; reach it via `zlabel.resolve` if you
+  need it. (The richer per-term `TermVoteTrace` in `zlabel.models` is what `trace()` exposes.)
 
 ## Decision output
 
 - **Labeler** — the entry point. `Labeler(stage_hpf=48).label([...markers...])` loads the
   ontologies once and returns a `Label`. The one object most users touch.
 - **Label** — the evidence packet for one cluster. `bucket` is the named ZFA anatomy term the
-  markers converged on (or the coarse panel bucket / `mixed/unresolved` when the vote found
+  markers converged on (or the coarse panel bucket / `mixed/unresolved` when the descent found
   nothing). It also carries `panel_bucket`, `depth`, `convergent_genes`, the `confidence`, the
   markers and in-vivo `expression_evidence`, a one-line `rationale`, and a `next_step`.
   `.to_yaml()` serialises it.
@@ -104,7 +111,7 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   `muscle`), kept visible so you see both the guardrail anchor and the finer name.
 - **positive_markers vs. convergent_genes vs. expression_evidence** — three easily-confused
   marker sets. `positive_markers` matched the winning *panel*. `convergent_genes` are the
-  markers whose in-vivo expression *voted for the named ZFA term* (the anatomy vote — may differ
+  markers whose in-vivo expression *backed the named ZFA term* (the anatomy descent — may differ
   from the panel matches). `expression_evidence` is the list of in-vivo records (`ExprHit`)
   behind the call.
 - **depth** — how specific the label is, derived from the evidence (`len(levels)`, the length of
@@ -118,7 +125,7 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   `mixed/unresolved` and `confidence` is `None`. An honest "not sure" beats a wrong label.
 - **underclustered** — when no single bucket dominates but the near-top contenders share a germ
   layer, zlabel rolls up to that coarser tier instead of guessing the finer one.
-- **convergence cap** — a confidence ceiling (distinct from the convergence *vote* above):
+- **convergence cap** — a confidence ceiling (distinct from the convergence *descent* above):
   strong panels alone top out at `medium`; `high` is reserved for calls the in-vivo expression
   (or stage) actually corroborates.
 
@@ -133,8 +140,8 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
 - **broad agreement / coverage** — the fraction of scored clusters whose call lands in the right
   broad tissue; coverage is the non-abstain rate (named + fallback + rollup).
 - **overcall audit** — a structural check for false precision: a named term that won on the bare
-  `CONVERGENCE_MIN` genes while a broader parent term had more support (the IC-first sort favouring
-  a rare specific term over the consensus). Phase 4b reports it; it is not yet tuned.
+  `CONVERGENCE_MIN` genes while a broader parent term had more support. Phase 4b reports it as a
+  regression guard on the descent (1 thin call in 39 named clusters).
 
 ## How data flows through zlabel
 

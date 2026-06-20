@@ -176,7 +176,7 @@ def test_branch_precheck_a_no_identity(zfa_ontology):
     result = _trace_branch(scores, [_norm("zzz", status=STATUS_UNRESOLVED)], zfa_ontology)
     assert result.branch == "precheck-a-no-identity"
     assert result.label.abstained
-    assert result.term_votes == ()  # convergence vote not run on the precheck branch
+    assert result.term_votes == ()  # descent not run on the precheck branch
 
 
 def test_branch_precheck_b_weak_signal(zfa_ontology):
@@ -193,7 +193,7 @@ def test_branch_precheck_b_weak_signal(zfa_ontology):
     result = _trace_branch([muscle], [_norm("myod1")], zfa_ontology)
     assert result.branch == "precheck-b-weak-signal"
     assert result.label.abstained
-    assert result.term_votes == ()  # convergence vote not run on the precheck branch
+    assert result.term_votes == ()  # descent not run on the precheck branch
 
 
 def test_branch_rollup_marks_contenders(zfa_ontology):
@@ -215,7 +215,7 @@ def test_branch_rollup_marks_contenders(zfa_ontology):
     assert result.branch == "germ-layer-rollup"
     contenders = {b.bucket for b in result.panel_scores if b.is_contender}
     assert contenders == {"muscle", "blood_erythroid"}
-    assert result.term_votes == ()  # rollup does not run the convergence vote
+    assert result.term_votes == ()  # rollup does not run the descent
 
 
 def test_branch_mixed_contradictory_germ_layers(zfa_ontology):

@@ -138,7 +138,7 @@ def test_assign_clear_winner(zfa_ontology):
 
 def test_decide_names_from_zfa_when_symbols_provided(zfa_ontology, expression_map, information_content):
     # With symbols + information_content, the clear-winner branch names the bucket from the ZFA
-    # convergence vote (muscle cell) instead of the coarse panel bucket (muscle).
+    # anchor-rooted descent (muscle cell) instead of the coarse panel bucket (muscle).
     muscle = _make_bucket_score("muscle", markers=["mylpfa", "acta1b", "myog"], total_weight=3.0)
     blood = _make_empty_bucket_score("blood_erythroid")
     label = decide(
@@ -406,7 +406,7 @@ def test_labeler_smoke_muscle_cluster():
     # Use the old symbol 'mylz2' to exercise normalization (GAF maps it to mylpfa).
     label = lab.label(["mylz2", "acta1b", "tnnt3a", "myod1", "myog"])
     assert not label.abstained
-    # The convergence vote names the most specific ZFA term: mylpfa + acta1b + myog
+    # The anchor-rooted descent names the most specific ZFA term: mylpfa + acta1b + myog
     # all express under ZFA:0009234 (muscle cell), which has higher IC than
     # musculature system and clears CONVERGENCE_MIN=3.
     assert label.bucket == "muscle cell"
