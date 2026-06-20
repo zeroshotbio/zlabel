@@ -100,7 +100,7 @@ print(label.to_yaml())                           # the evidence packet
 > Five generic muscle markers name `musculature system`, not a subtype: the anchor-rooted descent
 > (§Resolution) walks down only while the markers converge on a *single* child, and here they spread
 > across muscle subtypes, so it stops at the broad muscle level. The support floor + unique-winner stop
-> keep the descent from over-specifying — the Phase 4b overcall audit finds 1 thin call in 39 named
+> keep the descent from over-specifying — the Phase 4b overcall audit finds 1 thin call in 36 named
 > clusters. Fine-naming on a richer truth set is still future work.
 
 One entry point. The public surface is small — `Labeler`, `Label`, and the Phase 1/2
@@ -200,7 +200,7 @@ under `benchmarks/` (the ~2.5 GB source is not). `evaluate.py` runs the engine o
 **named/fallback/rollup/abstain** split, **confidence-by-correctness**, and a structural
 **parent-child overcall audit** — a regression guard that the descent does not overcall (a
 specific term winning on the bare `CONVERGENCE_MIN` while a broader parent had more support): 1 thin
-call in 39 named clusters. The engine is untouched by the eval; the audit replays the vote tally
+call in 36 named clusters. The engine is untouched by the eval; the audit replays the vote tally
 privately. Daniocell's broad labels cannot validate
 within-bucket fine-naming, so depth correctness there is reported by the structural audit, not
 checked against truth — finer-reference depth validation (ZSCAPE/Zebrahub) and bare-LLM /
