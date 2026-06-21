@@ -87,12 +87,15 @@ def test_load_crosswalk_real_file():
     assert crosswalk.gold("blas") is None  # blastomeres are explicitly not_scored
 
 
-def test_axia_gold_includes_notochord():
+def test_axia_gold_includes_axial_members():
     # Daniocell "axia" means notochord/prechordal plate/hatching gland, so its gold anchor must
-    # cover notochord (ZFA:0000135). Axial mesoderm (ZFA:0001204) alone does not reach notochord
-    # via is_a+part_of, so a notochord-anchored prediction would not ground under axia without it.
+    # cover each. Prechordal plate grounds under axial mesoderm (ZFA:0001204), but notochord
+    # (ZFA:0000135) and hatching gland (ZFA:0000026) are not reachable under axial mesoderm via
+    # is_a+part_of, so each needs an explicit anchor or a legitimate axia call would not ground.
     crosswalk = evaluate.load_crosswalk(REPO / "benchmarks" / "daniocell_tissue_crosswalk.yaml")
-    assert "ZFA:0000135" in (crosswalk.gold("axia") or frozenset())
+    axia = crosswalk.gold("axia") or frozenset()
+    assert "ZFA:0000135" in axia  # notochord
+    assert "ZFA:0000026" in axia  # hatching gland
 
 
 def test_crosswalk_fails_closed_on_unknown_tissue():
