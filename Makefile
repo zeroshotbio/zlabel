@@ -35,8 +35,9 @@ test:  ## pytest
 
 verify: lint lint-docstrings type test  ## The PR gate: lint + docstrings + types + tests
 
-audit:  ## Curation gate: audit panels.yaml markers vs ZFIN data (needs data/ontologies; not in CI)
+audit:  ## Curation gate: audit panels.yaml + crosswalk vs ZFIN data (needs data/ontologies; not in CI)
 	uv run python scripts/audit_panels.py
+	uv run python scripts/audit_crosswalk.py
 
 ##@ Development
 notebook:  ## Start JupyterLab on port 8888 (no token; run make setup first)

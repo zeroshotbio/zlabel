@@ -14,7 +14,9 @@ objects are not).
   - `tissue_name` — the detailed `tissue.name` (metadata; not scored in 4b).
   - `stage_hpf` — representative developmental stage (see Parameters).
 - `daniocell_tissue_crosswalk.yaml` — the gold-side, fail-closed `{tissue -> broad ZFA
-  anchor(s)}` scoring map, reviewed like code.
+  anchor(s)}` scoring map, reviewed like code. Audited by `scripts/audit_crosswalk.py`
+  (`make audit`): every structure a tissue's comment names must ground under that tissue's
+  anchor (members are listed before `--`; glosses and composition notes after).
 - `daniocell_baseline_report.md` — the generated baseline report (regenerate; do not hand-edit).
 - `daniocell_umap.json` — a 2-D UMAP overview asset for the zlabel-scope companion: one centroid
   (x, y) + true cell count per cluster, plus a downsampled cell cloud. A VIEW of the substrate for
@@ -75,3 +77,7 @@ coverage/split columns, out of the agreement count.
   scoring, but the Label object itself still carries a single id.
 - not_scored tissues. Categories with no clean ZFA anchor (e.g. `blas` blastomeres) are excluded
   from agreement; the crosswalk fails closed on any unmapped tissue.
+- One-directional crosswalk audit. `scripts/audit_crosswalk.py` checks that each tissue's named
+  members ground under its anchor (catching a too-tight anchor that silently mis-scores a real call
+  as a disagreement), but not that the anchor grounds only members (a too-loose anchor that lets
+  non-member calls count — the more flattering error). A reverse check is future work.

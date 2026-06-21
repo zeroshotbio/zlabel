@@ -24,11 +24,11 @@ tissues:
     anchors: [ZFA:0000105, ZFA:0000368] # epidermis; integument
   eye:                                  # eye
     anchors: [ZFA:0000107]              # eye
-  fin:                                  # fin epithelia / mesenchyme
+  fin:                                  # fin -- fin-fold epithelium + fin mesenchyme
     anchors: [ZFA:0000108]              # fin
   glia:                                 # glial
     anchors: [ZFA:0009073]              # glial cell
-  hema:                                 # erythrocytes + immune
+  hema:                                 # nucleate erythrocyte + immune system
     anchors: [ZFA:0000007, ZFA:0005023, ZFA:0001159]  # blood; hematopoietic system; immune system
   iono:                                 # ionocyte
     anchors: [ZFA:0005323]              # ionocyte
@@ -48,7 +48,7 @@ tissues:
     anchors: [ZFA:0009288]              # primordial germ cell
   pigm:                                 # pigment (melanocytes, iridophores, xanthophores)
     anchors: [ZFA:0009090]              # pigment cell
-  pron:                                 # pronephros (kidney)
+  pron:                                 # pronephros -- the embryonic kidney
     anchors: [ZFA:0000151]              # pronephros
   tast:                                 # taste / lateral line
     anchors: [ZFA:0001074, ZFA:0000034] # taste bud; lateral line system
