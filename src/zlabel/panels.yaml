@@ -209,9 +209,12 @@ pigment:
   tissue: pigment cells
   lineage: neural crest pigment derivatives
   kind: identity
-  cite: "playbook §7; ZFIN wt-expr (mitfa, dct, tyrp1b); literature"
+  cite: "playbook §7; ZFIN wt-expr (mitfa, dct, tyrp1b, ltk, pnp4a, aox5); literature"
   ontology_anchor:
     - ZFA:0009090  # pigment cell
+  # Pigment is a three-lineage tissue (melanophore, iridophore, xanthophore). The starter
+  # set was melanophore-only with weakly-grounded xanthophore markers; ltk/pnp4a add the
+  # iridophore lineage and aox5 adds a well-grounded xanthophore marker.
   markers:
     - mitfa    # microphthalmia-associated TF a; melanocyte master TF
     - dct      # dopachrome tautomerase; melanin synthesis enzyme
@@ -219,6 +222,9 @@ pigment:
     - xdh      # xanthine dehydrogenase; xanthophore marker (scoring; sparse anchor grounding)
     - gch2     # GTP cyclohydrolase 2; pteridine synthesis; xanthophores/iridophores
     - slc45a2  # solute carrier family 45 member 2 (matp); melanocyte transporter
+    - ltk      # leukocyte tyrosine kinase; iridophore specification
+    - pnp4a    # purine nucleoside phosphorylase 4a; iridophore (reflective platelets)
+    - aox5     # aldehyde oxidase 5; xanthophore (well-grounded; complements xdh/gch2)
 
 # === mesoderm =================================================================
 
@@ -227,9 +233,11 @@ muscle:
   tissue: muscle
   lineage: skeletal muscle
   kind: identity
-  cite: "playbook §7; ZFIN wt-expr (myod1, mylpfa, acta1b); literature"
+  cite: "playbook §7; ZFIN wt-expr (myod1, mylpfa, acta1b, smyhc2); literature"
   ontology_anchor:
     - ZFA:0000548  # musculature system
+  # The scored marker list was fast-fiber-biased; smyhc2 adds slow fiber, msc/myoz1a/pvalb3
+  # add regulatory + Z-disc + calcium-handling breadth.
   markers:
     - myod1    # myogenic regulatory factor; master TF for myoblast commitment
     - myog     # myogenin; terminal myogenic differentiation
@@ -239,6 +247,10 @@ muscle:
     - tnnt3a   # troponin T type 3a; sarcomeric; fast skeletal muscle
     - tnnc2.2  # troponin C type 2.2; fast skeletal muscle (prev. tnnc2)
     - ckma     # creatine kinase muscle a; energy metabolism in mature muscle
+    - smyhc2   # slow myosin heavy chain 2; slow skeletal fiber
+    - msc      # musculin; myogenic bHLH (cranial/fin muscle)
+    - myoz1a   # myozenin 1a; sarcomeric Z-disc
+    - pvalb3   # parvalbumin 3; myotome/skeletal-muscle calcium buffering
 
 cardiac:
   germ_layer: mesoderm
@@ -345,9 +357,11 @@ pronephros:
   tissue: kidney
   lineage: nephron
   kind: identity
-  cite: "ZFIN wt-expr (pax2a, cdh17, slc12a1); literature"
+  cite: "ZFIN wt-expr (pax2a, cdh17, slc12a1, nphs1, nphs2); literature"
   ontology_anchor:
     - ZFA:0000151  # pronephros
+  # Podocytes were represented only by the TFs wt1a/wt1b; nphs1/nphs2 add the differentiated
+  # slit-diaphragm markers that identify the mature podocyte.
   markers:
     - pax2a    # paired box 2a; pronephric/nephron progenitor TF
     - wt1a     # Wilms tumor 1a; podocyte/glomerulus
@@ -356,6 +370,8 @@ pronephros:
     - cdh17    # cadherin 17; pronephric duct/tubule
     - slc12a1  # Na-K-Cl cotransporter; distal tubule
     - pax8     # paired box 8; nephron progenitor
+    - nphs1    # nephrin; differentiated podocyte slit diaphragm
+    - nphs2    # podocin; differentiated podocyte slit diaphragm
 
 mesenchyme:
   germ_layer: mesoderm
@@ -496,15 +512,17 @@ intestine:
   tissue: intestine
   lineage: enterocyte
   kind: identity
-  cite: "ZFIN wt-expr (fabp2, fabp6, cdx1b); literature"
+  cite: "ZFIN wt-expr (fabp2, fabp6, cdx1b, muc2.1); literature"
   ontology_anchor:
     - ZFA:0001338  # intestine
+  # The starter set was enterocyte-only; muc2.1 adds the intestinal goblet/secretory cell.
   markers:
     - fabp2    # fatty acid binding protein 2 (intestinal); enterocyte
     - fabp6    # fatty acid binding protein 6; ileal/bile-acid enterocyte
     - cdx1b    # caudal type homeobox 1b; posterior gut/intestine TF
     - slc15a1b # peptide transporter 1b; intestinal absorption
     - vil1     # villin 1; enterocyte brush border
+    - muc2.1   # mucin 2.1; intestinal goblet/secretory cell (gut mucin; muc5.x are surface-epithelial)
 
 # === germline =================================================================
 
