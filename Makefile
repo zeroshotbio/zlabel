@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup setup-core setup-upgrade format lint lint-docstrings type test verify audit notebook
+.PHONY: help setup setup-core setup-upgrade format lint lint-docstrings type test verify audit eval gate hooks notebook
 
 help:  ## Show this help
 	@awk 'BEGIN {FS = ":.*## "; print "Usage: make <target>\n"} /^##@/ {printf "\n%s\n", substr($$0, 5)} /^[a-zA-Z0-9_.-]+:.*## / {printf "  %-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -38,6 +38,16 @@ verify: lint lint-docstrings type test  ## The PR gate: lint + docstrings + type
 audit:  ## Curation gate: audit panels.yaml markers vs ZFIN data (needs data/ontologies; not in CI)
 	uv run python scripts/audit_panels.py
 
+eval:  ## Regenerate the Daniocell baseline report (needs data/ontologies)
+	uv run python -m zlabel.evaluate benchmarks/daniocell_eval.csv
+
+gate:  ## Regression wall: fail on baseline drift / overcall-audit regression (needs data/ontologies)
+	uv run python scripts/check_baseline.py
+
 ##@ Development
+hooks:  ## Install the git pre-commit hook (runs make gate on engine/panel/benchmark changes)
+	install -m 0755 scripts/hooks/pre-commit .git/hooks/pre-commit
+	@echo "installed .git/hooks/pre-commit"
+
 notebook:  ## Start JupyterLab on port 8888 (no token; run make setup first)
 	uv run jupyter lab --no-browser --port=8888 --ServerApp.token='' --ServerApp.password=''

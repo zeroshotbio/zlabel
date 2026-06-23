@@ -20,7 +20,12 @@ Types: feat, fix, chore, refactor, test, docs, ci, perf.
 
 ```bash
 make verify   # lint + docstrings + types + tests
+make gate     # regression wall: regenerate the baseline, fail on drift / overcall regression
 ```
+
+`make gate` needs `data/ontologies`; install it once as a pre-commit hook with `make hooks` so
+the overcall-audit + baseline wall runs automatically on engine/panel/benchmark changes. An
+intentional behavior change regenerates the baseline (`make eval`) and commits it for review.
 
 ## Pull requests
 
