@@ -26,8 +26,37 @@ TIER_LOW_NAME: Literal["low"] = "low"
 
 Confidence = Literal["high", "medium", "low"]
 
+# --- Out-of-distribution flag -------------------------------------------------
+# Whether a caller can honestly force the top candidate. in_set means the evidence is
+# consistent with a known reference type the descent can reach (force-able); the other three
+# mark genuinely-unassigned regimes. in_set is a soft signal, not a certification -- a broad
+# attractor panel can mask a structural blind-spot. See the Label.ood docstring.
+
+Ood = Literal["in_set", "structural", "doublet", "no_signal"]
+OOD_IN_SET: Ood = "in_set"
+
 
 # --- Sub-models ---------------------------------------------------------------
+
+
+class Candidate(BaseModel):
+    """One bucket the evidence is consistent with, in the near-tie candidate set.
+
+    Surfaced on Label so a caller can see the competing types and their separation, and force the
+    top of set when it judges the call worth forcing. Carries the adjusted identity score decide()
+    actually ranks on, not the raw panel score (which omits the state-weight discount).
+
+    Attributes:
+        bucket (str): The identity panel bucket name (e.g. muscle, endothelium).
+        germ_layer (str): The bucket's germ layer, so the caller sees germ-layer agreement.
+        adjusted_score (float): The identity-only adjusted score decide() ranks on, in [0, 1].
+        margin_to_top (float): The top member's adjusted score minus this one (0.0 for the top).
+    """
+
+    bucket: str
+    germ_layer: str
+    adjusted_score: float
+    margin_to_top: float
 
 
 class ExprHit(BaseModel):
@@ -115,6 +144,19 @@ class Label(BaseModel):
         rationale (str): One-line human-readable reason for the call.
         next_step (str | None): Suggested next action. Subcluster when a bucket
             or rollup was assigned; None when abstained.
+        candidates (tuple[Candidate, ...]): The near-tie candidate set -- identity buckets
+            within DOMINANCE_GAP of the top, best-first. A clear winner yields one member; a
+            near-tie yields the competing types with their margins. Empty when no identity panel
+            matched. Lets a caller force the top of set when it judges that worthwhile.
+        ood (Ood): Whether the call is force-able. in_set means the evidence is consistent with a
+            reference type the descent can reach (the selection residual is force-able); structural
+            means the markers reach no named term under any anchor (a blind-spot or novel type);
+            doublet means contradictory germ layers; no_signal means no identity hit. in_set is
+            high-recall but soft -- a broad attractor can mask a blind-spot, so a structural or
+            doublet flag is far more trustworthy than an in_set one. Always in_set for an assigned call.
+        margin (float): The raw, un-clamped lead of the top adjusted score over the runner-up
+            (top_adj minus second_adj). The selection signal a caller thresholds to decide whether
+            to force; distinct from the clamped margin confidence-component.
     """
 
     bucket: str
@@ -135,22 +177,34 @@ class Label(BaseModel):
     expression_evidence: tuple[ExprHit, ...]
     rationale: str
     next_step: str | None = None
+    candidates: tuple[Candidate, ...] = ()
+    ood: Ood = OOD_IN_SET
+    margin: float = 0.0
 
     @model_validator(mode="after")
     def _check_abstain_consistency(self) -> Label:
-        """Enforce that confidence and confidence_score are None iff abstained.
+        """Enforce the confidence-vs-abstained and ood-vs-abstained invariants.
+
+        confidence and confidence_score are None iff abstained. A non-in_set ood marks an
+        abstention regime (structural, doublet, no_signal), so it may only appear on an
+        abstention; an assigned Label is always in_set (it named or fell back to a real bucket).
+        The implication is one-directional: an abstention may still be in_set (a same-germ-layer
+        near-tie whose types are both known).
 
         Returns:
             Label: self, after validation.
 
         Raises:
-            ValueError: If abstained, confidence, and confidence_score disagree.
+            ValueError: If abstained, confidence, and confidence_score disagree, or a non-in_set
+                ood appears on an assigned Label.
         """
         if self.abstained:
             if self.confidence is not None or self.confidence_score is not None:
                 raise ValueError("abstained Label must have confidence and confidence_score = None")
         elif self.confidence is None or self.confidence_score is None:
             raise ValueError("assigned Label must have a confidence tier and score")
+        if self.ood != OOD_IN_SET and not self.abstained:
+            raise ValueError("a non-in_set ood marks an abstention regime; an assigned Label must be in_set")
         return self
 
     def to_yaml(self) -> str:

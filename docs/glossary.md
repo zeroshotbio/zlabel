@@ -112,6 +112,16 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   nothing). It also carries `panel_bucket`, `depth`, `convergent_genes`, the `confidence`, the
   markers and in-vivo `expression_evidence`, a one-line `rationale`, and a `next_step`.
   `.to_yaml()` serialises it.
+- **candidates / ood / margin (the forcing evidence)** — what a caller uses to force a call when
+  zlabel abstains (zlabel itself never forces a blind guess). `candidates` is the near-tie set
+  (the buckets within `DOMINANCE_GAP` of the top, best-first, each with its `margin_to_top`);
+  `margin` is the raw lead of the top adjusted score over the runner-up; `ood` flags the regime —
+  `in_set` (a reference type the descent can reach: force-able), `structural` (converges on no
+  named anatomy: a blind-spot / novel type), `doublet` (contradictory germ layers), `no_signal`
+  (no identity hit). `structural` / `doublet` are high-precision when they fire; `in_set` is a
+  soft signal — a broad attractor panel can mask a blind-spot, so it has high recall, imperfect
+  precision. All derived at label time, no per-dataset calibration; the force threshold is the
+  caller's.
 - **bucket vs. panel_bucket** — `bucket` is the fine call (the named ZFA term, e.g.
   `muscle cell`); `panel_bucket` is the coarse prior that anchored it (the winning panel, e.g.
   `muscle`), kept visible so you see both the guardrail anchor and the finer name.

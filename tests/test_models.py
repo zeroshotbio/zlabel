@@ -10,6 +10,7 @@ from zlabel.models import (
     TIER_LOW_NAME,
     TIER_MEDIUM_NAME,
     BucketScoreTrace,
+    Candidate,
     ExprHit,
     Label,
     LabelTrace,
@@ -352,3 +353,25 @@ def test_label_trace_to_yaml_field_order():
     assert yaml_str.index("panel_scores:") < yaml_str.index("branch:")
     assert yaml_str.index("branch:") < yaml_str.index("term_votes:")
     assert yaml_str.index("term_votes:") < yaml_str.index("\nlabel:")
+
+
+# --- Stage O: candidate set + ood flag + margin ------------------------------
+
+
+def test_label_validator_rejects_non_in_set_when_assigned():
+    # A non-in_set ood marks an abstention regime; it must not appear on an assigned Label.
+    with pytest.raises(Exception, match="in_set"):
+        _make_valid_label(ood="structural")
+
+
+def test_label_new_fields_default_and_round_trip():
+    label = _make_valid_label(
+        candidates=(Candidate(bucket="muscle", germ_layer="mesoderm", adjusted_score=0.71, margin_to_top=0.0),),
+        margin=0.38,
+    )
+    assert label.ood == "in_set"  # default for an assigned call
+    raw = yaml.safe_load(label.to_yaml())
+    assert raw["ood"] == "in_set"
+    assert raw["margin"] == 0.38
+    assert raw["candidates"][0]["bucket"] == "muscle"
+    assert raw["candidates"][0]["margin_to_top"] == 0.0

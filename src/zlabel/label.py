@@ -45,15 +45,18 @@ from zlabel.data import (
 from zlabel.genes import STATUS_RESOLVED, NormalizedSymbol, normalize_markers, resolved_symbols
 from zlabel.ground import expression_lookup, grounds_under, stage_plausibility
 from zlabel.models import (
+    OOD_IN_SET,
     TIER_HIGH_NAME,
     TIER_LOW_NAME,
     TIER_MEDIUM_NAME,
     BucketScoreTrace,
+    Candidate,
     Confidence,
     ExprHit,
     Label,
     LabelTrace,
     NormalizedMarkerTrace,
+    Ood,
     TermVoteTrace,
 )
 from zlabel.panels import KIND_IDENTITY, KIND_STATE, BucketScore, MatchedMarker, Panel, load_panels, score_markers
@@ -218,6 +221,40 @@ def _best_marker_specificity(bucket_score: BucketScore, marker_specificity: Mapp
         float: The maximum marker_specificity over this bucket's matched markers, or 0.0 when none.
     """
     return max((marker_specificity.get(matched.symbol, 0.0) for matched in bucket_score.matched_markers), default=0.0)
+
+
+def _candidates(identity: list[BucketScore], identity_denom: float, top_adj: float) -> tuple[Candidate, ...]:
+    """The near-tie candidate set: identity buckets within DOMINANCE_GAP of the top, best-first.
+
+    Surfaces the contender band decide() already trusts so a caller sees the types the evidence is
+    consistent with. identity is sorted by descending adjusted score, so the band is a prefix and the
+    walk stops at the first bucket outside it. A clear winner yields one member; a near-tie yields the
+    competing types with their margins. On an abstention candidates[0] is the honest force-the-top
+    target; on an assigned call the named bucket is panel_bucket and candidates is the context.
+
+    Args:
+        identity (list[BucketScore]): Identity buckets that matched markers, sorted by -adj.
+        identity_denom (float): The identity-only weight denominator for _adj.
+        top_adj (float): The top bucket's adjusted score.
+
+    Returns:
+        tuple[Candidate, ...]: Ordered best-first; each carries its adjusted score and its margin
+        (top_adj minus its adjusted score) to the top member.
+    """
+    out: list[Candidate] = []
+    for bucket_score in identity:
+        adj = _adj(bucket_score, identity_denom)
+        if top_adj - adj > DOMINANCE_GAP:
+            break
+        out.append(
+            Candidate(
+                bucket=bucket_score.bucket,
+                germ_layer=bucket_score.germ_layer,
+                adjusted_score=round(adj, 4),
+                margin_to_top=round(top_adj - adj, 4),
+            )
+        )
+    return tuple(out)
 
 
 def _state_only_weight(scores: list[BucketScore]) -> float:
@@ -395,13 +432,25 @@ def _detect_states(scores: list[BucketScore]) -> tuple[str, ...]:
     return tuple(sorted(detected))
 
 
-def _abstain(flag: str, states: tuple[str, ...], panel_scores: dict[str, float]) -> Label:
+def _abstain(
+    flag: str,
+    states: tuple[str, ...],
+    panel_scores: dict[str, float],
+    *,
+    ood: Ood = OOD_IN_SET,
+    candidates: tuple[Candidate, ...] = (),
+    margin: float = 0.0,
+) -> Label:
     """Build a mixed/unresolved abstention Label.
 
     Args:
         flag (str): Ambiguity flag (provisional, mixed).
         states (tuple[str, ...]): Detected state programs.
         panel_scores (dict[str, float]): Raw panel scores.
+        ood (Ood): The out-of-distribution flag for this abstention (no_signal, structural, doublet,
+            or in_set for a reachable near-tie the gate vetoed).
+        candidates (tuple[Candidate, ...]): The near-tie candidate set (empty when no identity hit).
+        margin (float): Raw lead of the top adjusted score over the runner-up.
 
     Returns:
         Label: An abstained evidence packet.
@@ -425,6 +474,9 @@ def _abstain(flag: str, states: tuple[str, ...], panel_scores: dict[str, float])
         expression_evidence=(),
         rationale=f"abstained: {flag}",
         next_step=None,
+        candidates=candidates,
+        ood=ood,
+        margin=margin,
     )
 
 
@@ -516,11 +568,15 @@ def decide(
     if not identity:
         if recorder is not None:
             recorder.branch = BRANCH_PRECHECK_A
-        return _abstain("provisional", states, panel_scores)
+        return _abstain("provisional", states, panel_scores, ood="no_signal")
 
     top = identity[0]
     top_adj = _adj(top, identity_denom)
     second_adj = _adj(identity[1], identity_denom) if len(identity) > 1 else 0.0
+    # The near-tie candidate set and the raw margin -- the forcing evidence surfaced on every Label
+    # below. Computed once, now that the top exists.
+    candidates = _candidates(identity, identity_denom, top_adj)
+    margin = top_adj - second_adj
 
     # --- Precheck B: signal too weak ---
     if top_adj < MIN_SIGNAL:
@@ -548,11 +604,28 @@ def decide(
                     panel_scores=panel_scores,
                     symbols=symbols or [],
                     information_content=information_content or {},
+                    candidates=candidates,
+                    margin=margin,
                     recorder=recorder,
                 )
         if recorder is not None:
             recorder.branch = BRANCH_PRECHECK_B
-        return _abstain("provisional", states, panel_scores)
+        # OOD: does the descent seed under the top panel's anchor? If it does, the markers converge on
+        # reachable anatomy and only the weak gate vetoed them (in_set, force-able); if not, their
+        # anatomy converges nowhere -- a structural blind-spot. Needs the descent machinery; without it
+        # (pure decide() tests omit symbols/IC) we do not claim structural.
+        ood: Ood = OOD_IN_SET
+        if symbols and information_content:
+            seeds = resolve_label(
+                symbols,
+                expression_map=expression_map,
+                zfa_ontology=zfa_ontology,
+                information_content=information_content,
+                anchor=anchors.get(top.bucket, frozenset()),
+            )
+            if not seeds:
+                ood = "structural"
+        return _abstain("provisional", states, panel_scores, ood=ood, candidates=candidates, margin=margin)
 
     # --- C / D: dominance test ---
     gap = top_adj - second_adj
@@ -574,6 +647,8 @@ def decide(
             panel_scores=panel_scores,
             symbols=symbols or [],
             information_content=information_content or {},
+            candidates=candidates,
+            margin=margin,
             recorder=recorder,
         )
 
@@ -602,12 +677,14 @@ def decide(
             stage_hpf=stage_hpf,
             states=states,
             panel_scores=panel_scores,
+            candidates=candidates,
+            margin=margin,
         )
 
     # Contradictory germ layers -> mixed.
     if recorder is not None:
         recorder.branch = BRANCH_MIXED
-    return _abstain("mixed", states, panel_scores)
+    return _abstain("mixed", states, panel_scores, ood="doublet", candidates=candidates, margin=margin)
 
 
 def _assign_named(
@@ -623,6 +700,8 @@ def _assign_named(
     panel_scores: dict[str, float],
     symbols: list[str],
     information_content: Mapping[str, float],
+    candidates: tuple[Candidate, ...] = (),
+    margin: float = 0.0,
     recorder: _Recorder | None = None,
 ) -> Label:
     """Build a Label for a clear single-bucket assignment, named from ZFA convergence.
@@ -651,6 +730,8 @@ def _assign_named(
         symbols (list[str]): Already-normalized current ZFIN symbols of all
             cluster markers, in rank order. May be empty.
         information_content (Mapping[str, float]): IC model from build_information_content. May be empty.
+        candidates (tuple[Candidate, ...]): The near-tie candidate set, surfaced on the Label.
+        margin (float): Raw lead of the top adjusted score over the runner-up.
         recorder (_Recorder | None): Optional trace sink. When provided, the full
             convergence descent (with gate near-misses) and the selected term are
             recorded for trace(); None leaves behavior unchanged.
@@ -730,6 +811,8 @@ def _assign_named(
         expression_evidence=hits,
         rationale=rationale,
         next_step="subcluster",
+        candidates=candidates,
+        margin=margin,
     )
 
 
@@ -745,6 +828,8 @@ def _assign_rollup(
     stage_hpf: float | None,
     states: tuple[str, ...],
     panel_scores: dict[str, float],
+    candidates: tuple[Candidate, ...] = (),
+    margin: float = 0.0,
 ) -> Label:
     """Build a germ-layer rollup Label.
 
@@ -763,6 +848,8 @@ def _assign_rollup(
         stage_hpf (float | None): Dataset stage in hpf, or None.
         states (tuple[str, ...]): Detected state programs.
         panel_scores (dict[str, float]): Raw panel scores.
+        candidates (tuple[Candidate, ...]): The near-tie candidate set (the contender band).
+        margin (float): Raw lead of the top adjusted score over the runner-up.
 
     Returns:
         Label: Rollup evidence packet.
@@ -809,6 +896,8 @@ def _assign_rollup(
         expression_evidence=hits,
         rationale=f"{germ_layer} rollup: contenders {[bucket_score.bucket for bucket_score in contenders]}",
         next_step="subcluster",
+        candidates=candidates,
+        margin=margin,
     )
 
 
