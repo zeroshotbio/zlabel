@@ -3,55 +3,60 @@
 - clusters: 522  ·  scored: 511  ·  not_scored: 11
 
 ## Broad agreement (named + fallback, scored against the gold tissue)
-- agreement: 71.1% (27/38)
+- agreement: 71.3% (107/150)
 
 ## Coverage / split (over scored clusters)
-- coverage (non-abstain): 13.1% (67/511)
-- named: 7.2% (37/511)
-- fallback: 0.2% (1/511)
+- coverage (non-abstain): 35.0% (179/511)
+- named: 28.6% (146/511)
+- fallback: 0.8% (4/511)
 - rollup: 5.7% (29/511)
-- abstain: 86.9% (444/511)
+- abstain: 65.0% (332/511)
 
 ## Agreement by prediction class
-- named: 70.3% (26/37)
-- fallback: 100.0% (1/1)
+- named: 71.2% (104/146)
+- fallback: 75.0% (3/4)
 
 ## Confidence by correctness (named + fallback)
 - high: 100.0% (12/12)
-- medium: 62.5% (15/24)
-- low: 0.0% (0/2)
+- medium: 62.1% (18/29)
+- low: 70.6% (77/109)
 
 ## Parent-child overcall audit (named calls)
-- named calls audited: 37
-- won with exactly CONVERGENCE_MIN=3 genes: 2.7% (1/37)
-- thin-support overcalls (won at min, broader parent had more support): 2.7% (1/37)
+- named calls audited: 146
+- won with exactly CONVERGENCE_MIN=3 genes: 4.8% (7/146)
+- thin-support overcalls (won at min, broader parent had more support): 4.8% (7/146)
 
 Lowest support-fraction named calls (child support / best-parent support), top 15:
+- fin.9: fin fold pectoral fin bud (3) vs multi-tissue structure (19)  -> fraction 0.16
 - musc.19: segmental plate (3) vs portion of tissue (19)  -> fraction 0.16
+- iono.12: NaK ionocyte (3) vs portion of tissue (16)  -> fraction 0.19
+- iono.5: NaK ionocyte (3) vs portion of tissue (14)  -> fraction 0.21
+- iono.6: NaK ionocyte (3) vs portion of tissue (14)  -> fraction 0.21
+- pigm.3: xanthophore (3) vs organism subdivision (13)  -> fraction 0.23
+- glia.23: oligodendrocyte (4) vs nervous system (17)  -> fraction 0.24
+- pigm.23: pigment cell (3) vs cell (12)  -> fraction 0.25
+- axia.4: notochord (4) vs portion of tissue (14)  -> fraction 0.29
+- eye.20: epiphysis (5) vs cavitated compound organ (17)  -> fraction 0.29
+- pigm.2: xanthophore (5) vs organism subdivision (16)  -> fraction 0.31
+- axia.9: epidermis (7) vs portion of tissue (21)  -> fraction 0.33
+- endo.17: intestine (6) vs cavitated compound organ (18)  -> fraction 0.33
+- eye.14: epiphysis (6) vs cavitated compound organ (18)  -> fraction 0.33
 - mura.3: mesenchyme (7) vs portion of tissue (20)  -> fraction 0.35
-- mese.5: head mesenchyme (8) vs portion of tissue (22)  -> fraction 0.36
-- eye.30: retinal ganglion cell layer (7) vs compound organ (18)  -> fraction 0.39
-- hema.27: nucleate erythrocyte (8) vs hematopoietic system (17)  -> fraction 0.47
-- neur.12: diencephalon (9) vs cavitated compound organ (19)  -> fraction 0.47
-- endo.23: exocrine pancreas (7) vs compound organ (14)  -> fraction 0.50
-- neur.33: diencephalon (10) vs cavitated compound organ (20)  -> fraction 0.50
-- peri.3: epidermis (8) vs portion of tissue (16)  -> fraction 0.50
-- pigm.14: melanocyte (10) vs portion of tissue (20)  -> fraction 0.50
-- pigm.9: melanocyte (11) vs portion of tissue (21)  -> fraction 0.52
-- neur.8: diencephalon (10) vs cavitated compound organ (19)  -> fraction 0.53
-- hema.3: nucleate erythrocyte (7) vs blood (13)  -> fraction 0.54
-- hema.22: nucleate erythrocyte (8) vs blood (14)  -> fraction 0.57
-- hema.1: nucleate erythrocyte (7) vs blood (12)  -> fraction 0.58
 
 ## Failure gallery (scored disagreements)
+- axia.16: gold axia, predicted 'epidermis' (named)
+- axia.2: gold axia, predicted 'epidermis' (named)
+- axia.6: gold axia, predicted 'epidermis' (named)
+- axia.9: gold axia, predicted 'epidermis' (named)
+- eye.14: gold eye, predicted 'epiphysis' (named)
+- eye.15: gold eye, predicted 'forebrain' (named)
+- eye.20: gold eye, predicted 'epiphysis' (named)
 - eye.22: gold eye, predicted 'pigment cell' (named)
+- fin.11: gold fin, predicted 'epidermis' (named)
+- fin.19: gold fin, predicted 'epidermis' (named)
+- fin.3: gold fin, predicted 'epidermis' (named)
+- fin.5: gold fin, predicted 'epidermis' (named)
+- fin.9: gold fin, predicted 'fin fold pectoral fin bud' (named)
 - glia.11: gold glia, predicted 'diencephalon' (named)
-- mura.3: gold mura, predicted 'mesenchyme' (named)
-- musc.19: gold musc, predicted 'segmental plate' (named)
-- peri.16: gold peri, predicted 'epidermis' (named)
-- peri.20: gold peri, predicted 'epidermis' (named)
-- peri.29: gold peri, predicted 'integument' (named)
-- peri.3: gold peri, predicted 'epidermis' (named)
-- peri.5: gold peri, predicted 'epidermis' (named)
-- peri.6: gold peri, predicted 'epidermis' (named)
-- peri.7: gold peri, predicted 'epidermis' (named)
+- hema.24: gold hema, predicted 'artery' (named)
+- ... and 28 more

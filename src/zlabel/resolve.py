@@ -38,7 +38,7 @@ from __future__ import annotations
 
 import math
 from collections import Counter
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 import networkx as nx
@@ -189,6 +189,45 @@ def build_information_content(
         gene_counts.update(credited)
 
     return {term_id: -math.log2(count / n_genes) for term_id, count in gene_counts.items() if count > 0}
+
+
+def build_marker_specificity(
+    expression_map: Mapping[str, list[ZfinExpressionRecord]],
+    identity_anchors: Sequence[frozenset[str]],
+    zfa_ontology: nx.MultiDiGraph,
+) -> dict[str, float]:
+    """Per-gene inverse panel-frequency (IDF): how lineage-specific a marker's expression is.
+
+    For each gene in the loaded ZFIN corpus, counts how many identity-panel anchor sets its
+    expression grounds under (a record's term, or any of its is_a/part_of ancestors, lands
+    at-or-under the anchor), and returns 1 / that count -- 1.0 when the gene marks a single
+    lineage, smaller when it is promiscuous. label.decide uses it to rescue a weak_signal
+    cluster from the dilution veto when one matched marker is sharply lineage-specific.
+    Data-derived from the loaded corpus + panel anchors; no hardcoded biology. Ancestor walks
+    are memoized so each id is walked at most once.
+
+    Args:
+        expression_map (Mapping[str, list[ZfinExpressionRecord]]): ZFIN expression from
+            data.load_zfin_expression. Keys are lowercased gene symbols.
+        identity_anchors (Sequence[frozenset[str]]): The ontology_anchor of each identity
+            panel (one frozenset of ZFA ids per panel).
+        zfa_ontology (nx.MultiDiGraph): ZFA ontology from data.load_zfa.
+
+    Returns:
+        dict[str, float]: gene symbol to 1 / (number of identity-panel anchors it grounds
+        under), in (0, 1]. A gene that grounds under no anchor is absent from the map; callers
+        treat absence as maximally promiscuous (it never triggers the rescue).
+    """
+    ancestor_cache: dict[str, frozenset[str]] = {}
+    specificity: dict[str, float] = {}
+    for gene, records in expression_map.items():
+        credited: set[str] = set()
+        for record in records:
+            credited |= _term_with_ancestors(record.zfa_id, zfa_ontology, ancestor_cache)
+        count = sum(1 for anchor in identity_anchors if anchor & credited)
+        if count:
+            specificity[gene] = 1.0 / count
+    return specificity
 
 
 # ---------------------------------------------------------------------------

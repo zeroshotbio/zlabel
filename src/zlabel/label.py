@@ -57,7 +57,7 @@ from zlabel.models import (
     TermVoteTrace,
 )
 from zlabel.panels import KIND_IDENTITY, KIND_STATE, BucketScore, MatchedMarker, Panel, load_panels, score_markers
-from zlabel.resolve import STOPLIST, TermVote, build_information_content, resolve_label
+from zlabel.resolve import STOPLIST, TermVote, build_information_content, build_marker_specificity, resolve_label
 
 # ---------------------------------------------------------------------------
 # Decision constants
@@ -71,6 +71,15 @@ MIN_SIGNAL: float = 0.15
 DOMINANCE_GAP: float = 0.30
 # Minimum gap (adj_top - adj_second) for a confident single-bucket call.
 # Doubles as the margin component's normaliser: margin = clamp01(gap / DOMINANCE_GAP).
+
+MARKER_SPECIFICITY_MIN: float = 1.0 / 3.0
+# Specificity-rescue threshold (Stage S "F2"): a weak-signal cluster (top adjusted score below
+# MIN_SIGNAL) is rescued from the dilution veto when one matched identity marker is sharply
+# lineage-specific -- its inverse panel-frequency (resolve.build_marker_specificity) is >= this,
+# i.e. it grounds under at most 3 of the ~31 lineage anchors. It is then named from that marker's
+# panel. The fraction denominator alone vetoes a single canonical marker among many off-panel ones;
+# this is what a human does instead (call the lineage from the one specific marker). Measured: ~4x
+# coverage at the named-agreement floor. Contained to precheck B; the descent is unchanged.
 
 COHERENCE_SAT: float = 2.13
 # Matched weight that saturates the coherence component at 1.0.
@@ -107,6 +116,7 @@ _ABSTAIN_BUCKET = "mixed/unresolved"
 # show which path the engine took (and, for abstentions, why).
 BRANCH_PRECHECK_A = "precheck-a-no-identity"
 BRANCH_PRECHECK_B = "precheck-b-weak-signal"
+BRANCH_PRECHECK_B_RESCUE = "precheck-b-specificity-rescue"
 BRANCH_CLEAR_WINNER = "clear-winner"
 BRANCH_ROLLUP = "germ-layer-rollup"
 BRANCH_MIXED = "mixed-abstain"
@@ -416,6 +426,7 @@ def decide(
     stage_hpf: float | None,
     symbols: list[str] | None = None,
     information_content: Mapping[str, float] | None = None,
+    marker_specificity: Mapping[str, float] | None = None,
     recorder: _Recorder | None = None,
 ) -> Label:
     """Converging-evidence decision: turn a score table into a Label.
@@ -448,6 +459,10 @@ def decide(
             When None, the descent is skipped and the panel bucket is used directly.
         information_content (Mapping[str, float] | None): IC model from resolve.build_information_content. Required
             alongside symbols for the convergence descent.
+        marker_specificity (Mapping[str, float] | None): Per-gene panel-IDF from
+            resolve.build_marker_specificity. When provided, a weak-signal cluster carrying a
+            sharply lineage-specific matched marker (IDF >= MARKER_SPECIFICITY_MIN) is rescued from
+            precheck B and named from that marker's panel; absent or empty, precheck B abstains.
         recorder (_Recorder | None): Optional trace sink. When None (the default
             and the labeling path) decide() is unchanged; when provided, the
             intermediates are recorded for trace() with no effect on the result.
@@ -492,6 +507,39 @@ def decide(
 
     # --- Precheck B: signal too weak ---
     if top_adj < MIN_SIGNAL:
+        # Specificity rescue: the fraction denominator buries a single canonical marker among many
+        # off-panel ones, but a sharply lineage-specific marker (IDF >= MARKER_SPECIFICITY_MIN) is
+        # strong evidence on its own -- so rescue from the veto and name from that marker's panel,
+        # the way a human calls the lineage off one specific marker. Contained to this branch.
+        if marker_specificity:
+            best = max(
+                identity,
+                key=lambda bucket_score: max(
+                    (marker_specificity.get(matched.symbol, 0.0) for matched in bucket_score.matched_markers),
+                    default=0.0,
+                ),
+            )
+            best_specificity = max(
+                (marker_specificity.get(matched.symbol, 0.0) for matched in best.matched_markers), default=0.0
+            )
+            if best_specificity >= MARKER_SPECIFICITY_MIN:
+                if recorder is not None:
+                    recorder.branch = BRANCH_PRECHECK_B_RESCUE
+                    recorder.winner_bucket = best.bucket
+                return _assign_named(
+                    top=best,
+                    top_adj=_adj(best, identity_denom),
+                    second_adj=second_adj,
+                    anchors=anchors,
+                    expression_map=expression_map,
+                    zfa_ontology=zfa_ontology,
+                    stage_hpf=stage_hpf,
+                    states=states,
+                    panel_scores=panel_scores,
+                    symbols=symbols or [],
+                    information_content=information_content or {},
+                    recorder=recorder,
+                )
         if recorder is not None:
             recorder.branch = BRANCH_PRECHECK_B
         return _abstain("provisional", states, panel_scores)
@@ -769,6 +817,7 @@ def trace(
     stage_hpf: float | None,
     symbols: list[str] | None = None,
     information_content: Mapping[str, float] | None = None,
+    marker_specificity: Mapping[str, float] | None = None,
 ) -> LabelTrace:
     """Run decide() with a recorder and return a faithful LabelTrace.
 
@@ -787,6 +836,9 @@ def trace(
         stage_hpf (float | None): Dataset developmental stage in hpf, or None.
         symbols (list[str] | None): Resolved current ZFIN symbols in rank order.
         information_content (Mapping[str, float] | None): IC model for the vote.
+        marker_specificity (Mapping[str, float] | None): Per-gene panel-IDF from
+            resolve.build_marker_specificity; passed through to decide() for the precheck-B
+            specificity rescue.
 
     Returns:
         LabelTrace: The decision plus its intermediates (normalization, panel
@@ -801,6 +853,7 @@ def trace(
         stage_hpf=stage_hpf,
         symbols=symbols,
         information_content=information_content,
+        marker_specificity=marker_specificity,
         recorder=recorder,
     )
     return _assemble_trace(normalized_markers, scores, recorder, label, stage_hpf)
@@ -960,6 +1013,12 @@ class Labeler:
         self._information_content: dict[str, float] = build_information_content(
             self._expression_map, self._zfa_ontology
         )
+        # Per-gene panel-IDF, built once: how lineage-specific each marker is. decide() uses it
+        # for the precheck-B specificity rescue (a sharply specific marker survives the dilution veto).
+        identity_anchors = [panel.ontology_anchor for panel in self._panels if panel.kind == KIND_IDENTITY]
+        self._marker_specificity: dict[str, float] = build_marker_specificity(
+            self._expression_map, identity_anchors, self._zfa_ontology
+        )
 
     def label(self, markers: list[str]) -> Label:
         """Label one cluster from its marker gene list.
@@ -992,6 +1051,7 @@ class Labeler:
             stage_hpf=self.stage_hpf,
             symbols=symbols,
             information_content=self._information_content,
+            marker_specificity=self._marker_specificity,
         )
 
     def trace(self, markers: list[str]) -> LabelTrace:
@@ -1022,4 +1082,5 @@ class Labeler:
             stage_hpf=self.stage_hpf,
             symbols=symbols,
             information_content=self._information_content,
+            marker_specificity=self._marker_specificity,
         )

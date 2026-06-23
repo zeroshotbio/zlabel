@@ -46,6 +46,18 @@ panels are the **coarse prior and the trusted anchor the namer descends from**, 
 ladder. The same function resolves finer on a tighter subcluster and shallower on a
 heterogeneous one; that is the engine being honest, not a failure.
 
+**The specificity rescue.** The panel score is a coarse prior, not a hard fraction veto: a
+single sharply lineage-specific marker is strong evidence on its own (a scientist calls
+"muscle" from `myod1` alone, ignoring the rest). So a cluster that would abstain on a weak
+panel signal is rescued when a matched marker's panel-specificity — its inverse panel-frequency
+over ZFIN expression (`resolve.build_marker_specificity`) — clears `MARKER_SPECIFICITY_MIN`
+(1/3: it grounds under at most 3 of the 31 lineage anchors); it is then named by descending from
+that marker's panel anchor. The rescue is contained to the abstain branch — every confident call
+is unchanged, and the convergence descent and overcall audit are untouched. On the Daniocell eval
+it roughly quadruples coverage (37 → ~146 named) while holding broad agreement at the named bar;
+a gold-blind audit of the recovered disagreements puts true precision near 86%, since about half
+are crosswalk/annotation artifacts rather than engine errors.
+
 The panels themselves are a versioned **v1 starter set** (see `docs/reference/
 cell_labelling_playbook.md §7`): *"These are starter panels for first-pass annotation.
 They must be versioned and adapted to stage, genome build, sequencing chemistry, and

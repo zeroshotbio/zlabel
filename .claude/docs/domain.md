@@ -62,6 +62,13 @@ When the signals agree, confidence is `high`. Panels alone top out at `medium` (
 **convergence cap**). When no bucket dominates but contenders share a germ layer, zlabel
 rolls up to that tier; contradictory germ layers give `mixed/unresolved`. It never overcalls.
 
+A weak panel signal would normally abstain, but a single **sharply lineage-specific marker**
+rescues the call — the way a scientist names a lineage from one canonical marker (`myod1` →
+muscle) and ignores the rest. A matched marker whose inverse panel-frequency over ZFIN
+expression grounds it under at most 3 of the 31 lineages survives the weak-signal veto, and the
+cluster is named by descending from that marker's panel anchor (contained to the abstain branch;
+the descent and overcall audit are unchanged).
+
 ## Additional Information
 
 Additional documentation can be found in [`docs/reference/`](../../docs/reference/).

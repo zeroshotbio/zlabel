@@ -38,7 +38,13 @@ from zlabel.ground import expression_lookup, grounds_under
 from zlabel.label import decide
 from zlabel.models import Label
 from zlabel.panels import KIND_IDENTITY, Panel, load_panels, score_markers
-from zlabel.resolve import CONVERGENCE_MIN, STOPLIST, _term_with_ancestors, build_information_content
+from zlabel.resolve import (
+    CONVERGENCE_MIN,
+    STOPLIST,
+    _term_with_ancestors,
+    build_information_content,
+    build_marker_specificity,
+)
 
 # Prediction classes (how the engine resolved a cluster).
 NAMED = "named"  # the convergence descent named a ZFA term
@@ -96,6 +102,7 @@ class Resources:
     panels: list[Panel]
     anchors: dict[str, frozenset[str]]
     information_content: dict[str, float]
+    marker_specificity: dict[str, float]
 
 
 @dataclass(frozen=True)
@@ -224,7 +231,11 @@ def load_resources(
     panels = load_panels(panels_path)
     anchors = {panel.bucket: panel.ontology_anchor for panel in panels}
     information_content = build_information_content(expression_map, zfa_ontology)
-    return Resources(zfa_ontology, expression_map, synonyms, panels, anchors, information_content)
+    identity_anchors = [panel.ontology_anchor for panel in panels if panel.kind == KIND_IDENTITY]
+    marker_specificity = build_marker_specificity(expression_map, identity_anchors, zfa_ontology)
+    return Resources(
+        zfa_ontology, expression_map, synonyms, panels, anchors, information_content, marker_specificity
+    )
 
 
 def _label_row(row: BenchmarkRow, resources: Resources) -> tuple[Label, list[str]]:
@@ -249,6 +260,7 @@ def _label_row(row: BenchmarkRow, resources: Resources) -> tuple[Label, list[str
         stage_hpf=row.stage_hpf,
         symbols=symbols,
         information_content=resources.information_content,
+        marker_specificity=resources.marker_specificity,
     )
     return label, symbols
 

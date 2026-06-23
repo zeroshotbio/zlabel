@@ -18,6 +18,7 @@ from zlabel.data import ZfinExpressionRecord
 from zlabel.resolve import (
     STOPLIST,
     build_information_content,
+    build_marker_specificity,
     resolve_label,
 )
 
@@ -38,6 +39,31 @@ def _rec(zfa_id: str, zfa_name: str) -> ZfinExpressionRecord:
 
 def test_build_information_content_empty_corpus(zfa_ontology):
     assert build_information_content({}, zfa_ontology) == {}
+
+
+# ---------------------------------------------------------------------------
+# build_marker_specificity (the panel-IDF signal for label.decide's specificity rescue)
+# ---------------------------------------------------------------------------
+
+
+def test_build_marker_specificity_single_anchor_gene(expression_map, zfa_ontology):
+    # With two disjoint identity anchors, each gene grounds under exactly one of them ->
+    # idf 1.0, maximally lineage-specific.
+    anchors = [frozenset({"ZFA:0000548"}), frozenset({"ZFA:0005307"})]
+    idf = build_marker_specificity(expression_map, anchors, zfa_ontology)
+    assert idf["mylpfa"] == 1.0  # grounds only under musculature system
+    assert idf["kdrl"] == 1.0  # grounds only under endothelial cell
+
+
+def test_build_marker_specificity_counts_every_grounded_anchor(expression_map, zfa_ontology):
+    # idf = 1 / (#identity anchors the gene grounds under). mylpfa expresses in muscle cell
+    # (ZFA:0009234), so it grounds under BOTH muscle cell and its ancestor musculature system;
+    # with both as separate anchors (+ a disjoint endothelial one) it grounds under 2 of 3 -> 1/2.
+    # myod1 expresses only in musculature system (no subterm), so it grounds under 1 of 3 -> 1.0.
+    anchors = [frozenset({"ZFA:0000548"}), frozenset({"ZFA:0009234"}), frozenset({"ZFA:0005307"})]
+    idf = build_marker_specificity(expression_map, anchors, zfa_ontology)
+    assert idf["mylpfa"] == pytest.approx(1 / 2)
+    assert idf["myod1"] == 1.0
 
 
 def test_build_information_content_descendant_ic_ge_ancestor(information_content):

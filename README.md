@@ -30,7 +30,7 @@ entry point — rules, architecture, commands, and build context in one file.
 2. **Score** markers against curated tissue/lineage panels → a ranked bucket table (a coarse prior, not the namer).
 3. **Descend** from the winning panel's ZFA anchor — each marker's in-vivo ZFIN expression votes for the anatomy terms it covers; the namer rolls down into the best-supported child while the markers keep converging on one subtype, stopping at the deepest term they still agree on.
 4. **Guardrail (intrinsic) + stage** — the name is descended from the anchor, so it always sits at or under it; an anchor the markers don't support falls back to the coarse panel bucket. Check stage plausibility (ZFS).
-5. **Decide** — assign with confidence, or abstain / roll up to a coarser tier when nothing dominates.
+5. **Decide** — assign with confidence, or abstain / roll up to a coarser tier when nothing dominates; a single sharply lineage-specific marker (e.g. `myod1` → muscle) rescues an otherwise-weak signal, named from that marker's panel.
 6. **Emit** a `Label` evidence packet (named term, depth, the `panel_bucket` prior, convergent genes, confidence, evidence).
 
 A label rests on **converging evidence, not one gene**. The full design is in
