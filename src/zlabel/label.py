@@ -204,6 +204,22 @@ def _adj(bucket_score: BucketScore, identity_denom: float) -> float:
     return hit_weight / identity_denom
 
 
+def _best_marker_specificity(bucket_score: BucketScore, marker_specificity: Mapping[str, float]) -> float:
+    """The panel-IDF of this bucket's single most lineage-specific matched marker, 0.0 if none.
+
+    The precheck-B specificity rescue uses this to pick the bucket carrying the sharpest marker
+    and to test it against MARKER_SPECIFICITY_MIN.
+
+    Args:
+        bucket_score (BucketScore): One identity bucket's score, with its matched markers.
+        marker_specificity (Mapping[str, float]): Per-gene panel-IDF from build_marker_specificity.
+
+    Returns:
+        float: The maximum marker_specificity over this bucket's matched markers, or 0.0 when none.
+    """
+    return max((marker_specificity.get(matched.symbol, 0.0) for matched in bucket_score.matched_markers), default=0.0)
+
+
 def _state_only_weight(scores: list[BucketScore]) -> float:
     """Weight of markers that hit a state panel and no identity panel.
 
@@ -436,7 +452,8 @@ def decide(
 
     The decision ladder:
       A. No resolved markers or no identity panel hit at all -> abstain (provisional).
-      B. Top adjusted identity score < MIN_SIGNAL -> abstain (provisional).
+      B. Top adjusted identity score < MIN_SIGNAL -> rescue on a sharply lineage-specific marker
+         (IDF >= MARKER_SPECIFICITY_MIN), else abstain (provisional).
       C. Top score dominates (gap >= DOMINANCE_GAP, or only one identity bucket) ->
          name from ZFA convergence descent (symbols + information_content required) or fall back to the
          panel bucket; emit the named label.
@@ -512,23 +529,16 @@ def decide(
         # strong evidence on its own -- so rescue from the veto and name from that marker's panel,
         # the way a human calls the lineage off one specific marker. Contained to this branch.
         if marker_specificity:
-            best = max(
-                identity,
-                key=lambda bucket_score: max(
-                    (marker_specificity.get(matched.symbol, 0.0) for matched in bucket_score.matched_markers),
-                    default=0.0,
-                ),
-            )
-            best_specificity = max(
-                (marker_specificity.get(matched.symbol, 0.0) for matched in best.matched_markers), default=0.0
-            )
-            if best_specificity >= MARKER_SPECIFICITY_MIN:
+            best = max(identity, key=lambda bucket_score: _best_marker_specificity(bucket_score, marker_specificity))
+            if _best_marker_specificity(best, marker_specificity) >= MARKER_SPECIFICITY_MIN:
                 if recorder is not None:
                     recorder.branch = BRANCH_PRECHECK_B_RESCUE
                     recorder.winner_bucket = best.bucket
                 return _assign_named(
                     top=best,
                     top_adj=_adj(best, identity_denom),
+                    # second_adj keeps the original runner-up; for a rescued (non-top) bucket it can
+                    # exceed top_adj, intentionally driving the margin component low -> low confidence.
                     second_adj=second_adj,
                     anchors=anchors,
                     expression_map=expression_map,

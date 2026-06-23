@@ -31,7 +31,7 @@ A label rests on **converging evidence, not one gene**:
 2. **Score markers against curated tissue panels** → a ranked bucket table; the winning panel is the coarse prior, and its ontology anchor is the root the namer descends from.
 3. **Descend from the anchor on ZFA anatomy** → for each marker, look up ZFIN in-vivo expression and walk the ZFA ancestor DAG; tally distinct genes per anatomy term; seed at the panel's ontology anchor and roll *down* into the best-supported child while the markers keep converging on a single subtype (the support floor + unique-winner stop). The deepest such term names the cluster. Depth falls out of the evidence: a tight endothelial panel resolves to a cell type; generic muscle markers stay at the broad muscle level.
 4. **Guardrail (now intrinsic) + stage** → the name is descended from the anchor, so it is always at or under it and the old contradiction check is folded into the walk; an anchor the markers do not support falls back to the coarse panel bucket. Check stage plausibility (ZFS) as a confidence component.
-5. **Decide** → one dominant, corroborated bucket with convergent anatomy → assign with confidence; otherwise `mixed/unresolved` (honest abstention) or a germ-layer rollup.
+5. **Decide** → one dominant, corroborated bucket with convergent anatomy → assign with confidence; or, on a weak panel signal, a single sharply lineage-specific marker rescues the call (named from that marker's panel); otherwise `mixed/unresolved` (honest abstention) or a germ-layer rollup.
 6. **Emit a `Label` evidence packet** → bucket (named ZFA term or coarse fallback), levels (ZFA ancestry chain), depth, panel_bucket (the prior), convergent_genes, confidence, expression_evidence, rationale.
 
 > [!WARNING]

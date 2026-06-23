@@ -10,8 +10,9 @@ from its **marker genes**. Whole-organism, low-resolution atlases are labeled
 **broad-first**: assign each cluster to one of the curated panel buckets — 33 in all
 (31 identity lineages spanning every germ layer, plus 2 orthogonal state programs; see
 `docs/reference/panels_and_markers_reference.md`) — or to mixed/unresolved when the
-evidence does not converge, then subcluster and re-label finer. A good label rests on
-**converging evidence**, not a single gene.
+evidence does not converge, then subcluster and re-label finer. A good label usually rests on
+**converging evidence**; the exception is one sharply lineage-specific marker, which rescues an
+otherwise-weak signal (see Converging evidence below).
 
 ## scRNA-seq in a paragraph
 
