@@ -114,6 +114,62 @@ def test_abstain_weak_signal(zfa_ontology):
     assert label.ambiguity_flag == "provisional"
 
 
+def test_precheck_b_rescued_by_specific_marker(zfa_ontology, expression_map, information_content):
+    # Weak signal (adj 0.1 < MIN_SIGNAL) but the matched marker is sharply lineage-specific
+    # (IDF 1.0 >= 1/3): rescued from the veto and named from that marker's panel, not abstained.
+    muscle = BucketScore(
+        bucket="muscle",
+        score=0.1,
+        germ_layer="mesoderm",
+        tissue="muscle",
+        lineage="skeletal muscle",
+        kind=KIND_IDENTITY,
+        matched_markers=(_make_matched_marker("mylpfa", 1),),
+        total_weight=10.0,  # tiny adj -> would fail precheck B without the rescue
+    )
+    blood = _make_empty_bucket_score("blood_erythroid")
+    label = decide(
+        [muscle, blood],
+        anchors={"muscle": MUSCLE_ANCHOR},
+        expression_map=expression_map,
+        zfa_ontology=zfa_ontology,
+        stage_hpf=None,
+        symbols=["mylpfa", "acta1b", "myog"],
+        information_content=information_content,
+        marker_specificity={"mylpfa": 1.0},
+    )
+    assert not label.abstained
+    assert label.bucket == "muscle cell"  # named from the muscle anchor descent
+    assert label.panel_bucket == "muscle"
+
+
+def test_precheck_b_not_rescued_when_marker_promiscuous(zfa_ontology, expression_map, information_content):
+    # Same weak signal, but the matched marker is promiscuous (IDF 0.25 < 1/3): no rescue, abstains.
+    muscle = BucketScore(
+        bucket="muscle",
+        score=0.1,
+        germ_layer="mesoderm",
+        tissue="muscle",
+        lineage="skeletal muscle",
+        kind=KIND_IDENTITY,
+        matched_markers=(_make_matched_marker("mylpfa", 1),),
+        total_weight=10.0,
+    )
+    blood = _make_empty_bucket_score("blood_erythroid")
+    label = decide(
+        [muscle, blood],
+        anchors={"muscle": MUSCLE_ANCHOR},
+        expression_map=expression_map,
+        zfa_ontology=zfa_ontology,
+        stage_hpf=None,
+        symbols=["mylpfa", "acta1b", "myog"],
+        information_content=information_content,
+        marker_specificity={"mylpfa": 0.25},
+    )
+    assert label.abstained
+    assert label.ambiguity_flag == "provisional"
+
+
 def test_assign_clear_winner(zfa_ontology):
     # Muscle has 3 markers, blood has 1, total_weight=3 so muscle adj score dominates.
     muscle = _make_bucket_score("muscle", markers=["mylpfa", "myod1", "myog"], total_weight=3.0)

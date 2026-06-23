@@ -10,8 +10,9 @@ from its **marker genes**. Whole-organism, low-resolution atlases are labeled
 **broad-first**: assign each cluster to one of the curated panel buckets — 33 in all
 (31 identity lineages spanning every germ layer, plus 2 orthogonal state programs; see
 `docs/reference/panels_and_markers_reference.md`) — or to mixed/unresolved when the
-evidence does not converge, then subcluster and re-label finer. A good label rests on
-**converging evidence**, not a single gene.
+evidence does not converge, then subcluster and re-label finer. A good label usually rests on
+**converging evidence**; the exception is one sharply lineage-specific marker, which rescues an
+otherwise-weak signal (see Converging evidence below).
 
 ## scRNA-seq in a paragraph
 
@@ -61,6 +62,13 @@ neural panel stays at CNS. Depth honesty is the whole zlabel thesis.
 When the signals agree, confidence is `high`. Panels alone top out at `medium` (the
 **convergence cap**). When no bucket dominates but contenders share a germ layer, zlabel
 rolls up to that tier; contradictory germ layers give `mixed/unresolved`. It never overcalls.
+
+A weak panel signal would normally abstain, but a single **sharply lineage-specific marker**
+rescues the call — the way a scientist names a lineage from one canonical marker (`myod1` →
+muscle) and ignores the rest. A matched marker whose inverse panel-frequency over ZFIN
+expression grounds it under at most 3 of the 31 lineages survives the weak-signal veto, and the
+cluster is named by descending from that marker's panel anchor (contained to the abstain branch;
+the descent and overcall audit are unchanged).
 
 ## Additional Information
 

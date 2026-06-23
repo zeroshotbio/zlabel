@@ -31,7 +31,7 @@ A label rests on **converging evidence, not one gene**:
 2. **Score markers against curated tissue panels** → a ranked bucket table; the winning panel is the coarse prior, and its ontology anchor is the root the namer descends from.
 3. **Descend from the anchor on ZFA anatomy** → for each marker, look up ZFIN in-vivo expression and walk the ZFA ancestor DAG; tally distinct genes per anatomy term; seed at the panel's ontology anchor and roll *down* into the best-supported child while the markers keep converging on a single subtype (the support floor + unique-winner stop). The deepest such term names the cluster. Depth falls out of the evidence: a tight endothelial panel resolves to a cell type; generic muscle markers stay at the broad muscle level.
 4. **Guardrail (now intrinsic) + stage** → the name is descended from the anchor, so it is always at or under it and the old contradiction check is folded into the walk; an anchor the markers do not support falls back to the coarse panel bucket. Check stage plausibility (ZFS) as a confidence component.
-5. **Decide** → one dominant, corroborated bucket with convergent anatomy → assign with confidence; otherwise `mixed/unresolved` (honest abstention) or a germ-layer rollup.
+5. **Decide** → one dominant, corroborated bucket with convergent anatomy → assign with confidence; or, on a weak panel signal, a single sharply lineage-specific marker rescues the call (named from that marker's panel); otherwise `mixed/unresolved` (honest abstention) or a germ-layer rollup.
 6. **Emit a `Label` evidence packet** → bucket (named ZFA term or coarse fallback), levels (ZFA ancestry chain), depth, panel_bucket (the prior), convergent_genes, confidence, expression_evidence, rationale.
 
 > [!WARNING]
@@ -45,6 +45,18 @@ panels are the **coarse prior and the trusted anchor the namer descends from**, 
 `Label.depth` (`len(levels)`) is a real, evidence-dependent integer — not a hardcoded tier
 ladder. The same function resolves finer on a tighter subcluster and shallower on a
 heterogeneous one; that is the engine being honest, not a failure.
+
+**The specificity rescue.** The panel score is a coarse prior, not a hard fraction veto: a
+single sharply lineage-specific marker is strong evidence on its own (a scientist calls
+"muscle" from `myod1` alone, ignoring the rest). So a cluster that would abstain on a weak
+panel signal is rescued when a matched marker's panel-specificity — its inverse panel-frequency
+over ZFIN expression (`resolve.build_marker_specificity`) — clears `MARKER_SPECIFICITY_MIN`
+(1/3: it grounds under at most 3 of the 31 lineage anchors); it is then named by descending from
+that marker's panel anchor. The rescue is contained to the abstain branch — every confident call
+is unchanged, and the convergence descent and overcall audit are untouched. On the Daniocell eval
+it roughly quadruples coverage (37 → ~146 named) while holding broad agreement at the named bar;
+a gold-blind audit of the recovered disagreements puts true precision near 86%, since about half
+are crosswalk/annotation artifacts rather than engine errors.
 
 The panels themselves are a versioned **v1 starter set** (see `docs/reference/
 cell_labelling_playbook.md §7`): *"These are starter panels for first-pass annotation.

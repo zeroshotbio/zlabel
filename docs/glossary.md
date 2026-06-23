@@ -92,6 +92,12 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   or entered. The thresholds are provisional; Phase 4b measured the baseline — calibration is
   deferred. Because the name descends *from* the anchor it always sits at or under it, so the
   panel guardrail needs no separate contradiction check.
+- **Specificity rescue (panel-IDF)** — a weak panel signal normally abstains, but a single sharply
+  lineage-specific marker rescues the call (`label.decide`, precheck B). Each gene's **panel-IDF**
+  (`resolve.build_marker_specificity`, `1 / #lineage anchors it grounds under`) measures how
+  lineage-specific it is; a matched marker clearing `MARKER_SPECIFICITY_MIN` (1/3 — it grounds under
+  at most 3 of the 31 lineages) names the cluster by descending from that marker's panel. Contained
+  to the abstain branch; the descent and overcall audit are unchanged.
 - **TermVote** — the candidate object `resolve.resolve_label` returns: the named terminal term
   (a one-element list, or empty when nothing converges), with its ZFA id, name, the genes that
   backed it, IC, and ancestor depth. Not a user-facing API; reach it via `zlabel.resolve` if you
@@ -141,7 +147,7 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   broad tissue; coverage is the non-abstain rate (named + fallback + rollup).
 - **overcall audit** — a structural check for false precision: a named term that won on the bare
   `CONVERGENCE_MIN` genes while a broader parent term had more support. Phase 4b reports it as a
-  regression guard on the descent (1 thin call in 39 named clusters).
+  regression guard on the descent (the live count is in the benchmark report).
 
 ## How data flows through zlabel
 
@@ -159,7 +165,7 @@ src/zlabel/panels.py    ->  load_panels() · score_markers() -> list[BucketScore
                                         |
                                         v
 src/zlabel/ground.py    ->  expression_lookup() · grounds_under() · stage_plausibility() (Phase 3)
-src/zlabel/resolve.py   ->  build_information_content() · resolve_label() -> list[TermVote] (Phase 4a)
+src/zlabel/resolve.py   ->  build_information_content() · build_marker_specificity() · resolve_label() -> list[TermVote] (Phase 4a)
 src/zlabel/label.py     ->  decide() · Labeler.label() -> Label                         (Phase 3+4a)
 src/zlabel/evaluate.py  ->  evaluate() over the Daniocell benchmark -> baseline report  (Phase 4b)
 ```
