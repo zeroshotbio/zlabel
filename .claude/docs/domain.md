@@ -70,6 +70,13 @@ expression grounds it under at most 3 of the 31 lineages survives the weak-signa
 cluster is named by descending from that marker's panel anchor (contained to the abstain branch;
 the descent and overcall audit are unchanged).
 
+On an abstention, `Label` still exposes the **forcing evidence** so a caller can decide whether to
+force a call itself: `candidates` (the near-tie buckets, best-first, with margins), `margin` (the
+raw lead over the runner-up), and `ood` — `in_set` (reachable, force-able), `structural` (converges
+nowhere, a blind-spot), `doublet` (contradictory germ layers), or `no_signal` (no identity hit).
+`structural`/`doublet` are high-precision when they fire; `in_set` is a soft signal (a broad
+attractor can mask a blind-spot).
+
 ## Additional Information
 
 Additional documentation can be found in [`docs/reference/`](../../docs/reference/).

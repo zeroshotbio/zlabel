@@ -58,6 +58,21 @@ it roughly quadruples coverage (37 → ~146 named) while holding broad agreement
 a gold-blind audit of the recovered disagreements puts true precision near 86%, since about half
 are crosswalk/annotation artifacts rather than engine errors.
 
+**Forcing or abstaining — the caller decides, on the evidence.** zlabel labels one cluster; it
+never emits a blind forced guess. So even when it abstains it exposes the evidence a caller needs
+to force a call itself: `Label.candidates` (the near-tie buckets, best-first, each with its margin
+to the top), `Label.margin` (the raw lead of the top adjusted score over the runner-up), and
+`Label.ood` — a flag separating "uncertain among known types" from "genuinely unassigned." `ood`
+is `in_set` when the markers reach a reference type the descent can seed on (the selection
+residual — force-able), `structural` when they converge on no named anatomy under any anchor (a
+blind-spot or novel type), `doublet` on contradictory germ layers, and `no_signal` on no identity
+hit. The caveat the field docs lead with: `structural`/`doublet` are high-precision *when they
+fire*, but `in_set` is a soft signal, not a certification — a broad attractor panel can mask a
+structural blind-spot (periderm seeding under epidermis), so `in_set` has high recall and
+imperfect precision. The flags are derived at label time from signals `decide()` already computes,
+with no per-dataset calibration; the force/no-force threshold on `margin` is left to the caller
+(baking one in would re-introduce the forced mode this design rejects).
+
 The panels themselves are a versioned **v1 starter set** (see `docs/reference/
 cell_labelling_playbook.md §7`): *"These are starter panels for first-pass annotation.
 They must be versioned and adapted to stage, genome build, sequencing chemistry, and

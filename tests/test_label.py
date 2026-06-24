@@ -493,3 +493,121 @@ def test_labeler_to_yaml_runs():
     yaml_str = label.to_yaml()
     assert "bucket:" in yaml_str
     assert "muscle" in yaml_str
+
+
+# ---------------------------------------------------------------------------
+# OOD flag + candidate set (the forcing-evidence enrichment)
+# ---------------------------------------------------------------------------
+
+
+def test_ood_no_signal_on_precheck_a(zfa_ontology):
+    # No identity panel matched at all -> no_signal, with an empty candidate set.
+    scores = [_make_empty_bucket_score("muscle"), _make_empty_bucket_score("blood_erythroid")]
+    label = decide(scores, anchors={}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None)
+    assert label.abstained
+    assert label.ood == "no_signal"
+    assert label.candidates == ()
+    assert label.margin == 0.0
+
+
+def test_ood_doublet_on_contradictory_germ_layers(zfa_ontology):
+    # Two near-tied buckets in different germ layers -> mixed abstention, flagged doublet, and the
+    # candidate set surfaces both competing germ layers for the caller.
+    muscle = _make_bucket_score("muscle", germ_layer="mesoderm", markers=["myod1"], total_weight=2.0)
+    neural = _make_bucket_score(
+        "neural", germ_layer="ectoderm", tissue="nervous system", lineage="neural", markers=["elavl3"], total_weight=2.0
+    )
+    label = decide([muscle, neural], anchors={}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None)
+    assert label.abstained
+    assert label.ambiguity_flag == "mixed"
+    assert label.ood == "doublet"
+    assert {candidate.germ_layer for candidate in label.candidates} == {"mesoderm", "ectoderm"}
+
+
+def test_ood_in_set_and_singleton_candidate_on_clear_winner(zfa_ontology):
+    # A dominant winner is in_set with a one-element candidate set (set size = uncertainty) and a
+    # positive raw margin over the runner-up.
+    muscle = _make_bucket_score("muscle", markers=["mylpfa", "myod1", "myog"], total_weight=3.0)
+    blood = _make_bucket_score(
+        "blood_erythroid", tissue="blood", lineage="erythroid", markers=["gata1a"], total_weight=3.0
+    )
+    label = decide(
+        [muscle, blood],
+        anchors={"muscle": MUSCLE_ANCHOR},
+        expression_map=EMPTY_EXPR,
+        zfa_ontology=zfa_ontology,
+        stage_hpf=None,
+    )
+    assert not label.abstained
+    assert label.ood == "in_set"
+    assert [candidate.bucket for candidate in label.candidates] == ["muscle"]
+    assert label.candidates[0].margin_to_top == 0.0
+    assert label.margin > 0.0
+
+
+def test_ood_structural_when_descent_cannot_seed(zfa_ontology, expression_map, information_content):
+    # Weak gate, no rescue, and the descent symbols have no ZFIN records -> the markers' anatomy
+    # converges nowhere reachable -> structural (a genuine blind-spot, not a force-able residual).
+    muscle = BucketScore(
+        bucket="muscle",
+        score=0.1,
+        germ_layer="mesoderm",
+        tissue="muscle",
+        lineage="skeletal muscle",
+        kind=KIND_IDENTITY,
+        matched_markers=(_make_matched_marker("mylpfa", 1),),
+        total_weight=10.0,
+    )
+    label = decide(
+        [muscle, _make_empty_bucket_score("blood_erythroid")],
+        anchors={"muscle": MUSCLE_ANCHOR},
+        expression_map=expression_map,
+        zfa_ontology=zfa_ontology,
+        stage_hpf=None,
+        symbols=["nonexistent_a", "nonexistent_b"],
+        information_content=information_content,
+    )
+    assert label.abstained
+    assert label.ood == "structural"
+
+
+def test_ood_in_set_when_weak_gate_vetoes_a_reachable_call(zfa_ontology, expression_map, information_content):
+    # Weak gate, no rescue, but the markers DO seed the descent under the anchor -> only the gate
+    # vetoed a reachable call -> in_set (the force-able selection residual). This is also the leak:
+    # in_set fires on the descent seeding, not on the truth.
+    muscle = BucketScore(
+        bucket="muscle",
+        score=0.1,
+        germ_layer="mesoderm",
+        tissue="muscle",
+        lineage="skeletal muscle",
+        kind=KIND_IDENTITY,
+        matched_markers=(_make_matched_marker("mylpfa", 1),),
+        total_weight=10.0,
+    )
+    label = decide(
+        [muscle, _make_empty_bucket_score("blood_erythroid")],
+        anchors={"muscle": MUSCLE_ANCHOR},
+        expression_map=expression_map,
+        zfa_ontology=zfa_ontology,
+        stage_hpf=None,
+        symbols=["mylpfa", "acta1b", "myog"],
+        information_content=information_content,
+    )
+    assert label.abstained
+    assert label.ood == "in_set"
+
+
+def test_candidates_ordered_with_margins_on_rollup(zfa_ontology):
+    # A same-germ-layer near-tie rolls up; the candidate set carries both contenders best-first with
+    # ascending margins, and an assigned rollup stays in_set.
+    muscle = _make_bucket_score("muscle", germ_layer="mesoderm", markers=["myod1", "myog"], total_weight=3.0)
+    cardiac = _make_bucket_score(
+        "cardiac", germ_layer="mesoderm", tissue="heart", lineage="cardiac", markers=["myl7"], total_weight=3.0
+    )
+    label = decide([muscle, cardiac], anchors={}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None)
+    assert label.ambiguity_flag == "underclustered"
+    assert label.ood == "in_set"
+    assert [candidate.bucket for candidate in label.candidates] == ["muscle", "cardiac"]
+    assert label.candidates[0].margin_to_top == 0.0
+    assert label.candidates[1].margin_to_top > 0.0
