@@ -135,10 +135,10 @@ checkpoints/
 # marimo session cache (ephemeral, per-kernel)
 __marimo__/
 
-# Interactive pairing scratch (playwright-MCP captures + walkthrough screenshots)
+# Interactive pairing scratch (playwright-MCP captures + walkthrough/UI screenshots).
+# Root-anchored so committed images under docs/ or notebooks/ stay trackable.
 /.playwright-mcp/
-/walk_main.png
-/walk_state.png
+/*.png
 
 # Claude Code ephemeral data (track config, exclude state)
 .claude/sessions/
