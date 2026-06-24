@@ -22,11 +22,10 @@ zlabel is built in **seven phases**. Every phase follows the same loop:
   has a tight Google-style docstring; non-obvious choices get a one-line *why*. Cut
   anything that just restates the code.
 - **Docs current.** No stale claims anywhere in the repo.
-- **No silent regression.** The parent-child overcall audit and the broad-agreement
-  baseline are hard regression gates, mechanized by `make gate` (regenerates the
-  Daniocell baseline; fails on any drift, calling out a rise in the overcall count as a
-  named regression). Install it as a pre-commit hook with `make hooks`. An intentional
-  behavior change regenerates the baseline (`make eval`) and commits it for review.
+- **No baseline regression.** `make gate` passes: the parent-child overcall audit did not
+  rise and `benchmarks/daniocell_baseline_report.md` did not drift. An intentional behavior
+  change regenerated the baseline (`make eval`) and committed it for review. (Mechanized as a
+  pre-commit hook via `make hooks`.)
 
 ## The phases
 

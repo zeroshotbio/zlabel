@@ -49,7 +49,7 @@ make test     # pytest
 make verify   # lint + docstrings + types + tests
 make eval     # regenerate the Daniocell baseline report (needs data/ontologies)
 make gate     # regression wall: regenerate baseline, fail on drift / overcall regression
-make hooks    # install the pre-commit hook that runs `make gate` on engine/panel changes
+make hooks    # install the pre-commit hook that runs `make gate` on engine/panel/benchmark changes
 ```
 
 ## Tech stack

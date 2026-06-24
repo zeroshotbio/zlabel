@@ -8,12 +8,10 @@ and compares the fresh report to the committed benchmarks/daniocell_baseline_rep
   - Any drift fails. A behavior change must be made intentionally: run `make eval` to regenerate the
     report, review the diff, and commit it alongside the change (the regenerate-baseline rule).
   - A rise in the thin-support overcall count fails loudly as a named regression -- the exact trade
-    (blind-spot recovery bought with over-calling) the descent design exists to prevent.
+    (blind-spot recovery bought with overcalling) the descent design exists to prevent.
 
-The check needs data/ontologies (the gitignored ZFIN/ZFA downloads). When that data is absent it
-SKIPS (exit 0) rather than blocking, so a machine without the corpus is not walled out; the gate
-still stands on the dev machine and any data-provisioned CI. Run via `make gate`, or automatically
-from the pre-commit hook installed by `make hooks`.
+The check needs data/ontologies (the gitignored ZFIN/ZFA downloads); when that data is absent it
+SKIPS (exit 0) rather than blocking a machine without the corpus.
 """
 
 from __future__ import annotations
@@ -82,7 +80,7 @@ def main() -> int:
     if prior is not None and fresh_overcalls > prior:
         print(f"  OVERCALL AUDIT REGRESSION: thin-support overcalls {prior} -> {fresh_overcalls}.")
         print("  This is a hard regression gate (.claude/docs/workflow.md) -- do not commit unless")
-        print("  the over-calls are intended and reviewed.")
+        print("  the overcalls are intended and reviewed.")
     print("  If the labeling change is intentional, run `make eval` to regenerate the report and review")
     print("  the diff before committing. Unified diff (committed -> fresh):")
     diff = difflib.unified_diff(

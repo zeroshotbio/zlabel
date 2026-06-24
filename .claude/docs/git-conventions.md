@@ -24,8 +24,8 @@ make gate     # regression wall: regenerate the baseline, fail on drift / overca
 ```
 
 `make gate` needs `data/ontologies`; install it once as a pre-commit hook with `make hooks` so
-the overcall-audit + baseline wall runs automatically on engine/panel/benchmark changes. An
-intentional behavior change regenerates the baseline (`make eval`) and commits it for review.
+the overcall-audit + baseline wall runs automatically on engine/panel/benchmark changes (see
+[`workflow.md`](workflow.md) for when to regenerate the baseline).
 
 ## Pull requests
 
