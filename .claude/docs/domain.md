@@ -36,8 +36,10 @@ symbol. So **normalize every marker to its official ZFIN symbol before scoring**
 - **ZFIN wildtype-expression** — curated gene → ZFA anatomy + ZFS stage records.
   The in-vivo evidence: where a marker actually expresses.
 - **ZFS** — developmental-stage ontology (hpf ranges); used for stage plausibility.
-- **CL** — species-neutral Cell Ontology; an optional secondary anchor for generic
-  cell types (neuron, macrophage…) once resolution justifies it.
+- **CL** — species-neutral Cell Ontology. Not used, and ruled out as a grounding anchor:
+  ZFA already carries the cell-type axis (441 terms cross-reference CL, all under the `cell`
+  root ZFA:0009000), and ZFIN expression carries 0% CL annotation — so CL adds no axis ZFA
+  lacks. See `docs/design.md` §Known limit.
 
 These are *data authorities*: ZFIN curates the files, OBO Foundry / GO host them; we
 download and parse them (`scripts/setup_data.sh`). Which Python library does the
