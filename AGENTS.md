@@ -39,7 +39,7 @@ Broad buckets are the honest call on a *low-resolution* cluster — **not a ceil
 The same `label()` resolves finer on subclusters (specific ZFA grounding + nested
 panels). See [`docs/design.md`](docs/design.md) §Resolution.
 
-## Commands (land in Phase 1)
+## Commands
 
 ```bash
 make setup    # uv sync (all groups + extras)
@@ -47,6 +47,9 @@ make format   # ruff format + safe fixes
 make type     # pyright (basic)
 make test     # pytest
 make verify   # lint + docstrings + types + tests
+make eval     # regenerate the Daniocell baseline report (needs data/ontologies)
+make gate     # regression wall: regenerate baseline, fail on drift / overcall regression
+make hooks    # install the pre-commit hook that runs `make gate` on engine/panel/benchmark changes
 ```
 
 ## Tech stack

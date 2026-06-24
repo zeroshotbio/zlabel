@@ -147,7 +147,9 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   broad tissue; coverage is the non-abstain rate (named + fallback + rollup).
 - **overcall audit** — a structural check for false precision: a named term that won on the bare
   `CONVERGENCE_MIN` genes while a broader parent term had more support. Phase 4b reports it as a
-  regression guard on the descent (the live count is in the benchmark report).
+  regression guard on the descent (the live count is in the benchmark report); `make gate`
+  mechanizes the guard, failing on a rise in the count (install the pre-commit hook with
+  `make hooks`).
 
 ## How data flows through zlabel
 
