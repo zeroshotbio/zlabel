@@ -33,7 +33,7 @@ evidence does not converge.
 3. **Descend** on ZFA anatomy: each marker's in-vivo ZFIN expression votes for the terms it (and its ancestors) cover; seed at the panel's ontology anchor and roll down into the best-supported child while the markers converge on a single subtype — the deepest such term names the cluster (`resolve.py`).
 4. **Guardrail (intrinsic) + stage**: the name is descended from the anchor, so it always sits under it (no separate contradiction check); an unsupported anchor falls back to the coarse panel bucket. Plausible for the stage (ZFS)?
 5. **Decide**: assign with confidence, else abstain (`mixed/unresolved`) or roll up; a single sharply lineage-specific marker rescues an otherwise-weak signal (named from that marker's panel).
-6. **Emit** a `Label` evidence packet.
+6. **Emit** a `Label` evidence packet — plus, on an abstention, the forcing evidence (`candidates`, `ood`, `margin`) so a caller can decide whether to force the top candidate itself.
 
 Broad buckets are the honest call on a *low-resolution* cluster — **not a ceiling**.
 The same `label()` resolves finer on subclusters (specific ZFA grounding + nested

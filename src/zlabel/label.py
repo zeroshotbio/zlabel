@@ -229,8 +229,9 @@ def _candidates(identity: list[BucketScore], identity_denom: float, top_adj: flo
     Surfaces the contender band decide() already trusts so a caller sees the types the evidence is
     consistent with. identity is sorted by descending adjusted score, so the band is a prefix and the
     walk stops at the first bucket outside it. A clear winner yields one member; a near-tie yields the
-    competing types with their margins. On an abstention candidates[0] is the honest force-the-top
-    target; on an assigned call the named bucket is panel_bucket and candidates is the context.
+    competing types with their margins. On an abstention with identity signal candidates[0] is the
+    honest force-the-top target (precheck-A yields an empty set); on an assigned call the named
+    bucket is panel_bucket and candidates is the context.
 
     Args:
         identity (list[BucketScore]): Identity buckets that matched markers, sorted by -adj.
@@ -700,8 +701,8 @@ def _assign_named(
     panel_scores: dict[str, float],
     symbols: list[str],
     information_content: Mapping[str, float],
-    candidates: tuple[Candidate, ...] = (),
-    margin: float = 0.0,
+    candidates: tuple[Candidate, ...],
+    margin: float,
     recorder: _Recorder | None = None,
 ) -> Label:
     """Build a Label for a clear single-bucket assignment, named from ZFA convergence.
@@ -828,8 +829,8 @@ def _assign_rollup(
     stage_hpf: float | None,
     states: tuple[str, ...],
     panel_scores: dict[str, float],
-    candidates: tuple[Candidate, ...] = (),
-    margin: float = 0.0,
+    candidates: tuple[Candidate, ...],
+    margin: float,
 ) -> Label:
     """Build a germ-layer rollup Label.
 

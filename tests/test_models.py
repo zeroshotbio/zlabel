@@ -355,7 +355,7 @@ def test_label_trace_to_yaml_field_order():
     assert yaml_str.index("term_votes:") < yaml_str.index("\nlabel:")
 
 
-# --- Stage O: candidate set + ood flag + margin ------------------------------
+# --- Forcing evidence: candidates, ood, margin -------------------------------
 
 
 def test_label_validator_rejects_non_in_set_when_assigned():

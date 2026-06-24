@@ -5,7 +5,7 @@ not just the bucket name but the confidence rubric, the grounding evidence, and
 enough context for a human (or a future LLM narrator) to understand and verify the
 call without digging into the library internals.
 
-pydantic is used for two reasons: validation (the abstained/confidence invariant is
+pydantic is used for two reasons: validation (the confidence and ood invariants are
 enforced at construction, not asserted at call sites) and clean YAML serialisation
 via to_yaml(). Every field is a Python primitive so model_dump() is YAML-safe.
 """

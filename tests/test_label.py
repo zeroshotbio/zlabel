@@ -496,7 +496,7 @@ def test_labeler_to_yaml_runs():
 
 
 # ---------------------------------------------------------------------------
-# OOD flag + candidate set (Stage O: the forcing-evidence enrichment)
+# OOD flag + candidate set (the forcing-evidence enrichment)
 # ---------------------------------------------------------------------------
 
 
