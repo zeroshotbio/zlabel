@@ -88,6 +88,58 @@ for the coverage proof.
 What v1 deterministic *won't* do: **open-ended de-novo naming of types with no
 expression footprint.** That is the LLM's job (§LLM).
 
+## Known limit: selection is bounded by reference granularity
+
+Gate fixed and forcing answered — both gold-free, both generalizing. The one residual zlabel cannot
+cross is *selection*: on a low-resolution cluster whose markers are promiscuous, a broad **attractor**
+panel (epidermis, endothelium, mesenchyme, neural) out-scores the true lineage. This is a *measured*
+structural limit, not an open problem — and the record is worth stating precisely, because "we stopped"
+and "we measured exactly where the wall is and why" are different artifacts.
+
+**What is fixed, gold-free.** The panel *gate* (the F2 specificity rescue: a single sharply
+lineage-specific marker rescues a weak-signal cluster — ~4× coverage at ~86% true precision once the
+Stage-L key errors are credited) and *forcing honesty* (the candidate set + `ood` + `margin`, with the
+caller owning the force/abstain decision). Both shipped.
+
+**What is bounded, and why — the bound is earned, not exhausted.** Seven independent levers NO-GO'd on
+the same attractor-selection residual. Six are *marker-derived*: convergence-gating (F3), descent-level
+IDF (F4), grounding-argmax (Stage B), negative markers / mutual exclusion (N0), gold-free attractor
+derivation (N0b), and the descent-axis fix (D2 — whose premise proved false: the "wrong-axis overshoots"
+are selection failures, 35 of 42 named disagreements won by an attractor panel, not descent crossings).
+The seventh makes the bound defensible: the diagnosis itself nominated the escape hatch — the cues a
+human uses to disambiguate (developmental stage, tissue topology, context) are simply not in a marker
+list — so we tested the one such cue the system *does* receive, the **known HPF**, and it is
+non-discriminative: wrong (attractor) calls are stage-plausible (mean 0.938) almost exactly like correct
+ones (0.995), only ~2% of wrong calls implausible. Testing the diagnosis's own proposed fix and finding
+it flat is what makes this a measured boundary, not "we didn't try the right signal."
+
+And stage closes for a reason that **unifies three of the walls into one root cause**: it fails because
+ZFIN's stage annotations are *broad* (a marker spans 20+ developmental stages), so a known HPF lands
+inside almost everything's plausible window — the same shape as F4 (ZFIN expression sparsity) and a
+hypothetical CL grounding layer (ZFIN carries 0% Cell-Ontology annotation). **Three walls reduce to one:
+the reference data (ZFIN) is not fine-grained enough — not the algorithm.** That is the map of the
+boundary, and it says what would actually move the needle on a future dataset: finer reference
+annotations, not a cleverer rule.
+
+**What was ruled out, on evidence.** Grounding against the **Cell Ontology (CL)** — redundant *and*
+walled: ZFA already carries the cell-type axis (441 terms carry CL cross-references, all under the
+`cell` root ZFA:0009000 with zero overlap into the region roots, a clean verified split), so CL adds no
+axis ZFA lacks; and CL grounding is blocked anyway, since ZFIN expression carries 0% CL annotation and
+only ~21% of panel anchors map to CL. **Negative markers** — the gold-free attractor set they need is
+underivable (no marker-distribution or anchor-shape signal separates the attractors from specific
+lineages whose own markers are broad in ZFIN). **HPF as a selector** — non-discriminative (above); it
+stays the soft confidence component it already is, and a caller who knows the stage can apply it to the
+candidate set themselves.
+
+**The fallible-key caveat.** A gold-blind audit (Stage L) found ~14% of apparent errors (16 of 112) are
+Daniocell's own labels, not zlabel's — so the residual is partly benchmark error, and true performance
+is bounded below by the key.
+
+**The generalization claim.** Every shipped mechanism is dataset-composition-independent and gold-free
+(scored against the fixed ZFIN/panel reference, never the query), so it carries to other datasets
+unchanged. That — not a Daniocell agreement number — was the goal. The system now knows exactly what it
+can and cannot do, and why.
+
 ## Public surface (the whole API)
 
 ### Phase 2 primitives (lower-level API)
