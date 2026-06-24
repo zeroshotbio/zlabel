@@ -122,6 +122,12 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   soft signal — a broad attractor panel can mask a blind-spot, so it has high recall, imperfect
   precision. All derived at label time, no per-dataset calibration; the force threshold is the
   caller's.
+- **attractor panel** — one of the four broad panels (epidermis, endothelium, mesenchyme, neural)
+  whose markers are promiscuous enough (they express across many unrelated tissues) to out-score the
+  true lineage on a low-resolution cluster. The root cause of the **selection residual**.
+- **selection residual** — the error class where the correct lineage panel is scored below an
+  attractor panel. A measured structural limit, bounded by ZFIN reference granularity rather than the
+  algorithm (seven gold-free levers ruled it not-cheaply-fixable); see `docs/design.md` §Known limit.
 - **bucket vs. panel_bucket** — `bucket` is the fine call (the named ZFA term, e.g.
   `muscle cell`); `panel_bucket` is the coarse prior that anchored it (the winning panel, e.g.
   `muscle`), kept visible so you see both the guardrail anchor and the finer name.
