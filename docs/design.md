@@ -185,6 +185,23 @@ is bounded below by the key.
 unchanged. That — not a Daniocell agreement number — was the goal. The system now knows exactly what it
 can and cannot do, and why.
 
+**Generalization, measured on a 2nd atlas (ZSCAPE, 2026-06-27).** The claim above was put to a held-out
+test: zlabel UNCHANGED (committed default thresholds) on the wild-type-control subset of the ZSCAPE
+perturbation atlas (Saunders 2023), genes harmonized ENSDARG→ZFIN symbol (93% map), scored gold-blind
+against benchmarks/zscape_tissue_crosswalk.yaml (scripts/build_zscape_eval.py, run_zscape_eval.py).
+Where zlabel makes a named call it **generalizes — 88.9% broad agreement (16/18), above Daniocell's
+71.3%** — and its characteristic confusions reproduce (hatching-gland → epidermis), so the boundary is a
+property of the method, not Daniocell overfitting. Coverage is lower (22% vs 35% non-abstain): of the 75
+scored abstentions, two-thirds are weak_signal (a home exists; the engine is conservative), the rest
+no_panel/mixed. The
+cause is a **marker-vocabulary** gap, not an anchor-coverage one — the panel buckets do cover ZSCAPE's
+tissues, but the panels' marker lists are Daniocell/reference-tuned, so a second atlas's canonical
+markers (titin/nebulin for muscle, slit/netrin for floor plate) plus noise (malat1, si:* clones) leave
+the right panel under threshold → honest abstention. Caveats: the named-N is only 18 (the 16/18 CI
+overlaps Daniocell's 71.3%, so read this as consistent-with-generalization, not proof of higher accuracy)
+and the ZSCAPE key is itself fallible. Actionable read: broadening panel marker vocabulary would lift
+cross-atlas coverage; the anchors hold.
+
 ## Public surface (the whole API)
 
 ### Phase 2 primitives (lower-level API)

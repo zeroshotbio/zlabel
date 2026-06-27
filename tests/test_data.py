@@ -20,6 +20,7 @@ from zlabel import (
     load_zfin_expression,
     term_name,
 )
+from zlabel.data import load_ensdarg_to_symbol
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -201,3 +202,12 @@ def test_synonym_loads_committed_fixture():
 def test_synonym_missing_file_raises(tmp_path):
     with pytest.raises(FileNotFoundError):
         load_gene_synonym_map(tmp_path / "nope.gaf")
+
+
+def test_load_ensdarg_to_symbol_maps_ensembl_to_current_symbol():
+    # ZFIN ensembl_1_to_1.txt: col 3 = symbol, col 4 = ENSDARG. Invert to ENSDARG -> symbol;
+    # a row with an empty symbol is skipped (not a usable mapping).
+    mapping = load_ensdarg_to_symbol(FIXTURES / "zfin_ensembl_test.txt")
+    assert mapping["ENSDARG00000009473"] == "ppardb"
+    assert mapping["ENSDARG00000052470"] == "igfbp2a"
+    assert "ENSDARG00000099999" not in mapping

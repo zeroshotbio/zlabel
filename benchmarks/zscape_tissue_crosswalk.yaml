@@ -1,0 +1,77 @@
+# ZSCAPE broad-tissue crosswalk -- eval-only, gold-side (held-out 2nd-atlas generalization check).
+#
+# Maps each ZSCAPE `tissue` value (Saunders et al. 2023; the perturbation atlas) to one or more
+# broad ZFA anchor terms, in ZFA-ancestry space. evaluate.py scores broad agreement as
+# any(grounds_under(prediction_zfa_id, anchors)).
+#
+# Curated GOLD-BLIND from each tissue name's anatomy alone, frozen before scoring -- NOT tuned to
+# help or hurt zlabel, and NOT a remap of panels.yaml. Every id was verified to exist in
+# data/ontologies/zfa.obo (by name lookup) or reused from the verified Daniocell crosswalk /
+# cell_population_coverage.yaml. FAILS CLOSED: every ZSCAPE tissue is either mapped to reviewed ZFA
+# anchors or explicitly not_scored. Lines tagged `review:` are the anchors I am least certain of.
+
+tissues:
+  Blood:
+    anchors: [ZFA:0000007, ZFA:0005023, ZFA:0001159]  # blood; hematopoietic system; immune system
+  Bone:
+    anchors: [ZFA:0000434]              # skeletal system   # review: no generic "bone" ZFA; skeletal is the broad anchor
+  "Central Nervous System":
+    anchors: [ZFA:0000012, ZFA:0000396] # central nervous system; nervous system
+  "Connective Tissue":
+    anchors: [ZFA:0001632, ZFA:0000393] # portion of connective tissue; mesenchyme   # review
+  "Cranial Muscle (Late)":
+    anchors: [ZFA:0000548]              # musculature system
+  "Cranial NC":
+    anchors: [ZFA:0000045]              # neural crest
+  Ear:
+    anchors: [ZFA:0000051, ZFA:0000217] # otic vesicle; inner ear
+  Endocrine:
+    anchors: [ZFA:0001158]              # endocrine system
+  Endothelial:
+    anchors: [ZFA:0005249]              # vasculature (endothelium)
+  Epidermis:
+    anchors: [ZFA:0000105, ZFA:0000368] # epidermis; integument
+  Eye:
+    anchors: [ZFA:0000107]              # eye
+  Fin:
+    anchors: [ZFA:0000108]              # fin
+  "Germ Line":
+    anchors: [ZFA:0009288]              # primordial germ cell
+  "Hatching Gland":
+    anchors: [ZFA:0000026]              # hatching gland
+  "Head Mesoderm":
+    anchors: [ZFA:0000113, ZFA:0000255] # head mesenchyme; paraxial mesoderm   # review
+  Heart:
+    anchors: [ZFA:0000114]              # heart
+  Hypochord:
+    anchors: [ZFA:0000031]              # hypochord
+  Intestine:
+    anchors: [ZFA:0001338, ZFA:0000339] # intestine; digestive system
+  Kidney:
+    anchors: [ZFA:0000151, ZFA:0000529] # pronephros; kidney
+  "Lateral Line":
+    anchors: [ZFA:0000034]              # lateral line system
+  Liver:
+    anchors: [ZFA:0000123]              # liver
+  Notochord:
+    anchors: [ZFA:0000135]              # notochord
+  Olfactory:
+    anchors: [ZFA:0001149, ZFA:0000048] # olfactory system; olfactory placode
+  Pancreas:
+    anchors: [ZFA:0000140]              # pancreas
+  "Paraxial Mesoderm":
+    anchors: [ZFA:0000255]              # paraxial mesoderm
+  "Peripheral Nervous System":
+    anchors: [ZFA:0000142]              # peripheral nervous system
+  "Pharyngeal Arch":
+    anchors: [ZFA:0001306]              # pharyngeal arch
+  Pharynx:
+    anchors: [ZFA:0000056]              # pharynx
+  Pigment:
+    anchors: [ZFA:0009090]              # pigment cell
+  Retina:
+    anchors: [ZFA:0000152, ZFA:0000107] # retina; eye
+  "Swim Bladder":
+    anchors: [ZFA:0000076]              # swim bladder
+  Tooth:
+    not_scored: true                    # no clean broad ZFA anchor (teeth are specific skeletal elements); tiny population
