@@ -513,12 +513,18 @@ def _pct(num: int, denom: int) -> str:
     return f"{100 * num / denom:.1f}% ({num}/{denom})" if denom else "n/a (0)"
 
 
-def render_report(report: Report, top_n: int = 15) -> str:
+def render_report(
+    report: Report,
+    top_n: int = 15,
+    title: str = "Daniocell baseline report (anchor-rooted descent engine)",
+) -> str:
     """Render a deterministic, concise markdown report from accumulated outcomes.
 
     Args:
         report (Report): The accumulated outcomes.
         top_n (int): How many failure / overcall examples to list.
+        title (str): The report's H1 heading. Defaults to the Daniocell baseline title so the committed
+            Daniocell gate stays byte-identical; other atlases (e.g. ZSCAPE) pass their own.
 
     Returns:
         str: The markdown report.
@@ -528,7 +534,7 @@ def render_report(report: Report, top_n: int = 15) -> str:
     agree = report.correct[NAMED] + report.correct[FALLBACK]
     covered = assigned + report.counts[ROLLUP]
 
-    lines = ["# Daniocell baseline report (anchor-rooted descent engine)", ""]
+    lines = [f"# {title}", ""]
     lines += [f"- clusters: {report.total}  ·  scored: {scored}  ·  not_scored: {report.not_scored}", ""]
     lines += ["## Broad agreement (named + fallback, scored against the gold tissue)"]
     lines += [f"- agreement: {_pct(agree, assigned)}", ""]

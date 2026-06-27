@@ -76,6 +76,8 @@ def build(h5ad_path: str, out_path: Path) -> int:
     adata.var["symbol"] = symbols
     adata = adata[:, mapped].copy()
     adata.var_names = adata.var["symbol"].astype(str).to_numpy()
+    # Duplicate symbols (rare in a 1-to-1 map) get -1/-2 suffixes; a suffixed name matches no panel, so
+    # the duplicate is silently treated as an unmapped marker downstream. Acceptable at this mapping rate.
     adata.var_names_make_unique()
 
     # Drop sparse cell_type_broad groups (unreliable one-vs-rest markers).

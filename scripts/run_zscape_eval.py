@@ -38,7 +38,7 @@ def main() -> int:
         panels_path=PANELS,
     )
     report = evaluate(load_benchmark(BENCH), load_crosswalk(CROSS), resources)
-    rendered = render_report(report)
+    rendered = render_report(report, title="ZSCAPE 2nd-atlas baseline report (anchor-rooted descent engine)")
     OUT.write_text(rendered, encoding="utf-8")
     print(rendered)
     print(f"\nWrote {OUT}")
