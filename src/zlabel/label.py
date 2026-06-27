@@ -392,6 +392,8 @@ def _grade_confidence(
     Returns:
         tuple[float, Confidence, dict[str, float]]: (score, tier, components).
     """
+    # Coherence is breadth of support, so it sums raw rank weight, not effective_weight: a marker's
+    # contribution to "enough markers agreed" is real even when the specificity blend demoted it in selection.
     coherence = _clamp01(sum(matched_marker.weight for matched_marker in top.matched_markers) / COHERENCE_SAT)
     margin = _clamp01((top_adj - second_adj) / DOMINANCE_GAP)
     grounding = counts["grounded"] / counts["gradable"] if counts["gradable"] else None
@@ -547,11 +549,11 @@ def decide(
     # Recover the effective total weight from the first score (all BucketScores
     # share it). With no blend this equals the raw total, so the default path and
     # every existing fixture are byte-for-byte unchanged.
-    total_weight = scores[0].total_effective_weight if scores else 0.0
+    total_effective_weight = scores[0].total_effective_weight if scores else 0.0
 
     # Compute state-only weight to derive the identity-only denominator.
     state_only_weight = _state_only_weight(scores)
-    identity_denom = total_weight - state_only_weight
+    identity_denom = total_effective_weight - state_only_weight
 
     # Sort identity buckets that actually matched markers, by adjusted score
     # descending. Dropping zero-marker buckets here is what keeps them from

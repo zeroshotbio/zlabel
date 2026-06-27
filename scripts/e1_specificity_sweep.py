@@ -41,6 +41,8 @@ CROSSWALK = REPO / "benchmarks" / "daniocell_tissue_crosswalk.yaml"
 PANELS = REPO / "src" / "zlabel" / "panels.yaml"
 OUTDIR = REPO / "outputs" / "e1_specificity_blend"
 
+# Pre-registered, fixed blend grid. ALPHAS[0] MUST be 0.0 (the unblended baseline): the harm read-out
+# and the summary diff every arm against summaries[0]/outcomes_by_alpha[ALPHAS[0]].
 ALPHAS = (0.0, 0.25, 0.5, 0.75, 1.0)
 
 # The four broad attractor panels (design.md: the promiscuous-support sinks) and the correct-but-

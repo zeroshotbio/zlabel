@@ -172,7 +172,8 @@ the attractor (the same gold-free axis the attractor-derivation lever hit), so d
 promiscuous markers demotes the correct call harder than the sink. (2) **A hypergeometric chance-gate**
 cannot separate the wins either: attractor wins are the *most* significant overlaps on the board
 (median p 0.001 vs 0.005 for correct calls), so abstaining on high-p overlaps vetoes 0 of 35 attractor
-wins at any threshold while only dropping correct calls. Both reinforce the same root: the bound is the
+wins at any of the tested thresholds (0.01–0.50) while only dropping correct calls. Both reinforce the
+same root: the bound is the
 over-broad panel itself, not a missing specificity weight, a weak signal, or a chance artifact.
 
 **The fallible-key caveat.** A gold-blind audit found ~14% of apparent errors (16 of 112) are
