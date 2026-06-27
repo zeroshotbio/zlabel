@@ -314,3 +314,44 @@ def load_gene_synonym_map(path: str | os.PathLike[str]) -> dict[str, set[str]]:
                 if key:
                     synonym_map.setdefault(key, set()).add(symbol)
     return synonym_map
+
+
+# Columns of ZFIN's ensembl_1_to_1.txt (tab-separated, no header): ZFIN id, SO id, symbol, Ensembl id.
+_ENS_COL_SYMBOL = 2
+_ENS_COL_ENSEMBL = 3
+_ENS_MIN_COLS = 4
+
+
+def load_ensdarg_to_symbol(path: str | os.PathLike[str]) -> dict[str, str]:
+    """Map each Ensembl gene id (ENSDARG) to its current ZFIN symbol.
+
+    ZFIN's ensembl_1_to_1.txt is a tab-separated file (ZFIN id, SO id, symbol, Ensembl id) with
+    no header. This inverts column 4 (the ENSDARG Ensembl gene id) onto column 3 (the current
+    ZFIN symbol), so a dataset that names genes by Ensembl id (e.g. ZSCAPE) can be harmonized to
+    the symbols zlabel scores on. Symbols are lowercased to match the panels and the GAF synonym
+    map; downstream normalize_symbol still resolves any aliases or previous names.
+
+    Args:
+        path (str | os.PathLike[str]): Path to ZFIN's ensembl_1_to_1.txt.
+
+    Returns:
+        dict[str, str]: Map from ENSDARG id to lowercased current ZFIN symbol. A row with an empty
+            symbol or Ensembl id is skipped. Empty when the file has no usable rows.
+
+    Raises:
+        FileNotFoundError: If path does not exist.
+    """
+    mapping: dict[str, str] = {}
+    with Path(path).open(encoding="utf-8") as handle:
+        for raw_line in handle:
+            line = raw_line.rstrip("\r\n")
+            if not line:
+                continue
+            fields = line.split("\t")
+            if len(fields) < _ENS_MIN_COLS:
+                continue
+            symbol = fields[_ENS_COL_SYMBOL].strip().lower()
+            ensembl = fields[_ENS_COL_ENSEMBL].strip()
+            if symbol and ensembl:
+                mapping[ensembl] = symbol
+    return mapping

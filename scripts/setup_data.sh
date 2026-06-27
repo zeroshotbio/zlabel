@@ -19,6 +19,7 @@ DEST="data/ontologies"
 ZFA_URL="https://purl.obolibrary.org/obo/zfa.obo"
 GAF_URL="https://current.geneontology.org/annotations/zfin.gaf.gz"
 ZFIN_EXPR_URL="https://zfin.org/downloads/wildtype-expression_fish.txt"
+ZFIN_ENSEMBL_URL="https://zfin.org/downloads/ensembl_1_to_1.txt"  # ENSDARG <-> ZFIN symbol (2nd-atlas harmonization)
 
 mkdir -p "$DEST"
 
@@ -62,6 +63,17 @@ else
     curl -fsSL "$ZFIN_EXPR_URL" -o "$TMP_DIR/zfin_wildtype_expression.txt"
     mv "$TMP_DIR/zfin_wildtype_expression.txt" "$ZFIN_EXPR_PATH"
     echo "  -> $ZFIN_EXPR_PATH ($(wc -l < "$ZFIN_EXPR_PATH") lines)"
+fi
+
+# --- ZFIN Ensembl 1-to-1 (ENSDARG -> symbol; used by the ZSCAPE 2nd-atlas builder) ----------
+ZFIN_ENSEMBL_PATH="$DEST/zfin_ensembl_1_to_1.txt"
+if [[ -f "$ZFIN_ENSEMBL_PATH" ]]; then
+    echo "zfin_ensembl_1_to_1.txt already present — skipping (delete to re-download)"
+else
+    echo "Downloading ZFIN Ensembl 1-to-1 map from $ZFIN_ENSEMBL_URL ..."
+    curl -fsSL "$ZFIN_ENSEMBL_URL" -o "$TMP_DIR/zfin_ensembl_1_to_1.txt"
+    mv "$TMP_DIR/zfin_ensembl_1_to_1.txt" "$ZFIN_ENSEMBL_PATH"
+    echo "  -> $ZFIN_ENSEMBL_PATH ($(wc -l < "$ZFIN_ENSEMBL_PATH") lines)"
 fi
 
 echo "Ontologies ready in $DEST/"
