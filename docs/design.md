@@ -158,7 +158,7 @@ down-regulation can only *demote* a wrong attractor, never *promote* the correct
 four attractors recovers 3 of 35 misselects, 32 abstaining); cross-germ-layer contamination is not the
 failure mode (the promiscuity is same-germ-layer); and logFC magnitude is composition-dependent noise
 relative to rank (a faithful re-score nets −3, breaking clean ionocyte/notochord calls as often as it
-rescues weak-signal abstains). The positive-only, rank-ordered contract is vindicated by measurement.
+rescues weak-signal abstains). Direction and magnitude add no recoverable signal over rank.
 
 **The fallible-key caveat.** A gold-blind audit found ~14% of apparent errors (16 of 112) are
 Daniocell's own labels, not zlabel's — so the residual is partly benchmark error, and true performance
