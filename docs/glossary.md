@@ -126,8 +126,10 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   whose markers are promiscuous enough (they express across many unrelated tissues) to out-score the
   true lineage on a low-resolution cluster. The root cause of the **selection residual**.
 - **selection residual** — the error class where the correct lineage panel is scored below an
-  attractor panel. A measured structural limit, bounded by ZFIN reference granularity rather than the
-  algorithm (seven gold-free levers ruled it not-cheaply-fixable); see `docs/design.md` §Known limit.
+  attractor panel. A measured structural limit, bounded by the selection/decision layer of the current
+  architecture (panel-overlap signal + marker promiscuity) — not reference granularity (finer data was
+  injected and did not convert) and not the clusters being unresolvable in principle; see
+  `docs/design.md` §Known limit.
 - **bucket vs. panel_bucket** — `bucket` is the fine call (the named ZFA term, e.g.
   `muscle cell`); `panel_bucket` is the coarse prior that anchored it (the winning panel, e.g.
   `muscle`), kept visible so you see both the guardrail anchor and the finer name.
