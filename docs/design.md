@@ -152,7 +152,13 @@ only ~21% of panel anchors map to CL. **Negative markers** — the gold-free att
 underivable (no marker-distribution or anchor-shape signal separates the attractors from specific
 lineages whose own markers are broad in ZFIN). **HPF as a selector** — non-discriminative (above); it
 stays the soft confidence component it already is, and a caller who knows the stage can apply it to the
-candidate set themselves.
+candidate set themselves. **Direction and magnitude** — the up/down sign and logFC the input contract
+drops are not a hidden door, tested directly (read-only, with a signed-DE regen): measured
+down-regulation can only *demote* a wrong attractor, never *promote* the correct panel (deleting all
+four attractors recovers 3 of 35 misselects, 32 abstaining); cross-germ-layer contamination is not the
+failure mode (the promiscuity is same-germ-layer); and logFC magnitude is composition-dependent noise
+relative to rank (a faithful re-score nets −3, breaking clean ionocyte/notochord calls as often as it
+rescues weak-signal abstains). Direction and magnitude add no recoverable signal over rank.
 
 **The fallible-key caveat.** A gold-blind audit found ~14% of apparent errors (16 of 112) are
 Daniocell's own labels, not zlabel's — so the residual is partly benchmark error, and true performance
