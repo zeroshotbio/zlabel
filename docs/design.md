@@ -160,6 +160,21 @@ failure mode (the promiscuity is same-germ-layer); and logFC magnitude is compos
 relative to rank (a faithful re-score nets −3, breaking clean ionocyte/notochord calls as often as it
 rescues weak-signal abstains). Direction and magnitude add no recoverable signal over rank.
 
+**Two further selection-score levers, tested directly (2026-06-27).** The bound is "panel-overlap
+signal and marker promiscuity," so the two most direct attacks on it were measured — an adversarial
+audit's two best candidates — each behind a default-off knob with the baseline byte-identical
+(`scripts/e1_specificity_sweep.py`, `scripts/significance_gate_eval.py`). (1) **Specificity-weighting
+the panel-selection score** — the textbook attractor fix, and the one signal the rescue already
+computes (`build_marker_specificity`) but consults only in the weak-signal branch — does *not* help
+when blended into the main score: across a 0→1 blend it *raises* attractor wins (35→41) and lowers
+agreement (0.713→0.688), because the true lineages losing those clusters are *more* promiscuous than
+the attractor (the same gold-free axis the attractor-derivation lever hit), so down-weighting
+promiscuous markers demotes the correct call harder than the sink. (2) **A hypergeometric chance-gate**
+cannot separate the wins either: attractor wins are the *most* significant overlaps on the board
+(median p 0.001 vs 0.005 for correct calls), so abstaining on high-p overlaps vetoes 0 of 35 attractor
+wins at any threshold while only dropping correct calls. Both reinforce the same root: the bound is the
+over-broad panel itself, not a missing specificity weight, a weak signal, or a chance artifact.
+
 **The fallible-key caveat.** A gold-blind audit found ~14% of apparent errors (16 of 112) are
 Daniocell's own labels, not zlabel's — so the residual is partly benchmark error, and true performance
 is bounded below by the key.
