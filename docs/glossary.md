@@ -147,6 +147,10 @@ returns a tissue/cell-type **label** with its evidence — or an honest "not sur
   `mixed/unresolved` and `confidence` is `None`. An honest "not sure" beats a wrong label.
 - **underclustered** — when no single bucket dominates but the near-top contenders share a germ
   layer, zlabel rolls up to that coarser tier instead of guessing the finer one.
+- **ambiguity_flag** — the `Label` field naming the call's shape: `none` (a clean assigned call,
+  including a single-marker rescue), `underclustered` (a germ-layer rollup), `mixed` (abstained on
+  contradictory germ layers — a doublet), or `provisional` (abstained on no, or too-weak, identity
+  signal).
 - **convergence cap** — a confidence ceiling (distinct from the convergence *descent* above):
   strong panels alone top out at `medium`; `high` is reserved for calls the in-vivo expression
   (or stage) actually corroborates.
