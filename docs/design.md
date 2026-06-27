@@ -67,9 +67,10 @@ is `in_set` when the markers reach a reference type the descent can seed on (the
 residual — force-able), `structural` when they converge on no named anatomy under any anchor (a
 blind-spot or novel type), `doublet` on contradictory germ layers, and `no_signal` on no identity
 hit. The caveat the field docs lead with: `structural`/`doublet` are high-precision *when they
-fire*, but `in_set` is a soft signal, not a certification — a broad attractor panel can mask a
-structural blind-spot (periderm seeding under epidermis), so `in_set` has high recall and
-imperfect precision. The flags are derived at label time from signals `decide()` already computes,
+fire*, but `in_set` is a soft signal, not a certification — a broad attractor panel can outscore the
+true lineage and still read force-able (periderm under the epidermis attractor — a selection miss, not
+a structural blind-spot, since periderm is evidence-rich), so `in_set` has high recall and imperfect
+precision. The flags are derived at label time from signals `decide()` already computes,
 with no per-dataset calibration; the force/no-force threshold on `margin` is left to the caller
 (baking one in would re-introduce the forced mode this design rejects).
 
@@ -88,7 +89,7 @@ for the coverage proof.
 What v1 deterministic *won't* do: **open-ended de-novo naming of types with no
 expression footprint.** That is the LLM's job (§LLM).
 
-## Known limit: selection is bounded by reference granularity
+## Known limit: selection is bounded by the decision layer, not reference granularity
 
 Gate fixed and forcing answered — both gold-free, both generalizing. The one residual zlabel cannot
 cross is *selection*: on a low-resolution cluster whose markers are promiscuous, a broad **attractor**
@@ -118,9 +119,30 @@ ZFIN's stage annotations are *broad* (a marker spans 20+ developmental stages), 
 inside almost everything's plausible window — the same shape as the descent-IDF wall (ZFIN expression
 sparsity) and a hypothetical CL grounding layer (ZFIN carries 0% Cell-Ontology annotation). **Three walls
 reduce to one:
-the reference data (ZFIN) is not fine-grained enough — not the algorithm.** That is the map of the
-boundary, and it says what would actually move the needle on a future dataset: finer reference
-annotations, not a cleverer rule.
+the reference data (ZFIN) is not fine-grained enough — not the algorithm.** That maps the boundary
+and named the obvious next hypothesis — finer reference annotations, not a cleverer rule — tested
+directly below.
+
+**The reference ecosystem, tested by injection.** That next hypothesis — finer annotations would move
+the needle — was then measured directly, not inferred. Injecting ZFIN's own *fuller* corpus
+(xpat_stage_anatomy, which does add endogenous cell-type grounding the loaded wildtype subset lacks —
+mural 15→41 genes, glia 90→250) **raises the descent ceiling** (mural convergence-feasibility 4%→38%)
+but **recovers zero** blind-spot clusters: injected naively it even regresses named calls (146→111,
+diluting the specificity the rescue runs on), and with specificity scores frozen — the IDF weights not
+recomputed on the larger corpus — it is neutral but still recovers nothing. Finer data lifts the
+*ceiling* without converting it — the binding constraint sits *downstream of evidence*, in the same
+weak-signal-plus-promiscuity selection layer. External atlases are subsumed: they would enter through
+the same expression path but are strictly weaker — any label→ZFA crosswalk re-introduces circularity,
+their gene vocabularies are not ZFA-native, and their annotation sets are smaller than ZFIN's.
+
+Two corrections fell out: **periderm is not a blind-spot** — it is evidence-rich (97% reachable) and
+selection-inseparable from epidermis (a test periderm panel regresses epidermis 14→0 while recovering
+≤1, sharing one keratin/claudin program), needing neither resource nor panel; and **pigment is
+already resolved** by the constituent-lineage panel work. The genuine evidence-sparse blind-spots are
+mural, glia, and ionocyte. The update to the boundary: the residual is bounded by the
+**selection/decision layer of the current architecture** (panel-overlap signal and marker
+promiscuity), which finer data does not lift — a property of this architecture, not of the reference
+ecosystem's granularity, and not of the clusters being unresolvable in principle.
 
 **What was ruled out, on evidence.** Grounding against the **Cell Ontology (CL)** — redundant *and*
 walled: ZFA already carries the cell-type axis (441 terms carry CL cross-references, all under the
