@@ -194,6 +194,22 @@ def test_cluster_outcomes_abstain_reason_no_panel(resources):
     assert outcome.agrees is None
 
 
+def test_label_row_forwards_specificity_blend(resources):
+    # The evaluator must forward Resources.alpha + marker_specificity into the scorer.
+    # mylpfa+acta1b (ranks 1-2) hit muscle; kdrl (rank 3) hits endothelium. At alpha=0
+    # muscle wins outright on rank. With a crafted specificity that makes the muscle
+    # markers promiscuous and kdrl sharp, alpha=1 flips the clear call to endothelium --
+    # which only happens if alpha actually reaches score_markers through _label_row.
+    row = evaluate.BenchmarkRow("x.1", ["mylpfa", "acta1b", "kdrl"], "musc", "somites", 48.0)
+    spec = {"mylpfa": 0.05, "acta1b": 0.05, "kdrl": 1.0}
+
+    label_zero, _ = evaluate._label_row(row, dataclasses.replace(resources, alpha=0.0, marker_specificity=spec))
+    label_one, _ = evaluate._label_row(row, dataclasses.replace(resources, alpha=1.0, marker_specificity=spec))
+
+    assert label_zero.panel_bucket == "muscle"
+    assert label_one.panel_bucket == "endothelium"
+
+
 # ---------------------------------------------------------------------------
 # Fallback anchor recovery (multi-anchor panels)
 # ---------------------------------------------------------------------------

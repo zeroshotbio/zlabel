@@ -143,6 +143,41 @@ def test_precheck_b_rescued_by_specific_marker(zfa_ontology, expression_map, inf
     assert label.panel_bucket == "muscle"
 
 
+def test_decide_selection_follows_effective_weight(zfa_ontology):
+    # The specificity blend lives in the matched markers' effective_weight (raw
+    # rank weight scaled down for a promiscuous marker). decide() must select on
+    # effective weight: the sharp bucket wins outright even though the promiscuous
+    # one ties it on raw weight and sorts first alphabetically. With the raw-weight
+    # ladder the two would tie into a cross-germ-layer "mixed" abstention instead.
+    promiscuous = BucketScore(
+        bucket="aaa_attractor",
+        score=0.2 / 1.2,
+        germ_layer="ectoderm",
+        tissue="skin",
+        lineage="epidermis",
+        kind=KIND_IDENTITY,
+        matched_markers=(MatchedMarker(input="promisc", symbol="promisc", rank=1, weight=1.0, effective_weight=0.2),),
+        total_weight=2.0,
+        total_effective_weight=1.2,
+    )
+    sharp = BucketScore(
+        bucket="bbb_lineage",
+        score=1.0 / 1.2,
+        germ_layer="mesoderm",
+        tissue="muscle",
+        lineage="skeletal muscle",
+        kind=KIND_IDENTITY,
+        matched_markers=(MatchedMarker(input="sharp", symbol="sharp", rank=1, weight=1.0, effective_weight=1.0),),
+        total_weight=2.0,
+        total_effective_weight=1.2,
+    )
+    label = decide(
+        [promiscuous, sharp], anchors={}, expression_map=EMPTY_EXPR, zfa_ontology=zfa_ontology, stage_hpf=None
+    )
+    assert not label.abstained
+    assert label.panel_bucket == "bbb_lineage"
+
+
 def test_precheck_b_not_rescued_when_marker_promiscuous(zfa_ontology, expression_map, information_content):
     # Same weak signal, but the matched marker is promiscuous (IDF 0.25 < 1/3): no rescue, abstains.
     muscle = BucketScore(
