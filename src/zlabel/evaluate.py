@@ -233,9 +233,7 @@ def load_resources(
     information_content = build_information_content(expression_map, zfa_ontology)
     identity_anchors = [panel.ontology_anchor for panel in panels if panel.kind == KIND_IDENTITY]
     marker_specificity = build_marker_specificity(expression_map, identity_anchors, zfa_ontology)
-    return Resources(
-        zfa_ontology, expression_map, synonyms, panels, anchors, information_content, marker_specificity
-    )
+    return Resources(zfa_ontology, expression_map, synonyms, panels, anchors, information_content, marker_specificity)
 
 
 def _label_row(row: BenchmarkRow, resources: Resources) -> tuple[Label, list[str]]:
