@@ -203,7 +203,7 @@ def _adj(bucket_score: BucketScore, identity_denom: float) -> float:
     """Adjusted identity score: hit_weight / identity_denom."""
     if identity_denom <= 0.0:
         return 0.0
-    hit_weight = sum(matched_marker.weight for matched_marker in bucket_score.matched_markers)
+    hit_weight = sum(matched_marker.effective_weight for matched_marker in bucket_score.matched_markers)
     return hit_weight / identity_denom
 
 
@@ -262,14 +262,15 @@ def _state_only_weight(scores: list[BucketScore]) -> float:
     """Weight of markers that hit a state panel and no identity panel.
 
     These markers legitimately belong in the denominator for state detection
-    but should not suppress identity scores. Subtracting their weight from
-    total_weight gives the identity-only denominator.
+    but should not suppress identity scores. Subtracting their effective weight
+    from the effective total gives the identity-only denominator, so the
+    specificity blend and the denominator stay in the same weight space.
 
     Args:
         scores (list[BucketScore]): Full score table from score_markers.
 
     Returns:
-        float: Sum of weights of markers that hit only state panels.
+        float: Sum of effective weights of markers that hit only state panels.
     """
     identity_symbols = {
         matched_marker.symbol
@@ -278,7 +279,7 @@ def _state_only_weight(scores: list[BucketScore]) -> float:
         for matched_marker in bucket_score.matched_markers
     }
     state_weight = {
-        matched_marker.symbol: matched_marker.weight
+        matched_marker.symbol: matched_marker.effective_weight
         for bucket_score in scores
         if bucket_score.kind == KIND_STATE
         for matched_marker in bucket_score.matched_markers
@@ -391,6 +392,8 @@ def _grade_confidence(
     Returns:
         tuple[float, Confidence, dict[str, float]]: (score, tier, components).
     """
+    # Coherence is breadth of support, so it sums raw rank weight, not effective_weight: a marker's
+    # contribution to "enough markers agreed" is real even when the specificity blend demoted it in selection.
     coherence = _clamp01(sum(matched_marker.weight for matched_marker in top.matched_markers) / COHERENCE_SAT)
     margin = _clamp01((top_adj - second_adj) / DOMINANCE_GAP)
     grounding = counts["grounded"] / counts["gradable"] if counts["gradable"] else None
@@ -543,12 +546,14 @@ def decide(
     panel_scores = {bucket_score.bucket: bucket_score.score for bucket_score in scores}
     states = _detect_states(scores)
 
-    # Recover total_weight from the first score (all BucketScores share it).
-    total_weight = scores[0].total_weight if scores else 0.0
+    # Recover the effective total weight from the first score (all BucketScores
+    # share it). With no blend this equals the raw total, so the default path and
+    # every existing fixture are byte-for-byte unchanged.
+    total_effective_weight = scores[0].total_effective_weight if scores else 0.0
 
     # Compute state-only weight to derive the identity-only denominator.
     state_only_weight = _state_only_weight(scores)
-    identity_denom = total_weight - state_only_weight
+    identity_denom = total_effective_weight - state_only_weight
 
     # Sort identity buckets that actually matched markers, by adjusted score
     # descending. Dropping zero-marker buckets here is what keeps them from

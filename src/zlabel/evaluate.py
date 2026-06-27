@@ -103,6 +103,10 @@ class Resources:
     anchors: dict[str, frozenset[str]]
     information_content: dict[str, float]
     marker_specificity: dict[str, float]
+    # Specificity-blend strength for the panel scorer (0..1). 0 is pure rank-overlap:
+    # the default, byte-identical to the committed baseline. The E1 sweep varies it via
+    # dataclasses.replace over a once-loaded Resources, so the heavy maps are shared.
+    alpha: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -249,7 +253,9 @@ def _label_row(row: BenchmarkRow, resources: Resources) -> tuple[Label, list[str
     """
     normalized_markers = normalize_markers(row.markers, resources.synonyms)
     symbols = resolved_symbols(normalized_markers)
-    scores = score_markers(normalized_markers, resources.panels)
+    scores = score_markers(
+        normalized_markers, resources.panels, marker_specificity=resources.marker_specificity, alpha=resources.alpha
+    )
     label = decide(
         scores,
         anchors=resources.anchors,

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import math
 import os
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -28,6 +29,11 @@ from zlabel.genes import STATUS_RESOLVED, NormalizedSymbol
 
 KIND_IDENTITY = "identity"  # a cell-type lineage bucket
 KIND_STATE = "state"  # a transcriptional program, not a lineage
+
+# Panel-specificity for a marker absent from the specificity map. 1.0 means "no
+# specificity evidence, no demotion": an unmapped marker keeps its full rank
+# weight at any blend strength, so absence is neutral rather than penalizing.
+SPECIFICITY_BLEND_DEFAULT = 1.0
 
 
 # --- value types --------------------------------------------------------------
@@ -81,12 +87,23 @@ class MatchedMarker:
         rank (int): 1-based position in the input list (rank 1 = most
             differentially expressed / most significant).
         weight (float): Rank weight applied: 1 / log2(rank + 1).
+        effective_weight (float): The weight the selection ladder consumes: the
+            rank weight scaled by the specificity blend, weight * (1 - alpha +
+            alpha * spec). Defaults to weight (the no-blend case), so direct
+            callers and test fixtures that set only weight need not supply it.
     """
 
     input: str
     symbol: str
     rank: int
     weight: float
+    effective_weight: float = math.nan
+
+    def __post_init__(self) -> None:
+        """Default effective_weight to the raw weight when it was not supplied (the no-blend case)."""
+        # nan is the not-supplied sentinel, so an un-blended MatchedMarker behaves exactly as before.
+        if math.isnan(self.effective_weight):
+            object.__setattr__(self, "effective_weight", self.weight)
 
 
 @dataclass(frozen=True)
@@ -107,10 +124,14 @@ class BucketScore:
         kind (str): Propagated from Panel.kind.
         matched_markers (tuple[MatchedMarker, ...]): Markers that hit this
             bucket, in input-rank order (highest-weight first).
-        total_weight (float): The shared denominator used when computing score
-            (sum of all resolved-marker weights, before any identity-only
-            adjustment). Carried here so label.decide() can recompute adjusted
-            scores without re-running the scorer.
+        total_weight (float): The shared raw denominator (sum of all
+            resolved-marker rank weights, before any identity-only adjustment).
+            Carried here so label.decide() can recompute adjusted scores without
+            re-running the scorer.
+        total_effective_weight (float): The shared blended denominator (sum of all
+            resolved-marker effective weights). Equals total_weight when alpha=0.
+            The selection ladder divides by this so the blend moves the decision,
+            not just the reported score. Defaults to total_weight.
     """
 
     bucket: str
@@ -121,6 +142,13 @@ class BucketScore:
     kind: str
     matched_markers: tuple[MatchedMarker, ...]
     total_weight: float = 0.0
+    total_effective_weight: float = math.nan
+
+    def __post_init__(self) -> None:
+        """Default total_effective_weight to total_weight when it was not supplied (the no-blend case)."""
+        # Callers and fixtures that set only total_weight keep an effective denominator equal to the raw one.
+        if math.isnan(self.total_effective_weight):
+            object.__setattr__(self, "total_effective_weight", self.total_weight)
 
 
 # --- loaders and scorer -------------------------------------------------------
@@ -195,8 +223,18 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
 def score_markers(
     normalized_markers: list[NormalizedSymbol],
     panels: list[Panel],
+    *,
+    marker_specificity: Mapping[str, float] | None = None,
+    alpha: float = 0.0,
 ) -> list[BucketScore]:
     """Score already-normalized markers against all panels using rank-weighted overlap.
+
+    An optional specificity blend (alpha in 0..1) scales each matched marker's rank
+    weight by its panel-specificity: effective = weight * (1 - alpha + alpha * spec).
+    alpha=0 (the default) is pure rank-overlap, byte-identical to no blend; alpha=1
+    fully scales by specificity, demoting promiscuous markers so a sharp lineage
+    marker can outweigh a broad attractor. The score is computed from effective
+    weights, so the blend moves the selection, not just the reported number.
 
     Weight for rank r (1-based): 1 / log2(r + 1). Rank 1 weighs 1.0,
     decaying toward zero as r grows. Only resolved markers enter the
@@ -220,6 +258,12 @@ def score_markers(
             hold their rank) but are excluded from scoring.
         panels (list[Panel]): Panels to score against, as returned by
             load_panels.
+        marker_specificity (Mapping[str, float] | None): Per-gene panel-specificity
+            (panel-IDF from resolve.build_marker_specificity), keyed by current ZFIN
+            symbol. A marker absent from the map is treated as fully specific
+            (SPECIFICITY_BLEND_DEFAULT), so absence never demotes. Consulted only
+            when alpha is greater than 0.
+        alpha (float): Specificity blend strength in 0..1; 0 disables the blend.
 
     Returns:
         list[BucketScore]: One score per panel, sorted descending by score
@@ -227,23 +271,34 @@ def score_markers(
     """
     # Keep only resolved markers; rank is the 1-based input position (unresolved
     # entries still consume a rank, so the resolved markers keep their weights).
+    # Each marker also carries its effective weight: the rank weight scaled by the
+    # specificity blend (identical to the rank weight when alpha is 0).
+    specificity = marker_specificity or {}
     resolved: list[MatchedMarker] = []
     for rank, normalized_marker in enumerate(normalized_markers, start=1):
         if normalized_marker.status == STATUS_RESOLVED:
             weight = 1.0 / math.log2(rank + 1)
             symbol = next(iter(normalized_marker.symbols))
-            resolved.append(MatchedMarker(input=normalized_marker.input, symbol=symbol, rank=rank, weight=weight))
+            spec = specificity.get(symbol, SPECIFICITY_BLEND_DEFAULT)
+            effective = weight * (1.0 - alpha + alpha * spec)
+            resolved.append(
+                MatchedMarker(
+                    input=normalized_marker.input, symbol=symbol, rank=rank, weight=weight, effective_weight=effective
+                )
+            )
 
-    # Denominator is the total weight of all resolved markers, whether or not
-    # they hit any panel. A cluster with mostly off-panel markers cannot
-    # score any bucket highly — this allows Phase 3 to abstain honestly.
+    # Denominator is the total weight of all resolved markers, whether or not they
+    # hit any panel. A cluster with mostly off-panel markers cannot score any bucket
+    # highly — this lets Phase 3 abstain honestly. The score divides by the effective
+    # total so the blend moves the decision, not just the reported number.
     total_weight = sum(matched_marker.weight for matched_marker in resolved)
+    total_effective_weight = sum(matched_marker.effective_weight for matched_marker in resolved)
 
     scores: list[BucketScore] = []
     for panel in panels:
         matched = tuple(matched_marker for matched_marker in resolved if matched_marker.symbol in panel.markers)
-        hit_weight = sum(matched_marker.weight for matched_marker in matched)
-        score = hit_weight / total_weight if total_weight > 0.0 else 0.0
+        hit_effective = sum(matched_marker.effective_weight for matched_marker in matched)
+        score = hit_effective / total_effective_weight if total_effective_weight > 0.0 else 0.0
         scores.append(
             BucketScore(
                 bucket=panel.bucket,
@@ -254,6 +309,7 @@ def score_markers(
                 kind=panel.kind,
                 matched_markers=matched,
                 total_weight=total_weight,
+                total_effective_weight=total_effective_weight,
             )
         )
 

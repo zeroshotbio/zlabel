@@ -242,3 +242,69 @@ def test_score_markers_all_panels_always_returned(test_panels):
     syn = _make_synonym_map("zyxwvut")
     scores = score_markers(normalize_markers(["zyxwvut"], syn), test_panels)
     assert len(scores) == len(test_panels)
+
+
+# --- score_markers: specificity blend (E1) -----------------------------------
+# A 0..1 knob (alpha) that mixes per-marker panel-specificity into the overlap
+# score: effective = weight * (1 - alpha + alpha * spec). alpha=0 is pure overlap
+# (the default, keeps the baseline byte-identical); alpha=1 fully specificity-scales.
+
+
+def test_score_markers_alpha_zero_is_identity(test_panels):
+    # alpha=0 must reproduce pure rank-overlap exactly, even when specificity is
+    # supplied. This is the invariant that keeps the default scorer (and make gate)
+    # byte-identical until the blend is intentionally turned on.
+    syn = _make_synonym_map("mylpfa", "kdrl", "gata1a")
+    markers = normalize_markers(["mylpfa", "kdrl", "gata1a"], syn)
+    specificity = {"mylpfa": 0.2, "kdrl": 1.0, "gata1a": 0.5}
+
+    baseline = score_markers(markers, test_panels)
+    blended = score_markers(markers, test_panels, marker_specificity=specificity, alpha=0.0)
+
+    assert [score.bucket for score in blended] == [score.bucket for score in baseline]
+    for base, zero in zip(baseline, blended, strict=True):
+        assert math.isclose(zero.score, base.score, rel_tol=1e-12)
+        assert math.isclose(zero.total_effective_weight, base.total_weight, rel_tol=1e-12)
+
+
+def test_score_markers_blend_demotes_promiscuous(test_panels):
+    # mylpfa (rank 1, weight 1.0) hits muscle; kdrl (rank 2, weight 1/log2(3))
+    # hits endothelium. At alpha=0, pure rank-overlap puts muscle on top. Give
+    # mylpfa LOW panel-specificity (a promiscuous attractor marker) and kdrl HIGH
+    # (a sharp lineage marker): the blend must demote the promiscuous winner so
+    # endothelium leads. This is the attractor-selection failure mode, directly.
+    syn = _make_synonym_map("mylpfa", "kdrl")
+    markers = normalize_markers(["mylpfa", "kdrl"], syn)
+    specificity = {"mylpfa": 0.2, "kdrl": 1.0}
+
+    at_zero = score_markers(markers, test_panels, marker_specificity=specificity, alpha=0.0)
+    assert at_zero[0].bucket == "muscle"
+
+    at_one = score_markers(markers, test_panels, marker_specificity=specificity, alpha=1.0)
+    assert at_one[0].bucket == "endothelium"
+
+
+def test_score_markers_absent_specificity_uses_default(test_panels):
+    # A marker absent from the specificity map has no specificity evidence, so it
+    # keeps full weight (multiplier 1.0) at any alpha -- absence must never demote.
+    syn = _make_synonym_map("mylpfa")
+    markers = normalize_markers(["mylpfa"], syn)
+
+    at_zero = score_markers(markers, test_panels, marker_specificity={}, alpha=0.0)
+    at_one = score_markers(markers, test_panels, marker_specificity={}, alpha=1.0)
+    muscle_zero = next(score for score in at_zero if score.bucket == "muscle")
+    muscle_one = next(score for score in at_one if score.bucket == "muscle")
+    assert math.isclose(muscle_one.score, muscle_zero.score, rel_tol=1e-12)
+
+
+def test_score_markers_records_effective_weight(test_panels):
+    # The per-marker effective weight (raw * blend multiplier) and the per-bucket
+    # total_effective_weight are exposed so label.decide() can route selection
+    # through them. At alpha=1 with spec 0.2, mylpfa's effective weight is 0.2x raw.
+    syn = _make_synonym_map("mylpfa")
+    markers = normalize_markers(["mylpfa"], syn)
+    scores = score_markers(markers, test_panels, marker_specificity={"mylpfa": 0.2}, alpha=1.0)
+    muscle = next(score for score in scores if score.bucket == "muscle")
+    matched = muscle.matched_markers[0]
+    assert math.isclose(matched.effective_weight, matched.weight * 0.2, rel_tol=1e-12)
+    assert math.isclose(muscle.total_effective_weight, matched.weight * 0.2, rel_tol=1e-12)
