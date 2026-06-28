@@ -71,7 +71,7 @@ tier; † = anchors span more than one rung.
 
 | panel | anchor · rung | markers |
 |---|---|---|
-| neural | nervous system `ZFA:0000396` · organ_system | elavl3, neurod1, tubb5, sox3, sox2, her4.1, ascl1a, gfap |
+| neural | nervous system `ZFA:0000396` · organ_system | elavl3, neurod1, tubb5, sox3, sox2, her4.1, ascl1a, gfap, nova2, elavl4, srrm4, rbfox3a |
 | glia | glial cell `ZFA:0009073` · cell_type | sox10, olig2, mbpa, gfap, plp1b, slc1a3b |
 | neural_crest † | neural crest `ZFA:0000045` + neural crest cell `ZFA:0009165` · cell_type | sox10, foxd3, tfap2a, snai1b, dlx2a, sox9b |
 | eye | eye `ZFA:0000107` · organ | cryaa, crybb1, mipa, rho, opn1mw1, gnat2, crx, rpe65a |
@@ -130,6 +130,10 @@ state is recorded separately.
 
 ## Notes on specific panels
 
+- **neural** is broadened with sharp differentiating/subtype markers (`nova2`, `elavl4`, `srrm4`,
+  `rbfox3a`) on top of the broad progenitor set; they raise its mean specificity and recover
+  cross-atlas CNS clusters (ZSCAPE coverage roughly doubled). As a broad attractor it still
+  occasionally over-calls a sensory cluster (eye/taste) to nervous system — a small, expected cost.
 - **glia** is anchored below the nervous system so glial clusters resolve to glia
   rather than rolling up to the CNS.
 - **lateral_line** covers both the lateral line and taste buds — `taste bud`

@@ -3,28 +3,28 @@
 - clusters: 522  ·  scored: 511  ·  not_scored: 11
 
 ## Broad agreement (named + fallback, scored against the gold tissue)
-- agreement: 71.8% (107/149)
+- agreement: 74.3% (127/171)
 
 ## Coverage / split (over scored clusters)
-- coverage (non-abstain): 37.2% (190/511)
-- named: 28.4% (145/511)
+- coverage (non-abstain): 41.7% (213/511)
+- named: 32.7% (167/511)
 - fallback: 0.8% (4/511)
-- rollup: 8.0% (41/511)
-- abstain: 62.8% (321/511)
+- rollup: 8.2% (42/511)
+- abstain: 58.3% (298/511)
 
 ## Agreement by prediction class
-- named: 71.7% (104/145)
+- named: 74.3% (124/167)
 - fallback: 75.0% (3/4)
 
 ## Confidence by correctness (named + fallback)
-- high: 100.0% (12/12)
-- medium: 61.3% (19/31)
-- low: 71.7% (76/106)
+- high: 100.0% (17/17)
+- medium: 70.3% (26/37)
+- low: 71.8% (84/117)
 
 ## Parent-child overcall audit (named calls)
-- named calls audited: 145
-- won with exactly CONVERGENCE_MIN=3 genes: 3.4% (5/145)
-- thin-support overcalls (won at min, broader parent had more support): 3.4% (5/145)
+- named calls audited: 167
+- won with exactly CONVERGENCE_MIN=3 genes: 3.0% (5/167)
+- thin-support overcalls (won at min, broader parent had more support): 3.0% (5/167)
 
 Lowest support-fraction named calls (child support / best-parent support), top 15:
 - musc.19: segmental plate (3) vs portion of tissue (22)  -> fraction 0.14
@@ -51,15 +51,15 @@ Lowest support-fraction named calls (child support / best-parent support), top 1
 - eye.15: gold eye, predicted 'forebrain' (named)
 - eye.20: gold eye, predicted 'epiphysis' (named)
 - eye.22: gold eye, predicted 'pigment cell' (named)
+- eye.36: gold eye, predicted 'nervous system' (named)
 - fin.11: gold fin, predicted 'epidermis' (named)
 - fin.19: gold fin, predicted 'epidermis' (named)
 - fin.3: gold fin, predicted 'epidermis' (named)
 - fin.5: gold fin, predicted 'epidermis' (named)
 - fin.9: gold fin, predicted 'fin fold pectoral fin bud' (named)
-- glia.11: gold glia, predicted 'diencephalon' (named)
 - hema.18: gold hema, predicted 'blood vasculature' (named)
 - hema.24: gold hema, predicted 'dorsal aorta' (named)
-- ... and 27 more
+- ... and 29 more
 
 ## Marker visibility (vocab-hit-rate)
 - median fraction of a cluster's markers in the panel vocabulary (scored): 12.0%
@@ -68,4 +68,4 @@ Lowest support-fraction named calls (child support / best-parent support), top 1
 - epidermis: 24
 - endothelium: 4
 - mesenchyme: 2
-- neural: 9
+- neural: 11

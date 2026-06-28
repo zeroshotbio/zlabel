@@ -27,7 +27,7 @@ tissues:
   fin:                                  # fin epithelia / mesenchyme
     anchors: [ZFA:0000108]              # fin
   glia:                                 # glial
-    anchors: [ZFA:0009073]              # glial cell
+    anchors: [ZFA:0009073, ZFA:0000396] # glial cell; nervous system (glia are nervous system -- credit a coarse neural call, like neur)
   hema:                                 # erythrocytes + immune
     anchors: [ZFA:0000007, ZFA:0005023, ZFA:0001159]  # blood; hematopoietic system; immune system
   iono:                                 # ionocyte
