@@ -49,6 +49,6 @@ tissues:
   pigm:                                 # pigment (melanocytes, iridophores, xanthophores)
     anchors: [ZFA:0009090]              # pigment cell
   pron:                                 # pronephros (kidney)
-    anchors: [ZFA:0000151]              # pronephros
+    anchors: [ZFA:0000151, ZFA:0000529] # pronephros; kidney -- the broad common-name call (kidney is unreachable under pronephros in ZFA, so added explicitly, per the axia notochord/hatching-gland pattern). Flips 0 current clusters.
   tast:                                 # taste / lateral line
     anchors: [ZFA:0001074, ZFA:0000034] # taste bud; lateral line system
