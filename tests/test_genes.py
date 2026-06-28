@@ -128,7 +128,8 @@ def test_is_uninformative_clone_provisional_and_accession_tokens():
     for token in ("si:ch211-152c2.3", "zgc:114188", "zmp:0000000760", "wu:fb18f06", "im:7150988", "sb:cb470"):
         assert is_uninformative(token)
     assert is_uninformative("LOC100537342")
-    assert is_uninformative("NC-002333.4")  # mito contig (the NC- rule, not the accession rule)
+    assert is_uninformative("NC-002333.4")  # mito contig, dash form
+    assert is_uninformative("NC_002333.2")  # mito contig, RefSeq underscore form
     assert is_uninformative("BX000438.2")
     assert is_uninformative("CABZ01021592.1")
 
