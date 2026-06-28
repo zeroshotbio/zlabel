@@ -12,11 +12,12 @@ imported lazily behind the optional [eval] extra, so importing this module needs
 core deps.
 
 Marker defaults (also recorded in benchmarks/README.md): group by clust, scanpy
-rank_genes_groups (default method t-test -- scanpy's own default and far faster than wilcoxon at
-this scale; near-identical top-N for feeding a labeler; edit MARKER_METHOD for a rigorous run),
-positive (logfoldchange > 0), non-technical (mitochondrial/ribosomal genes dropped) markers only,
-rank-ordered, top N = 25. Representative stage: the modal stage.integer per cluster, the median of
-all the cluster's stages on a modal tie.
+rank_genes_groups (default method t-test -- scanpy's own default and about 4x faster than wilcoxon
+at this scale, ~15 vs ~66 min on the 489k-cell matrix; the two are NOT interchangeable at the gene
+level, so set MARKER_METHOD = "wilcoxon" only for a rigorous run -- see the t-test vs wilcoxon note
+in benchmarks/README.md), positive (logfoldchange > 0), non-technical (mitochondrial/ribosomal
+genes dropped) markers only, rank-ordered, top N = 25. Representative stage: the modal stage.integer
+per cluster, the median of all the cluster's stages on a modal tie.
 """
 
 from __future__ import annotations
@@ -42,10 +43,13 @@ FILES = {
     "metadata": "GSE223922_Sur2023_metadata.tsv.gz",
 }
 
-# t-test is scanpy's default and far faster than wilcoxon at this scale (489k cells x 522
-# clusters); for feeding top-N markers to the labeler the two give near-identical gene lists.
-# Set "wilcoxon" for a rigorous (much slower) run -- it, like the t-test family, emits the
-# logfoldchanges that top_positive_markers needs; "logreg" does not and would KeyError below.
+# t-test is scanpy's default and ~4x faster than wilcoxon at this scale (489k cells x 522
+# clusters): ~15 vs ~66 min. The two do NOT give the same gene lists -- measured top-25 overlap is
+# ~75% (only 10/522 clusters identical), and t-test skews toward housekeeping genes (ribosomal,
+# histone, splicing) on low-signal clusters; at the label level the two still agree in aggregate
+# (see the t-test vs wilcoxon note in benchmarks/README.md). Set "wilcoxon" for a rigorous (much
+# slower) run -- it, like the t-test family, emits the logfoldchanges that top_positive_markers
+# needs; "logreg" does not and would KeyError below.
 MARKER_METHOD = "t-test"
 TOP_N = 25
 GROUPBY = "clust"

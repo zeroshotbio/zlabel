@@ -50,10 +50,11 @@ Daniocell source changes, not when panels or the engine change.
 ## Parameters (deterministic)
 
 - Benchmark unit: fine `clust`; broad agreement scored against the parent `tissue`.
-- Markers: scanpy `rank_genes_groups` (default `method="t-test"` — scanpy's default, far faster
-  than wilcoxon at this scale and near-identical top-N for labeling; `MARKER_METHOD="wilcoxon"`
-  for rigor), positive (logfoldchange > 0) and non-technical (mitochondrial/ribosomal genes
-  dropped) only, rank-ordered, top N = 25, after `normalize_total(target_sum=1e4)` + `log1p`.
+- Markers: scanpy `rank_genes_groups` (default `method="t-test"` — scanpy's default, ~4× faster
+  than wilcoxon at this scale; set `MARKER_METHOD="wilcoxon"` for a rigorous run — see "t-test vs
+  wilcoxon" under Recorded limitations for the measured tradeoff), positive (logfoldchange > 0) and
+  non-technical (mitochondrial/ribosomal genes dropped) only, rank-ordered, top N = 25, after
+  `normalize_total(target_sum=1e4)` + `log1p`.
 - Representative stage: the modal `stage.integer` per cluster; the median of the cluster's
   stages on a modal tie.
 
@@ -75,3 +76,17 @@ coverage/split columns, out of the agreement count.
   scoring, but the Label object itself still carries a single id.
 - not_scored tissues. Categories with no clean ZFA anchor (e.g. `blas` blastomeres) are excluded
   from agreement; the crosswalk fails closed on any unmapped tissue.
+- t-test vs wilcoxon (measured 2026-06-28). The committed markers use t-test (scanpy's default).
+  Wilcoxon is ~4× slower at this scale (~66 vs ~15 min on the 489k-cell matrix) and its top-25
+  lists are not interchangeable with t-test's — mean overlap ~75% (18.7/25), only 10/522 clusters
+  identical, with t-test biased toward highly-expressed housekeeping genes (ribosomal, histone,
+  splicing) that displace lineage markers in low-signal clusters. At the label level the two are
+  close in aggregate (broad agreement 74% t-test vs 76% wilcoxon): zlabel's abstention is gated
+  downstream of marker quality, so better markers rescue the occasional buried call (e.g. `otic.19`,
+  abstain → correct `otic vesicle`) but mostly do not move the label. t-test is kept as the
+  pragmatic default; the gap is real at the gene level but small at the label level. A min-pct
+  (`pts ≥ 0.1`) gate was also tested and is a no-op (0/522 clusters change).
+  - Faster wilcoxon (future, unimplemented — verify against the pinned scanpy first): pre-filter
+    genes before ranking (`highly_variable_genes`, or a min-cells-expressed cutoff, so rank-sum runs
+    over far fewer genes), or a presto-style fast rank-sum / GPU DE (e.g. rapids-singlecell). Only
+    relevant if a wilcoxon baseline is ever adopted.
