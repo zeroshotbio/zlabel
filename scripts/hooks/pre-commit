@@ -1,9 +1,9 @@
 #!/bin/sh
 # zlabel pre-commit hook -- the Stage-G regression wall.
 #
-# Runs `make gate-all` (regenerate the Daniocell baseline AND the held-out ZSCAPE report, fail on
-# drift or an overcall regression) when the engine, panels, or benchmark substrate is staged.
-# Doc-only and unrelated commits skip it and stay fast. Both gates skip when data/ontologies is
+# Runs `make gate-all` (regenerate the Daniocell baseline AND the held-out ZSCAPE + Zebrahub reports,
+# fail on drift or an overcall regression) when the engine, panels, or benchmark substrate is staged.
+# Doc-only and unrelated commits skip it and stay fast. Every gate skips when data/ontologies is
 # absent, so this never blocks a machine without the corpus. Install with `make hooks`.
 if git diff --cached --name-only | grep -qE '^(src/zlabel/|benchmarks/)'; then
 	echo "pre-commit: engine/panels/benchmark staged -> running make gate-all"

@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup setup-core setup-upgrade format lint lint-docstrings type test verify audit eval gate eval-zscape gate-zscape gate-all hooks notebook
+.PHONY: help setup setup-core setup-upgrade format lint lint-docstrings type test verify audit eval gate eval-zscape gate-zscape eval-zebrahub gate-zebrahub gate-all hooks notebook
 
 help:  ## Show this help
 	@awk 'BEGIN {FS = ":.*## "; print "Usage: make <target>\n"} /^##@/ {printf "\n%s\n", substr($$0, 5)} /^[a-zA-Z0-9_.-]+:.*## / {printf "  %-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -45,12 +45,18 @@ gate:  ## Regression wall: fail on baseline drift / overcall-audit regression (n
 	uv run python scripts/check_baseline.py
 
 eval-zscape:  ## Regenerate the held-out ZSCAPE 2nd-atlas report (needs data/ontologies)
-	uv run python scripts/run_zscape_eval.py
+	uv run python scripts/atlas_eval.py run --atlas zscape
 
-gate-zscape:  ## Held-out wall: regenerate the ZSCAPE report, fail on drift with a directional read (needs data/ontologies)
-	uv run python scripts/check_zscape_baseline.py
+gate-zscape:  ## Held-out wall: ZSCAPE report drift, with a directional read (needs data/ontologies)
+	uv run python scripts/atlas_eval.py check --atlas zscape
 
-gate-all: gate gate-zscape  ## Both regression walls: Daniocell (hard) + ZSCAPE (held-out)
+eval-zebrahub:  ## Regenerate the held-out Zebrahub 3rd-atlas report (needs data/ontologies)
+	uv run python scripts/atlas_eval.py run --atlas zebrahub
+
+gate-zebrahub:  ## Held-out wall: Zebrahub report drift, with a directional read (needs data/ontologies)
+	uv run python scripts/atlas_eval.py check --atlas zebrahub
+
+gate-all: gate gate-zscape gate-zebrahub  ## All regression walls: Daniocell (hard) + ZSCAPE + Zebrahub (held-out)
 
 ##@ Development
 hooks:  ## Install the git pre-commit hook (runs make gate-all on engine/panel/benchmark changes)
