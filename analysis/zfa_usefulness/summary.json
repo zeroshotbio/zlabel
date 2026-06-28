@@ -1,0 +1,49 @@
+{
+  "zfa_release": "releases/2026-06-02",
+  "n_zfa_terms": 3107,
+  "n_genes_in_corpus": 14485,
+  "grounded_terms": 1802,
+  "ungrounded_terms": 1305,
+  "cell_slim_terms": 657,
+  "cl_xref_terms": 441,
+  "obsolete_terms": 0,
+  "tier_counts": {
+    "T1": 964,
+    "T2": 481,
+    "T3": 24,
+    "T4": 1619,
+    "T5": 19
+  },
+  "curated_anchor_count": 62,
+  "curated_anchor_tiers": {
+    "T1": 51,
+    "T2": 11
+  },
+  "stoplist_tiers": {
+    "T5": 5
+  },
+  "edges_total": 5377,
+  "edges_sufficient": 2609,
+  "edges_discernible": 2515,
+  "edges_dead": 77,
+  "naive_jaccard_says_discernible": 5334,
+  "naive_but_insufficient": 2750,
+  "credited_bands": {
+    "0 (ungrounded)": 1305,
+    "1-2 (trace)": 314,
+    "3-9 (thin)": 455,
+    "10-29 (solid)": 384,
+    "30-99 (strong)": 315,
+    ">=100 (broad)": 334
+  },
+  "thresholds": {
+    "SOLID_GENES": 10,
+    "BROAD_FOOTPRINT": 1000,
+    "IC_BROAD": 3.0,
+    "FANOUT_CONTAINER": 40,
+    "IC_CONTAINER": 1.5,
+    "SUFFICIENT_GENES": 3,
+    "RETAINED_DISCERNIBLE_MAX": 0.95,
+    "RETAINED_DEAD_MIN": 0.98
+  }
+}
