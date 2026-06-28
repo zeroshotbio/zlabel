@@ -31,8 +31,9 @@ Daniocell+ZSCAPE-bias. The firewall is a strict separation of roles:
 
 - **Tier 1 — justification (what makes a marker legitimate).** ZFIN curated wildtype expression
   grounding under the panel's ZFA anchor, plus primary literature. This is **non-circular against the
-  atlases**: ZFIN does not curate scRNA into its gene→anatomy records (it links out to the atlases),
-  so grounding a marker in ZFIN cannot memorize a benchmark.
+  atlases**: ZFIN does not curate scRNA into its gene→anatomy records (those records derive
+  from curated experimental literature — ISH/IHC — not scRNA DE lists), so grounding a marker in ZFIN
+  cannot memorize a benchmark.
 - **Tier 2 — seeds (candidate generation only).** Atlas DE marker lists nominate genes to research.
   A gene is added because Tier 1 confirms it, **never because it appears in an atlas's DE**. The
   `cite` rule in `panels.yaml` forbids sourcing from any benchmark's computed markers.
@@ -91,24 +92,30 @@ The held-out column is the firewall working: `esama` would inflate the endotheli
 
 ## 5. Results — before / after
 
-Panels-only delta (same substrate, same crosswalks; isolates the marker change). Before = the
-pre-broadening panels; after = the seven shipped lineages.
+The committed baselines just before the broadening arc (commit `b91f75e`) vs current. The neural PR
+bundled a glia crosswalk correction with its markers; the rest of the delta is the marker broadening.
 
-| Atlas | Coverage | Accuracy | Overcalls | Vocab-hit |
-|---|---|---|---|---|
-| Daniocell (hard gate) | 37.2% → **42.7%** | 72.5% → **76.1%** | 5 → 5 | 12% → 12% |
-| ZSCAPE (held-out) | 21.9% → **47.9%** | 88.9% → 87.5% | 0 → 0 | 6% → 8% |
-| Zebrahub (held-out) | 22.2% → **33.3%** | 100% → 100% | 0 → 0 | 12% → 12% |
+| Atlas | Coverage | Accuracy | Overcalls |
+|---|---|---|---|
+| Daniocell (hard gate) | 37.2% → **42.7%** | 71.8% (107/149) → **76.1% (134/176)** | 5 → 5 |
+| ZSCAPE (held-out) | 21.9% → **47.9%** | 88.9% (16/18) → 87.5% (35/40) | 0 → 0 |
+| Zebrahub (held-out, N=3) | 22.2% → **33.3%** | 100% (2/2) → 100% (3/3) | 0 → 0 |
 
-Coverage rose on every atlas — **ZSCAPE more than doubled** — while accuracy held or improved and the
-thin-support overcall count stayed flat everywhere. No precision was traded for the recall.
+Coverage rose on every atlas — **ZSCAPE more than doubled** — while accuracy **improved on Daniocell**
+(71.8 → 76.1%) and **held on the held-out atlases**: ZSCAPE within ~1 point on a larger, more stable N
+(18 → 40 calls), and Zebrahub's 3/3 is too small to read as accuracy evidence. Thin-support overcalls
+stayed flat (5 / 0 / 0). No precision was traded for the recall. (Median vocab-hit-rate, the leading
+indicator, rose on ZSCAPE 6% → 8%; Daniocell held at 12%.)
 
 ### The forcing frontier
 
 The numbers above are **no-forcing**: zlabel scores its calls as-is and abstains honestly. Forcing is
 a *caller-side* option the `Label` enables (it surfaces `candidates` + an `ood` trust flag); the eval
 never applies it. **Soft-set** forcing commits the top candidate only on the force-able (`ood ==
-in_set`) abstentions. The broadening sharpens the high-precision no-forcing regime most:
+in_set`) abstentions. The broadening sharpens the high-precision no-forcing regime most. (Here
+**before** is the *intermediate* state — after neural/muscle/endothelium, before the final four
+lineages — the increment over which the forcing analysis was run, so this baseline differs from §5's
+pre-arc one.)
 
 | Atlas | Mode | Accuracy (before → after) | Coverage (before → after) |
 |---|---|---|---|
@@ -120,8 +127,9 @@ in_set`) abstentions. The broadening sharpens the high-precision no-forcing regi
 Soft-set roughly doubles coverage but costs ~15–20 points of accuracy — the selection wall (§7): the
 gate vetoes those near-ties for good reason. The broadening's real win is **converting forced guesses
 into confident named calls** rather than chasing coverage by forcing. The head-to-head benchmark
-in the sibling `zlabel-bench` repo shows the payoff against off-the-shelf annotators: zlabel's honest
-76% beats forced frontier LLMs at 31–49% agreement, and even zlabel-forced beats them.
+in the sibling `zlabel-bench` repo (computed there, not graded in this repo) reports the payoff against
+off-the-shelf annotators: zlabel's honest 76% vs forced frontier LLMs at 31–49% agreement, with even
+zlabel-forced ahead of both.
 
 ## 6. How the lineages were chosen — the systematic sweep
 
