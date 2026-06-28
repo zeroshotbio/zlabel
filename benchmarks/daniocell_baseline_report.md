@@ -60,3 +60,12 @@ Lowest support-fraction named calls (child support / best-parent support), top 1
 - glia.11: gold glia, predicted 'diencephalon' (named)
 - hema.24: gold hema, predicted 'artery' (named)
 - ... and 28 more
+
+## Marker visibility (vocab-hit-rate)
+- median fraction of a cluster's markers in the panel vocabulary (scored): 8.0%
+
+## Attractor over-attribution (named scored disagreements grounding under each attractor)
+- epidermis: 26
+- endothelium: 3
+- mesenchyme: 2
+- neural: 9

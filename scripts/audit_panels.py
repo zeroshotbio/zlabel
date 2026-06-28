@@ -22,8 +22,12 @@ the rung used in docs/reference/panels_and_markers_reference.md.
 Run before committing panel changes (needs scripts/setup_data.sh data):
     uv run python scripts/audit_panels.py
 
-Exits non-zero if any marker is dead or any identity panel has fewer than
-CONVERGENCE_MIN grounding markers.
+It also reports per-panel marker specificity and caps attractor-panel promiscuity: a broad
+attractor bucket (ATTRACTOR_BUCKETS) that gains a promiscuous marker beyond its reviewed baseline
+fails, so broadening cannot quietly feed the selection wall (see BASELINE_PROMISCUOUS).
+
+Exits non-zero if any marker is dead, any identity panel has fewer than CONVERGENCE_MIN grounding
+markers, or an attractor panel gains a promiscuous marker beyond its baseline.
 """
 
 from __future__ import annotations
@@ -34,8 +38,8 @@ from pathlib import Path
 import zlabel
 from zlabel.data import ancestors
 from zlabel.genes import normalize_symbol
-from zlabel.panels import KIND_IDENTITY, load_panels
-from zlabel.resolve import CONVERGENCE_MIN
+from zlabel.panels import ATTRACTOR_BUCKETS, KIND_IDENTITY, load_panels
+from zlabel.resolve import CONVERGENCE_MIN, build_marker_specificity
 
 ROOT = Path(__file__).parent.parent
 PANELS_YAML = ROOT / "src" / "zlabel" / "panels.yaml"
@@ -52,6 +56,19 @@ TIER_CLASSES: tuple[tuple[str, frozenset[str]], ...] = (
     ("organ", frozenset({"ZFA:0000496", "ZFA:0001490"})),  # compound organ / cavitated compound organ
     ("organ_system", frozenset({"ZFA:0001439"})),  # anatomical system
 )
+
+# Promiscuity guard: a marker with specificity < PROMISCUOUS_BELOW grounds under > 4 identity-panel
+# anchors -- it fires across many lineages. The broad ATTRACTOR_BUCKETS already carry such markers (the
+# measured selection wall in docs/design.md), so this is a DELTA gate keyed on each attractor's current
+# promiscuous set: the audit fails only when an attractor panel GAINS a promiscuous marker not listed
+# here. Regenerate from this script's per-panel print after a reviewed change (cf. audit_crosswalk.ACCEPTED_GAPS).
+PROMISCUOUS_BELOW = 0.25
+BASELINE_PROMISCUOUS: dict[str, frozenset[str]] = {
+    "neural": frozenset({"ascl1a", "elavl3", "her4.1", "neurod1", "sox2", "sox3"}),
+    "epidermis": frozenset({"cldnb", "cldne", "krt8", "tp63"}),
+    "endothelium": frozenset({"cdh5", "etsrp", "fli1", "kdrl"}),
+    "mesenchyme": frozenset({"col1a1a", "col1a2", "dcn", "fn1a", "osr2", "prrx1a", "twist1a"}),
+}
 
 
 def main() -> int:
@@ -133,13 +150,47 @@ def main() -> int:
             print(f"  [{flag}] {panel.bucket:18s} state ({len(panel.markers)} markers)", end="")
         print(f"  DEAD: {', '.join(panel_dead)}" if panel_dead else "")
 
+    # Promiscuity guard: per-panel mean specificity + promiscuous markers; an attractor panel that
+    # GAINS a promiscuous marker beyond its baseline fails (see BASELINE_PROMISCUOUS).
+    identity_anchors = [panel.ontology_anchor for panel in panels if panel.kind == KIND_IDENTITY]
+    specificity = build_marker_specificity(expression, identity_anchors, zfa)
+    gained_promiscuous: list[str] = []
+    print(f"\nPromiscuity (specificity < {PROMISCUOUS_BELOW}; grounds under 5+ identity anchors):")
+    for panel in panels:
+        if panel.kind != KIND_IDENTITY:
+            continue
+        graded = [specificity.get(symbol, 1.0) for marker in panel.markers for symbol in resolved_symbols(marker)]
+        promiscuous = sorted(
+            {
+                symbol
+                for marker in panel.markers
+                for symbol in resolved_symbols(marker)
+                if specificity.get(symbol, 1.0) < PROMISCUOUS_BELOW
+            }
+        )
+        mean = sum(graded) / len(graded) if graded else 1.0
+        tag = "ATTRACTOR" if panel.bucket in ATTRACTOR_BUCKETS else "         "
+        print(f"  [{tag}] {panel.bucket:18s} mean_spec={mean:.3f}  promiscuous={promiscuous}")
+        if panel.bucket in ATTRACTOR_BUCKETS:
+            baseline = BASELINE_PROMISCUOUS.get(panel.bucket, frozenset())
+            gained_promiscuous.extend(f"{panel.bucket}:{symbol}" for symbol in promiscuous if symbol not in baseline)
+
     if dead:
         print(f"\nFAIL: {len(dead)} dead marker(s) that do not resolve via the GAF: {', '.join(dead)}", file=sys.stderr)
     if thin:
         print(f"FAIL: identity panel(s) below CONVERGENCE_MIN grounding: {', '.join(thin)}", file=sys.stderr)
-    if dead or thin:
+    if gained_promiscuous:
+        print(
+            f"FAIL: attractor panel(s) gained promiscuous marker(s) beyond baseline: {', '.join(gained_promiscuous)}",
+            file=sys.stderr,
+        )
+        print(
+            "  Prefer a sharper marker; if the addition is intended and reviewed, update BASELINE_PROMISCUOUS.",
+            file=sys.stderr,
+        )
+    if dead or thin or gained_promiscuous:
         return 1
-    print("\nAll panels pass: every marker resolves; every identity panel converges.")
+    print("\nAll panels pass: markers resolve; identity panels converge; no new attractor promiscuity.")
     return 0
 
 

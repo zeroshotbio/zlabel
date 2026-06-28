@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import statistics
 import sys
 from collections import Counter
 from dataclasses import dataclass, field
@@ -37,7 +38,7 @@ from zlabel.genes import normalize_markers, resolved_symbols
 from zlabel.ground import expression_lookup, grounds_under
 from zlabel.label import decide
 from zlabel.models import Label
-from zlabel.panels import KIND_IDENTITY, Panel, load_panels, score_markers
+from zlabel.panels import ATTRACTOR_BUCKETS, KIND_IDENTITY, Panel, load_panels, score_markers
 from zlabel.resolve import (
     CONVERGENCE_MIN,
     STOPLIST,
@@ -146,6 +147,11 @@ class ClusterOutcome:
     convergent_genes: tuple[str, ...]
     abstain_reason: str | None
     audit: AuditRecord | None
+    # Fraction of the cluster's input markers whose normalized symbol is in the panel-marker
+    # vocabulary -- the leading indicator for cross-atlas recall (low = the panels can't see the
+    # cluster's markers). Empty tuple of attractor buckets the named prediction grounds under.
+    vocab_hit_rate: float = 0.0
+    attractor_groundings: tuple[str, ...] = ()
 
 
 @dataclass
@@ -162,6 +168,8 @@ class Report:
     failures: list[tuple[str, str, str, str]] = field(
         default_factory=list
     )  # (cluster_id, gold_tissue, predicted_bucket, kind)
+    vocab_hit_rates: list[float] = field(default_factory=list)  # per scored cluster, for the median
+    attractor_disagreements: Counter[str] = field(default_factory=Counter)  # named scored disagreements per attractor
 
 
 def load_benchmark(path: str | Path) -> list[BenchmarkRow]:
@@ -434,10 +442,26 @@ def cluster_outcomes(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resour
         list[ClusterOutcome]: One outcome per cluster, in benchmark order.
     """
     outcomes: list[ClusterOutcome] = []
+    panel_vocab = frozenset(marker for panel in resources.panels for marker in panel.markers)
+    attractor_anchors = {
+        bucket: resources.anchors[bucket] for bucket in ATTRACTOR_BUCKETS if bucket in resources.anchors
+    }
     for row in benchmark:
         gold = crosswalk.gold(row.broad_tissue)
         label, symbols = _label_row(row, resources)
         kind = _classify(label)
+        # Visibility: fraction of the cluster's input markers whose normalized symbol is panel vocabulary.
+        vocab_hit_rate = (
+            sum(1 for symbol in symbols if symbol.lower() in panel_vocab) / len(row.markers) if row.markers else 0.0
+        )
+        # Which attractor anchors a named prediction grounds under (for the over-attribution metric).
+        attractor_groundings: tuple[str, ...] = ()
+        if kind == NAMED and label.zfa_id is not None:
+            attractor_groundings = tuple(
+                bucket
+                for bucket, anchor in attractor_anchors.items()
+                if grounds_under(resources.zfa_ontology, label.zfa_id, anchor)
+            )
         agrees: bool | None = None
         if gold is not None and kind in (NAMED, FALLBACK):
             pred_ids = _prediction_anchor_ids(label, kind, resources)
@@ -467,6 +491,8 @@ def cluster_outcomes(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resour
                 convergent_genes=label.convergent_genes,
                 abstain_reason=_abstain_reason(label, resources),
                 audit=audit,
+                vocab_hit_rate=vocab_hit_rate,
+                attractor_groundings=attractor_groundings,
             )
         )
     return outcomes
@@ -491,6 +517,7 @@ def evaluate(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resources: Res
             report.not_scored += 1
             continue
         report.counts[outcome.kind] += 1
+        report.vocab_hit_rates.append(outcome.vocab_hit_rate)
         if outcome.audit is not None:
             report.audits.append(outcome.audit)  # record this scored named call's overcall audit
         # rollup / abstain carry no agreement (agrees is None by construction). A named/fallback call
@@ -505,6 +532,8 @@ def evaluate(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resources: Res
             report.conf_correct[tier] += 1
         else:
             report.failures.append((outcome.cluster_id, outcome.gold_tissue, outcome.bucket, outcome.kind))
+            for bucket in outcome.attractor_groundings:  # only named calls carry these
+                report.attractor_disagreements[bucket] += 1
     return report
 
 
@@ -576,6 +605,16 @@ def render_report(
         lines.append(f"- {cluster_id}: gold {tissue}, predicted {bucket!r} ({kind})")
     if len(report.failures) > top_n:
         lines.append(f"- ... and {len(report.failures) - top_n} more")
+
+    # Marker visibility -- the leading indicator for the cross-atlas broadening work.
+    median_vocab = statistics.median(report.vocab_hit_rates) if report.vocab_hit_rates else 0.0
+    lines += ["", "## Marker visibility (vocab-hit-rate)"]
+    lines += [f"- median fraction of a cluster's markers in the panel vocabulary (scored): {100 * median_vocab:.1f}%"]
+
+    # Attractor over-attribution -- named scored disagreements that ground under each broad attractor.
+    lines += ["", "## Attractor over-attribution (named scored disagreements grounding under each attractor)"]
+    for bucket in ATTRACTOR_BUCKETS:
+        lines.append(f"- {bucket}: {report.attractor_disagreements[bucket]}")
     return "\n".join(lines) + "\n"
 
 

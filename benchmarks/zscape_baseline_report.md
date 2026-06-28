@@ -46,3 +46,12 @@ Lowest support-fraction named calls (child support / best-parent support), top 1
 ## Failure gallery (scored disagreements)
 - hatching_gland: gold Hatching Gland, predicted 'epidermis' (named)
 - unknown_dcn_col6: gold Cranial Muscle (Late), predicted 'mesenchyme' (named)
+
+## Marker visibility (vocab-hit-rate)
+- median fraction of a cluster's markers in the panel vocabulary (scored): 4.0%
+
+## Attractor over-attribution (named scored disagreements grounding under each attractor)
+- epidermis: 1
+- endothelium: 0
+- mesenchyme: 1
+- neural: 0
