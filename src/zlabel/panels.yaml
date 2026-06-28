@@ -238,12 +238,13 @@ muscle:
   tissue: muscle
   lineage: skeletal muscle
   kind: identity
-  cite: "playbook §7; ZFIN wt-expr (myod1, mylpfa, acta1b, smyhc2, ttn.1, neb, smyhc1); literature; see reference doc"
+  cite: "playbook §7; ZFIN wt-expr (myod1, mylpfa, acta1b, smyhc2, ttn.1, neb, smyhc1, actc1b, ryr1a); literature; see reference doc"
   ontology_anchor:
     - ZFA:0000548  # musculature system
   # Fast-fiber TFs + sarcomere breadth, plus mature/structural markers (titin, nebulin, slow myosin,
   # SR calcium) that cross-atlas late/cranial-muscle clusters express. Cardiac paralogs kept OUT
-  # (ttn.2, actc1a/actc1c, tpm1 are heart-primary).
+  # (ttn.2, actc1a/actc1c, tpm1 are heart-primary); pax3a held out too (myogenic but leaks into
+  # neural crest / dorsal neural tube).
   markers:
     - myod1    # myogenic regulatory factor; master TF for myoblast commitment
     - myog     # myogenin; terminal myogenic differentiation
