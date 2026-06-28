@@ -15,8 +15,8 @@ lever is. Companion: `RELATIONSHIPS.md` (the relationship-axis primer).
 
 ## Bottom line (what the evidence says to do)
 
-1. **The engine already cannot emit a useless label.** Of 173 named Daniocell calls, **0 are T4/T5**
-   (T1 135, T2 18, T3 20). It descends from curated T1–T3 anchors and `CONVERGENCE_MIN=3` *is* the T4
+1. **The engine already cannot emit a useless label.** Of 176 named Daniocell calls, **0 are T4/T5**
+   (T1 137, T2 19, T3 20). It descends from curated T1–T3 anchors and `CONVERGENCE_MIN=3` *is* the T4
    boundary — so a junk-tier term is structurally unreachable. → **Blocking/“rolling up” useless
    labels is a non-problem. The cosmetic engine changes the first draft proposed are dropped.**
 2. **The most plausible coverage lever — the ignored `develops_from` axis — was tested and is a
@@ -131,7 +131,7 @@ is all-useful.
 Two of the three first-draft ideas are now ruled out **with evidence**, which is the value of this
 phase:
 
-1. **Roll-up / STOPLIST extension — not a capability gain.** The 0/173 finding kills the roll-up
+1. **Roll-up / STOPLIST extension — not a capability gain.** The 0/176 finding kills the roll-up
    (changes nothing, adds risk); the STOPLIST extension is optional hygiene only.
 2. **`develops_from` coverage — TESTED, NO-GO.** The most plausible lever realised 0 new labels and
    introduced `otolith`-type regressions (`develops_from_experiment.md`). The descent edge set stays

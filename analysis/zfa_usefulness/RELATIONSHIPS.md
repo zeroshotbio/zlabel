@@ -103,7 +103,7 @@ of which the descent can reach today by any `is_a`/`part_of` path.
 
 ## Why this is the lever (and what's next)
 
-The phase-1 audit proved the engine **never emits a useless label** (0 of 173 named Daniocell calls are
+The phase-1 audit proved the engine **never emits a useless label** (0 of 176 named Daniocell calls are
 junk-tier — the `CONVERGENCE_MIN` and descent-from-curated-anchor floors already guarantee it). So the
 opportunity is not in *blocking* bad terms; it is in *reaching* good ones. The descent is bounded by
 **which edges it walks** and **where the panel anchors sit** — and the `develops_into` axis is the

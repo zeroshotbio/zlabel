@@ -30,7 +30,7 @@ uv run python analysis/zfa_usefulness/backlog.py        # ranked curation queue
 
 ## One-paragraph conclusion
 
-The engine already never emits a useless label (0/173 named Daniocell calls are junk-tier — structural,
+The engine already never emits a useless label (0/176 named Daniocell calls are junk-tier — structural,
 via the curated anchors + `CONVERGENCE_MIN`). The rubric's value is therefore as a **standing audit**
 and a **curation backlog generator**, not a driver of descent changes. The most plausible coverage
 lever — following the ignored `develops_from` axis — was tested and is a NO-GO (0 new labels, otolith-

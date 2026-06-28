@@ -16,13 +16,15 @@ that no `is_a`/`part_of` path reaches (see `RELATIONSHIPS.md`, `coverage.md`).
 
 ## Result — no coverage gain, no accuracy gain, mixed label quality
 
+Measured on current `main` (after the #41 panel broadening; baseline 76.1%).
+
 | atlas | metric | baseline | prototype | Δ |
 |---|---|---|---|---|
-| daniocell | named+fallback (N) | 173 | 173 | **0** |
-| daniocell | accuracy | 74.0% (128/173) | 74.0% (128/173) | **0** |
-| daniocell | coverage | 42.1% | 42.1% | **0** |
-| daniocell | overcall audit | 5/169 | 3/169 | −2 (incidental) |
-| zscape | all | 39 / 87.2% / 0 | 39 / 87.2% / 0 | 0 |
+| daniocell | named+fallback (N) | 176 | 176 | **0** |
+| daniocell | accuracy | 76.1% (134/176) | 76.1% (134/176) | **0** |
+| daniocell | coverage | 42.7% | 42.7% | **0** |
+| daniocell | overcall audit | 5/172 | 3/172 | −2 (incidental) |
+| zscape | all | 40 / 87.5% / 0 | 40 / 87.5% / 0 | 0 |
 | zebrahub | all | 3 / 100% / 0 | 3 / 100% / 0 | 0 |
 
 Per-cluster over all 522 Daniocell clusters: **7 terminals changed; 0 newly named (zero coverage
