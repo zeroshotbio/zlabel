@@ -1,0 +1,351 @@
+zfa_id,name,credited_genes,genes_to_min,has_cl,reach,current_genes
+ZFA:0009069,Golgi cell,2,1,1,is_a/part_of,gad1b;gad2
+ZFA:0009221,UV sensitive photoreceptor cell,2,1,1,is_a/part_of,arr3b;opn1sw1
+ZFA:0009061,adrenergic neuron,2,1,1,is_a/part_of,dbh;th
+ZFA:0009222,blue sensitive photoreceptor cell,2,1,1,is_a/part_of,arr3b;opn1sw2
+ZFA:0009079,corneal endothelial cell,2,1,1,is_a/part_of,dnajc9;krt1-19e
+ZFA:0009396,glycinergic neuron,2,1,1,is_a/part_of,nkx1-2b;slc6a5
+ZFA:0001099,immature hair cell posterior macula,2,1,0,is_a/part_of,jag2b;sox2
+ZFA:0005828,kappe olfactory receptor neuron,2,1,0,is_a/part_of,piezo1;piezo2b
+ZFA:0005739,pancreatic acinar cell,2,1,1,is_a/part_of,nr5a2;prss1
+ZFA:0009237,perineuronal satellite cell,2,1,1,is_a/part_of,foxd3;mbpa
+ZFA:0009063,peripheral neuron,2,1,1,is_a/part_of,mbpa;prkcea
+ZFA:0005176,CoSA,1,2,0,is_a/part_of,pax2a
+ZFA:0005195,MiD3cl,1,2,0,is_a/part_of,sema3aa
+ZFA:0005190,MiV1,1,2,0,is_a/part_of,en1b
+ZFA:0009319,ON-bipolar cell,1,2,1,is_a/part_of,grm6b
+ZFA:0009335,alpha-beta T cell,1,2,1,is_a/part_of,trbc2
+ZFA:0009304,choroid plexus epithelial cell,1,2,1,is_a/part_of,slc16a2
+ZFA:0009314,columnar chondrocyte,1,2,1,is_a/part_of,msmo1
+ZFA:0009322,cone retinal bipolar cell,1,2,1,is_a/part_of,nup62l
+ZFA:0009156,gamete,1,2,1,is_a/part_of,zp3
+ZFA:0009336,gamma-delta T cell,1,2,1,is_a/part_of,trdc
+ZFA:0009337,immature gamma-delta T cell,1,2,1,is_a/part_of,trdc
+ZFA:0009328,immature neutrophil,1,2,1,is_a/part_of,cebp1
+ZFA:0009379,intrahepatic bile duct epithelial cell,1,2,1,is_a/part_of,wwtr1
+ZFA:0001674,mesonephric podocyte,1,2,0,is_a/part_of,vegfaa
+ZFA:0005210,midbrain interneuron,1,2,0,is_a/part_of,pvalb7
+ZFA:0001006,muscle pioneer somite 21,1,2,0,is_a/part_of,plce1
+ZFA:0000794,muscle pioneer somite 22,1,2,0,is_a/part_of,plce1
+ZFA:0000922,muscle pioneer somite 4,1,2,0,is_a/part_of,plce1
+ZFA:0001010,muscle pioneer somite 5,1,2,0,is_a/part_of,plce1
+ZFA:0000799,muscle pioneer somite 6,1,2,0,is_a/part_of,plce1
+ZFA:0000044,myotome somite 14,1,2,0,is_a/part_of,nr5a2
+ZFA:0000809,myotome somite 4,1,2,0,is_a/part_of,nr5a2
+ZFA:0000810,myotome somite 7,1,2,0,is_a/part_of,nr5a2
+ZFA:0009266,neutrophilic myelocyte,1,2,1,is_a/part_of,cebp1
+ZFA:0009240,nitrergic neuron,1,2,1,is_a/part_of,nos1
+ZFA:0005873,noradrenergic neuron,1,2,1,is_a/part_of,dbh
+ZFA:0005878,oogonia,1,2,1,is_a/part_of,nanos2
+ZFA:0009380,pancreatic ductal cell,1,2,1,is_a/part_of,epcam
+ZFA:0009170,pigment cell (sensu Vertebrata),1,2,1,is_a/part_of,nrp2b
+ZFA:0009204,prolactin secreting cell,1,2,1,is_a/part_of,prl
+ZFA:0005322,renal principal cell,1,2,1,is_a/part_of,trpm7
+ZFA:0000963,slow muscle cell somite 1,1,2,0,is_a/part_of,nr5a2
+ZFA:0001047,slow muscle cell somite 10,1,2,0,is_a/part_of,nr5a2
+ZFA:0000841,slow muscle cell somite 14,1,2,0,is_a/part_of,nr5a2
+ZFA:0000972,slow muscle cell somite 4,1,2,0,is_a/part_of,nr5a2
+ZFA:0000973,slow muscle cell somite 7,1,2,0,is_a/part_of,nr5a2
+ZFA:0009155,somatotropin secreting cell,1,2,1,is_a/part_of,gh1
+ZFA:0009297,stellate interneuron,1,2,1,is_a/part_of,gad1b
+ZFA:0005732,visceromotor neuron,1,2,1,is_a/part_of,phox2bb
+ZFA:0009195,CNS long range interneuron,0,3,1,is_a/part_of,
+ZFA:0005218,CaD,0,3,0,is_a/part_of,
+ZFA:0005217,CaV,0,3,0,is_a/part_of,
+ZFA:0009300,Cajal-Retzius cell,0,3,1,is_a/part_of,
+ZFA:0005186,CoB,0,3,0,is_a/part_of,
+ZFA:0005230,CoBL,0,3,0,is_a/part_of,
+ZFA:0005234,CoLA,0,3,0,is_a/part_of,
+ZFA:0005175,CoPA,0,3,0,is_a/part_of,
+ZFA:0005232,MCoD,0,3,0,is_a/part_of,
+ZFA:0005211,MeL,0,3,0,is_a/part_of,
+ZFA:0005214,MeLc,0,3,0,is_a/part_of,
+ZFA:0005215,MeLm,0,3,0,is_a/part_of,
+ZFA:0005213,MeLr,0,3,0,is_a/part_of,
+ZFA:0005212,MeM,0,3,0,is_a/part_of,
+ZFA:0005216,MeM1,0,3,0,is_a/part_of,
+ZFA:0005184,MiD2cl,0,3,0,is_a/part_of,
+ZFA:0005183,MiD2i,0,3,0,is_a/part_of,
+ZFA:0005197,MiD3i,0,3,0,is_a/part_of,
+ZFA:0005187,MiM1,0,3,0,is_a/part_of,
+ZFA:0005188,MiR1,0,3,0,is_a/part_of,
+ZFA:0005189,MiR2,0,3,0,is_a/part_of,
+ZFA:0005191,MiV2,0,3,0,is_a/part_of,
+ZFA:0009320,OFF-bipolar cell,0,3,1,is_a/part_of,
+ZFA:0005192,RoI2C,0,3,0,is_a/part_of,
+ZFA:0005193,RoI2R,0,3,0,is_a/part_of,
+ZFA:0005194,RoL1,0,3,0,is_a/part_of,
+ZFA:0005198,RoL2,0,3,0,is_a/part_of,
+ZFA:0005200,RoL2c,0,3,0,is_a/part_of,
+ZFA:0005199,RoL2r,0,3,0,is_a/part_of,
+ZFA:0005201,RoL3,0,3,0,is_a/part_of,
+ZFA:0005202,RoM1c,0,3,0,is_a/part_of,
+ZFA:0005203,RoM1r,0,3,0,is_a/part_of,
+ZFA:0005205,RoM2l,0,3,0,is_a/part_of,
+ZFA:0005206,RoM2m,0,3,0,is_a/part_of,
+ZFA:0005207,RoM3l,0,3,0,is_a/part_of,
+ZFA:0005208,RoM3m,0,3,0,is_a/part_of,
+ZFA:0005204,RoV3,0,3,0,is_a/part_of,
+ZFA:0005815,T interneuron,0,3,0,is_a/part_of,
+ZFA:0005235,UCoD,0,3,0,is_a/part_of,
+ZFA:0005969,VeMe,0,3,0,is_a/part_of,
+ZFA:0009254,band form neutrophil,0,3,1,is_a/part_of,
+ZFA:0009068,basket cell,0,3,1,is_a/part_of,
+ZFA:0005231,bifurcate interneuron,0,3,0,is_a/part_of,
+ZFA:0005970,brain lymphatic endothelial cell,0,3,0,is_a/part_of,
+ZFA:0009087,cementocyte,0,3,1,is_a/part_of,
+ZFA:0005770,crypt neuron olfactory support cell,0,3,0,is_a/part_of,
+ZFA:0009317,cyanophore,0,3,1,is_a/part_of,
+ZFA:0005806,diencephalic efferent neurons to the lateral line,0,3,0,is_a/part_of,
+ZFA:0009217,digestive enzyme secreting cell,0,3,1,is_a/part_of,
+ZFA:0009294,ependymoglial cell,0,3,1,is_a/part_of,
+ZFA:0009400,epithelial cell of esophagus,0,3,1,is_a/part_of,
+ZFA:0009263,erythrophore,0,3,1,is_a/part_of,
+ZFA:0009152,extramedullary cell,0,3,1,is_a/part_of,
+ZFA:0000513,fast muscle cell somite 1,0,3,0,is_a/part_of,
+ZFA:0000750,fast muscle cell somite 10,0,3,0,is_a/part_of,
+ZFA:0000876,fast muscle cell somite 11,0,3,0,is_a/part_of,
+ZFA:0000773,fast muscle cell somite 12,0,3,0,is_a/part_of,
+ZFA:0000752,fast muscle cell somite 13,0,3,0,is_a/part_of,
+ZFA:0000877,fast muscle cell somite 14,0,3,0,is_a/part_of,
+ZFA:0000784,fast muscle cell somite 15,0,3,0,is_a/part_of,
+ZFA:0000753,fast muscle cell somite 16,0,3,0,is_a/part_of,
+ZFA:0000878,fast muscle cell somite 17,0,3,0,is_a/part_of,
+ZFA:0000795,fast muscle cell somite 18,0,3,0,is_a/part_of,
+ZFA:0000754,fast muscle cell somite 19,0,3,0,is_a/part_of,
+ZFA:0000879,fast muscle cell somite 2,0,3,0,is_a/part_of,
+ZFA:0000806,fast muscle cell somite 20,0,3,0,is_a/part_of,
+ZFA:0000755,fast muscle cell somite 21,0,3,0,is_a/part_of,
+ZFA:0000880,fast muscle cell somite 22,0,3,0,is_a/part_of,
+ZFA:0000817,fast muscle cell somite 23,0,3,0,is_a/part_of,
+ZFA:0000756,fast muscle cell somite 24,0,3,0,is_a/part_of,
+ZFA:0000881,fast muscle cell somite 25,0,3,0,is_a/part_of,
+ZFA:0000827,fast muscle cell somite 26,0,3,0,is_a/part_of,
+ZFA:0000757,fast muscle cell somite 27,0,3,0,is_a/part_of,
+ZFA:0000883,fast muscle cell somite 28,0,3,0,is_a/part_of,
+ZFA:0000838,fast muscle cell somite 29,0,3,0,is_a/part_of,
+ZFA:0000758,fast muscle cell somite 3,0,3,0,is_a/part_of,
+ZFA:0000884,fast muscle cell somite 30,0,3,0,is_a/part_of,
+ZFA:0000849,fast muscle cell somite 4,0,3,0,is_a/part_of,
+ZFA:0000759,fast muscle cell somite 5,0,3,0,is_a/part_of,
+ZFA:0000885,fast muscle cell somite 6,0,3,0,is_a/part_of,
+ZFA:0000860,fast muscle cell somite 7,0,3,0,is_a/part_of,
+ZFA:0000760,fast muscle cell somite 8,0,3,0,is_a/part_of,
+ZFA:0000886,fast muscle cell somite 9,0,3,0,is_a/part_of,
+ZFA:0009281,folliculostellate cell,0,3,1,is_a/part_of,
+ZFA:0009339,gamma-delta intraepithelial T cell,0,3,1,is_a/part_of,
+ZFA:0005151,gold iridophore,0,3,0,is_a/part_of,
+ZFA:0009402,heart valve cell,0,3,1,is_a/part_of,
+ZFA:0009404,heart valve endothelial cell,0,3,0,is_a/part_of,
+ZFA:0009403,heart valve interstitial cell,0,3,0,is_a/part_of,
+ZFA:0000774,hypaxial region somite 28,0,3,0,is_a/part_of,
+ZFA:0000775,hypaxial region somite 30,0,3,0,is_a/part_of,
+ZFA:0009346,immature natural killer cell,0,3,1,is_a/part_of,
+ZFA:0005238,juxtaglomerular cell,0,3,1,is_a/part_of,
+ZFA:0009390,kidney interstitial cell,0,3,1,is_a/part_of,
+ZFA:0009391,kidney medulla cell,0,3,1,is_a/part_of,
+ZFA:0009261,leucophore,0,3,1,is_a/part_of,
+ZFA:0009331,mature B cell,0,3,1,is_a/part_of,
+ZFA:0009338,mature gamma-delta T cell,0,3,1,is_a/part_of,
+ZFA:0009347,mature natural killer cell,0,3,1,is_a/part_of,
+ZFA:0005928,melanoleucophore,0,3,0,is_a/part_of,
+ZFA:0009333,memory B cell,0,3,1,is_a/part_of,
+ZFA:0009342,memory T cell,0,3,1,is_a/part_of,
+ZFA:0007095,migratory trunk neural crest cell,0,3,1,is_a/part_of,
+ZFA:0009330,mononuclear odontoclast,0,3,1,is_a/part_of,
+ZFA:0009329,mononuclear osteoclast,0,3,1,is_a/part_of,
+ZFA:0005971,motor exit point glia,0,3,0,is_a/part_of,
+ZFA:0009056,multipolar neuron,0,3,1,is_a/part_of,
+ZFA:0000043,muscle pioneer somite 1,0,3,0,is_a/part_of,
+ZFA:0000790,muscle pioneer somite 10,0,3,0,is_a/part_of,
+ZFA:0000915,muscle pioneer somite 11,0,3,0,is_a/part_of,
+ZFA:0001003,muscle pioneer somite 12,0,3,0,is_a/part_of,
+ZFA:0000791,muscle pioneer somite 13,0,3,0,is_a/part_of,
+ZFA:0000916,muscle pioneer somite 14,0,3,0,is_a/part_of,
+ZFA:0001004,muscle pioneer somite 15,0,3,0,is_a/part_of,
+ZFA:0000792,muscle pioneer somite 16,0,3,0,is_a/part_of,
+ZFA:0000917,muscle pioneer somite 17,0,3,0,is_a/part_of,
+ZFA:0001005,muscle pioneer somite 18,0,3,0,is_a/part_of,
+ZFA:0000793,muscle pioneer somite 19,0,3,0,is_a/part_of,
+ZFA:0000395,muscle pioneer somite 2,0,3,0,is_a/part_of,
+ZFA:0000918,muscle pioneer somite 20,0,3,0,is_a/part_of,
+ZFA:0000919,muscle pioneer somite 23,0,3,0,is_a/part_of,
+ZFA:0001007,muscle pioneer somite 24,0,3,0,is_a/part_of,
+ZFA:0000796,muscle pioneer somite 25,0,3,0,is_a/part_of,
+ZFA:0000920,muscle pioneer somite 26,0,3,0,is_a/part_of,
+ZFA:0001008,muscle pioneer somite 27,0,3,0,is_a/part_of,
+ZFA:0000797,muscle pioneer somite 28,0,3,0,is_a/part_of,
+ZFA:0000921,muscle pioneer somite 29,0,3,0,is_a/part_of,
+ZFA:0001009,muscle pioneer somite 3,0,3,0,is_a/part_of,
+ZFA:0000798,muscle pioneer somite 30,0,3,0,is_a/part_of,
+ZFA:0000923,muscle pioneer somite 7,0,3,0,is_a/part_of,
+ZFA:0001011,muscle pioneer somite 8,0,3,0,is_a/part_of,
+ZFA:0000800,muscle pioneer somite 9,0,3,0,is_a/part_of,
+ZFA:0000801,myotome somite 11,0,3,0,is_a/part_of,
+ZFA:0000802,myotome somite 15,0,3,0,is_a/part_of,
+ZFA:0000803,myotome somite 18,0,3,0,is_a/part_of,
+ZFA:0000804,myotome somite 20,0,3,0,is_a/part_of,
+ZFA:0000805,myotome somite 23,0,3,0,is_a/part_of,
+ZFA:0000807,myotome somite 26,0,3,0,is_a/part_of,
+ZFA:0000808,myotome somite 29,0,3,0,is_a/part_of,
+ZFA:0009334,naive B cell,0,3,1,is_a/part_of,
+ZFA:0009299,neuroglioform cell,0,3,1,is_a/part_of,
+ZFA:0009268,neutrophilic metamyelocyte,0,3,1,is_a/part_of,
+ZFA:0001694,olfactory granule cell,0,3,1,is_a/part_of,
+ZFA:0000688,olfactory support cell,0,3,0,is_a/part_of,
+ZFA:0009119,pain receptor cell,0,3,1,is_a/part_of,
+ZFA:0005742,pancreatic PP cell,0,3,1,is_a/part_of,
+ZFA:0005740,pancreatic centroacinar cell,0,3,1,is_a/part_of,
+ZFA:0005776,parasympathetic neuron,0,3,1,is_a/part_of,
+ZFA:0009312,periarticular chondrocyte,0,3,1,is_a/part_of,
+ZFA:0009267,peritoneal macrophage,0,3,1,is_a/part_of,
+ZFA:0009066,pioneer neuron,0,3,1,is_a/part_of,
+ZFA:0009332,plasma cell,0,3,1,is_a/part_of,
+ZFA:0009054,polymodal neuron,0,3,1,is_a/part_of,
+ZFA:0007090,premigratory cranial neural crest cell,0,3,0,is_a/part_of,
+ZFA:0007094,premigratory trunk neural crest cell,0,3,0,is_a/part_of,
+ZFA:0009274,pressoreceptor cell,0,3,1,is_a/part_of,
+ZFA:0009057,pseudounipolar neuron,0,3,1,is_a/part_of,
+ZFA:0009273,pyramidal cell,0,3,1,is_a/part_of,
+ZFA:0009376,renal alpha-intercalated cell,0,3,1,is_a/part_of,
+ZFA:0009375,renal intercalated cell,0,3,1,is_a/part_of,
+ZFA:0009252,reticulocyte,0,3,1,is_a/part_of,
+ZFA:0005804,rhombencephalic efferent neurons to the lateral line,0,3,0,is_a/part_of,
+ZFA:0005805,rhombencephalic octavolateral efferent neuron,0,3,0,is_a/part_of,
+ZFA:0009321,rod bipolar cell,0,3,1,is_a/part_of,
+ZFA:0009174,scleral cell,0,3,1,is_a/part_of,
+ZFA:0009185,sensory processing neuron,0,3,1,is_a/part_of,
+ZFA:0005152,silver iridophore,0,3,0,is_a/part_of,
+ZFA:0000840,slow muscle cell somite 11,0,3,0,is_a/part_of,
+ZFA:0000964,slow muscle cell somite 12,0,3,0,is_a/part_of,
+ZFA:0001048,slow muscle cell somite 13,0,3,0,is_a/part_of,
+ZFA:0000965,slow muscle cell somite 15,0,3,0,is_a/part_of,
+ZFA:0001049,slow muscle cell somite 16,0,3,0,is_a/part_of,
+ZFA:0000842,slow muscle cell somite 17,0,3,0,is_a/part_of,
+ZFA:0000966,slow muscle cell somite 18,0,3,0,is_a/part_of,
+ZFA:0001050,slow muscle cell somite 19,0,3,0,is_a/part_of,
+ZFA:0000843,slow muscle cell somite 2,0,3,0,is_a/part_of,
+ZFA:0000967,slow muscle cell somite 20,0,3,0,is_a/part_of,
+ZFA:0000719,slow muscle cell somite 21,0,3,0,is_a/part_of,
+ZFA:0000844,slow muscle cell somite 22,0,3,0,is_a/part_of,
+ZFA:0000969,slow muscle cell somite 23,0,3,0,is_a/part_of,
+ZFA:0000720,slow muscle cell somite 24,0,3,0,is_a/part_of,
+ZFA:0000845,slow muscle cell somite 25,0,3,0,is_a/part_of,
+ZFA:0000970,slow muscle cell somite 26,0,3,0,is_a/part_of,
+ZFA:0000721,slow muscle cell somite 27,0,3,0,is_a/part_of,
+ZFA:0000846,slow muscle cell somite 28,0,3,0,is_a/part_of,
+ZFA:0000971,slow muscle cell somite 29,0,3,0,is_a/part_of,
+ZFA:0000722,slow muscle cell somite 3,0,3,0,is_a/part_of,
+ZFA:0000847,slow muscle cell somite 30,0,3,0,is_a/part_of,
+ZFA:0000723,slow muscle cell somite 5,0,3,0,is_a/part_of,
+ZFA:0000848,slow muscle cell somite 6,0,3,0,is_a/part_of,
+ZFA:0000724,slow muscle cell somite 8,0,3,0,is_a/part_of,
+ZFA:0000850,slow muscle cell somite 9,0,3,0,is_a/part_of,
+ZFA:0005733,somatomotor neuron,0,3,1,is_a/part_of,
+ZFA:0009311,spinal accessory motor neuron,0,3,1,is_a/part_of,
+ZFA:0005874,spiral neuron,0,3,0,is_a/part_of,
+ZFA:0009072,stellate cell,0,3,1,is_a/part_of,
+ZFA:0009370,stretch receptor cell,0,3,1,is_a/part_of,
+ZFA:0005965,striolar hair cell,0,3,0,is_a/part_of,
+ZFA:0009298,terminal Schwann cell,0,3,1,is_a/part_of,
+ZFA:0009123,thermoreceptor cell,0,3,1,is_a/part_of,
+ZFA:0009345,transitional stage B cell,0,3,1,is_a/part_of,
+ZFA:0009058,unipolar neuron,0,3,1,is_a/part_of,
+ZFA:0005866,vestibulospinal neuron,0,3,0,is_a/part_of,
+ZFA:0009171,visual pigment cell (sensu Vertebrata),0,3,1,is_a/part_of,
+ZFA:0005929,xantholeucophore,0,3,0,is_a/part_of,
+ZFA:0009099,chromaffin cell,2,1,1,develops_from_only,dbh;th
+ZFA:0009167,adrenal medulla cell,1,2,1,develops_from_only,pomca
+ZFA:0009397,cholangiocyte,1,2,1,develops_from_only,il17a/f1
+ZFA:0009022,megakaryocyte erythroid progenitor cell,1,2,1,develops_from_only,gata1a
+ZFA:0009353,myeloblast,1,2,1,develops_from_only,cebp1
+ZFA:0009257,neutrophilic promyelocyte,1,2,1,develops_from_only,cebp1
+ZFA:0009349,pro-B cell,1,2,1,develops_from_only,rag1
+ZFA:0009085,amelocyte,0,3,1,develops_from_only,
+ZFA:0005236,basophilic erythroblast,0,3,1,develops_from_only,
+ZFA:0009259,cardiac mesenchymal cell,0,3,1,develops_from_only,
+ZFA:0009030,cementoblast,0,3,1,develops_from_only,
+ZFA:0009295,cerebrospinal fluid secreting cell,0,3,1,develops_from_only,
+ZFA:0009175,choroidal cell of the eye,0,3,1,develops_from_only,
+ZFA:0005332,cyanoblast,0,3,1,develops_from_only,
+ZFA:0009173,dental papilla cell,0,3,1,develops_from_only,
+ZFA:0005329,leucoblast,0,3,1,develops_from_only,
+ZFA:0009017,monoblast,0,3,1,develops_from_only,
+ZFA:0009018,neutrophilic myeloblast,0,3,1,develops_from_only,
+ZFA:0009270,odontoclast,0,3,1,develops_from_only,
+ZFA:0009086,odontocyte,0,3,1,develops_from_only,
+ZFA:0009260,parafollicular cell,0,3,1,develops_from_only,
+ZFA:0005331,pigment erythroblast,0,3,1,develops_from_only,
+ZFA:0005241,polychromatophilic erythroblast,0,3,1,develops_from_only,
+ZFA:0009348,pro-NK cell,0,3,1,develops_from_only,
+ZFA:0009253,promonocyte,0,3,1,develops_from_only,
+ZFA:0009351,thromboblast,0,3,1,develops_from_only,
+ZFA:0009212,biogenic amine secreting cell,2,1,1,unreachable,dbh;th
+ZFA:0009043,circulating cell,2,1,1,unreachable,gata1a;tal1
+ZFA:0009214,norepinephrine secreting cell,2,1,1,unreachable,dbh;th
+ZFA:0009041,peridermal cell,2,1,1,unreachable,atp1b1a;spint2
+ZFA:0009241,pigmented epithelial cell,2,1,1,unreachable,mitfa;mitfb
+ZFA:0009189,tendon cell,2,1,1,unreachable,scxa;scxb
+ZFA:0009146,Merkel cell,1,2,1,unreachable,bdnf
+ZFA:0009385,ecto-epithelial cell,1,2,1,unreachable,edn1
+ZFA:0005956,germline stem cell,1,2,1,unreachable,nanos2
+ZFA:0009196,hypodermal cell,1,2,1,unreachable,bnc2
+ZFA:0005239,micropylar cell,1,2,1,unreachable,wwtr1
+ZFA:0009179,muscle stem cell,1,2,1,unreachable,asb11
+ZFA:0009187,nephrogenic mesenchyme stem cell,1,2,1,unreachable,fzd9b
+ZFA:0009207,parathyroid hormone secreting cell,1,2,0,unreachable,met
+ZFA:0009089,simple columnar epithelial cell,1,2,1,unreachable,gamt
+ZFA:0009368,slow muscle myoblast,1,2,1,unreachable,hsp90aa1.1
+ZFA:0009180,stratified epithelial stem cell,1,2,1,unreachable,chsy1
+ZFA:0009371,stratified keratinized epithelial stem cell,1,2,1,unreachable,chsy1
+ZFA:0009293,M cell,0,3,1,unreachable,
+ZFA:0009095,acid secreting cell,0,3,1,unreachable,
+ZFA:0009201,alkali secreting cell,0,3,1,unreachable,
+ZFA:0009037,barrier epithelial cell,0,3,1,unreachable,
+ZFA:0009178,blastemal cell,0,3,1,unreachable,
+ZFA:0009206,calcitonin secreting cell,0,3,1,unreachable,
+ZFA:0005786,cleft cell,0,3,0,unreachable,
+ZFA:0009232,endorphin secreting cell,0,3,1,unreachable,
+ZFA:0009231,enkephalin secreting cell,0,3,1,unreachable,
+ZFA:0007122,epidermal stem cell,0,3,1,unreachable,
+ZFA:0009211,epinephrin secreting cell,0,3,1,unreachable,
+ZFA:0009110,estradiol secreting cell,0,3,1,unreachable,
+ZFA:0009176,extraembryonic cell,0,3,1,unreachable,
+ZFA:0009286,fenestrated cell,0,3,1,unreachable,
+ZFA:0009215,glucocorticoid secreting cell,0,3,1,unreachable,
+ZFA:0009279,ito cell,0,3,1,unreachable,
+ZFA:0007124,keratinocyte progenitor cell,0,3,0,unreachable,
+ZFA:0009305,leptomeningeal cell,0,3,1,unreachable,
+ZFA:0009188,ligament cell,0,3,1,unreachable,
+ZFA:0009393,lymphangioblast,0,3,1,unreachable,
+ZFA:0009283,mesangial cell,0,3,1,unreachable,
+ZFA:0009394,mesenchymal lymphangioblast,0,3,1,unreachable,
+ZFA:0009388,meso-epithelial cell,0,3,1,unreachable,
+ZFA:0005921,migratory muscle precursor,0,3,0,unreachable,
+ZFA:0009113,myoepithelial cell,0,3,1,unreachable,
+ZFA:0009384,neurecto-epithelial cell,0,3,1,unreachable,
+ZFA:0009012,neuroplacodal cell,0,3,1,unreachable,
+ZFA:0009364,olfactory epithelial support cell,0,3,1,unreachable,
+ZFA:0009164,oxygen accumulating cell,0,3,1,unreachable,
+ZFA:0009233,paracrine cell,0,3,1,unreachable,
+ZFA:0009296,perijunctional fibroblast,0,3,1,unreachable,
+ZFA:0009140,phagocyte,0,3,1,unreachable,
+ZFA:0009109,progesterone secreting cell,0,3,1,unreachable,
+ZFA:0005968,pseudobranch cell,0,3,0,unreachable,
+ZFA:0005246,regeneration fibroblast,0,3,0,unreachable,
+ZFA:0009200,reticular cell,0,3,1,unreachable,
+ZFA:0009160,seminal fluid secreting cell,0,3,1,unreachable,
+ZFA:0009213,serotonin secreting cell,0,3,1,unreachable,
+ZFA:0009235,smooth muscle myoblast,0,3,1,unreachable,
+ZFA:0009145,stratified cuboidal epithelial cell,0,3,1,unreachable,
+ZFA:0009042,stratified epithelial cell,0,3,1,unreachable,
+ZFA:0009144,stratified squamous epithelial cell,0,3,1,unreachable,
+ZFA:0009230,substance P secreting cell,0,3,1,unreachable,
+ZFA:0009387,supportive cell,0,3,1,unreachable,
+ZFA:0009302,sustentacular cell,0,3,1,unreachable,
+ZFA:0009131,synovial cell,0,3,1,unreachable,
+ZFA:0009210,thyroid hormone secreting cell,0,3,1,unreachable,
+ZFA:0009024,totipotent stem cell,0,3,1,unreachable,
+ZFA:0009148,transitional epithelial cell,0,3,1,unreachable,
+ZFA:0009308,urothelial cell,0,3,1,unreachable,
+ZFA:0009395,vascular lymphangioblast,0,3,1,unreachable,
