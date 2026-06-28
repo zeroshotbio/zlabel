@@ -219,12 +219,13 @@ pigment:
     - mitfa    # microphthalmia-associated TF a; melanocyte master TF
     - dct      # dopachrome tautomerase; melanin synthesis enzyme
     - tyrp1b   # tyrosinase related protein 1b; melanin synthesis
-    - xdh      # xanthine dehydrogenase; xanthophore marker (scoring; sparse anchor grounding)
     - gch2     # GTP cyclohydrolase 2; pteridine synthesis; xanthophores/iridophores
     - slc45a2  # solute carrier family 45 member 2 (matp); melanocyte transporter
     - ltk      # leukocyte tyrosine kinase; iridophore specification
     - pnp4a    # purine nucleoside phosphorylase 4a; iridophore (reflective platelets)
     - aox5     # aldehyde oxidase 5; xanthophore (well-grounded; complements xdh/gch2)
+  scoring_markers:
+    - xdh      # xanthine dehydrogenase; xanthophore (scoring-only: ZFIN expression too sparse to ground)
 
 # === mesoderm =================================================================
 
@@ -279,10 +280,11 @@ mural:
   markers:
     - pdgfrb   # PDGF receptor beta; pericyte/mural recruitment
     - notch3   # notch receptor 3; pericyte/mural identity
-    - tagln    # transgelin (SM22); smooth-muscle contractile (scoring)
-    - acta2    # smooth muscle actin alpha 2; contractile mural (scoring)
-    - desma    # desmin a; smooth/striated muscle cytoskeleton (scoring)
-    - cspg4    # chondroitin sulfate proteoglycan 4 (NG2); pericyte (scoring)
+    - tagln    # transgelin (SM22); smooth-muscle contractile
+    - acta2    # smooth muscle actin alpha 2; contractile mural
+  scoring_markers:
+    - desma    # desmin a; smooth/striated muscle cytoskeleton (scoring-only: does not ground under mural)
+    - cspg4    # chondroitin sulfate proteoglycan 4 (NG2); pericyte (scoring-only: does not ground under mural)
 
 endothelium:
   germ_layer: mesoderm
@@ -382,13 +384,14 @@ mesenchyme:
   ontology_anchor:
     - ZFA:0000393  # mesenchyme
   markers:
-    - col1a1a  # collagen type I alpha 1a; ECM (scoring; grounds in mature connective tissue)
-    - col1a2   # collagen type I alpha 2; ECM (scoring)
     - dcn      # decorin; small leucine-rich proteoglycan; mesenchymal ECM
     - twist1a  # twist family bHLH TF 1a; mesenchymal/EMT TF
     - prrx1a   # paired related homeobox 1a; limb/craniofacial mesenchyme TF
     - osr2     # odd-skipped related TF 2; lateral plate and craniofacial mesenchyme
     - fn1a     # fibronectin 1a; ECM glycoprotein; mesenchymal and migratory cells
+  scoring_markers:
+    - col1a1a  # collagen type I alpha 1a; pan-ECM (scoring-only: does not ground under mesenchyme)
+    - col1a2   # collagen type I alpha 2; pan-ECM (scoring-only: does not ground under mesenchyme)
 
 cartilage:
   germ_layer: neural crest  # craniofacial cartilage is neural-crest-derived (some trunk cartilage is lateral-plate mesoderm)

@@ -79,6 +79,26 @@ def test_load_panels_ontology_anchor_loaded(test_panels):
     assert blood.ontology_anchor == frozenset()
 
 
+def test_load_panels_scoring_markers_union_and_default(tmp_path):
+    # scoring_markers (optional) are lowercased, kept on Panel.scoring_markers, and unioned into
+    # Panel.markers (the scored vocabulary); a panel without the key defaults to an empty set.
+    path = tmp_path / "p.yaml"
+    path.write_text(
+        "spine_panel:\n  kind: identity\n  cite: test\n  germ_layer: ''\n  tissue: ''\n  lineage: ''\n"
+        "  ontology_anchor: [ZFA:0000548]\n  markers: [myod1, myog]\n  scoring_markers: [Col1a1a]\n"
+        "plain_panel:\n  kind: identity\n  cite: test\n  germ_layer: ''\n  tissue: ''\n  lineage: ''\n"
+        "  ontology_anchor: [ZFA:0000548]\n  markers: [kdrl]\n",
+        encoding="utf-8",
+    )
+    panels = load_panels(path)
+    spine = next(panel for panel in panels if panel.bucket == "spine_panel")
+    assert spine.scoring_markers == frozenset({"col1a1a"})  # lowercased
+    assert spine.markers == frozenset({"myod1", "myog", "col1a1a"})  # union = the scored vocabulary
+    plain = next(panel for panel in panels if panel.bucket == "plain_panel")
+    assert plain.scoring_markers == frozenset()  # defaults to empty when the key is absent
+    assert plain.markers == frozenset({"kdrl"})
+
+
 def test_load_panels_scalar_ontology_anchor_raises(tmp_path):
     # A bare scalar would silently become a frozenset of characters; reject it.
     path = tmp_path / "bad.yaml"

@@ -18,7 +18,7 @@ coarse prior, not the namer: biological resolution comes from the ontology walk 
 
 Three fields drive the engine:
 
-- **`markers`** — current ZFIN gene symbols. The scorer ranks buckets by how a
+- **`markers`** — current ZFIN gene symbols (the grounding spine). The scorer ranks buckets by how a
   cluster's genes overlap each panel's markers; the best overlap wins. This is the
   only field that selects a bucket.
 - **`ontology_anchor`** — one or more ZFA terms. The winning panel's anchor seeds the
@@ -26,6 +26,11 @@ Three fields drive the engine:
   for ZFA terms, and the walk steps down from the anchor to the deepest term the genes
   converge on. This is the only field that sets where naming starts.
 - **`kind`** — `identity` or `state`.
+
+An optional **`scoring_markers`** list holds markers kept for overlap scoring only — they aid
+bucket selection but are not required to express under the anchor in ZFIN. `Panel.markers` is the
+union of the spine and `scoring_markers` (what the scorer sees); the grounding audit
+(`scripts/audit_panels.py`) requires only the spine to ground, and fails if a spine marker does not.
 
 `germ_layer` / `tissue` / `lineage` supply a fallback label when the evidence does not
 converge; `cite` records provenance. A panel proposes a neighbourhood; the ZFA
@@ -75,21 +80,21 @@ tier; † = anchors span more than one rung.
 | olfactory † | olfactory system `ZFA:0001149` + olfactory epithelium `ZFA:0000554` · tissue | ompb, s100z, calb2b, gng8, neurod1 |
 | epidermis † | epidermis `ZFA:0000105` + integument `ZFA:0000368` · tissue | krt4, krt5, tp63, cldne, krt8, cldnb |
 | ionocyte | ionocyte `ZFA:0005323` · cell_type | foxi3a, foxi3b, ca2, slc12a10.2, trpv6, atp1b1b |
-| pigment | pigment cell `ZFA:0009090` · cell_type | mitfa, dct, tyrp1b, gch2, slc45a2, xdh |
+| pigment | pigment cell `ZFA:0009090` · cell_type | mitfa, dct, tyrp1b, gch2, slc45a2, ltk, pnp4a, aox5 _(+xdh scoring)_ |
 
 ### Mesoderm
 
 | panel | anchor · rung | markers |
 |---|---|---|
-| muscle | musculature system `ZFA:0000548` · organ_system | myod1, myog, myf5, mylpfa, acta1b, tnnt3a, tnnc2.2, ckma |
+| muscle | musculature system `ZFA:0000548` · organ_system | myod1, myog, myf5, mylpfa, acta1b, tnnt3a, tnnc2.2, ckma, smyhc2, msc, myoz1a, pvalb3 |
 | cardiac | heart `ZFA:0000114` · organ | myl7, myh6, myh7, nppa, tnnt2a, ttn.2 |
-| mural | mural cell `ZFA:0005944` · cell_type | pdgfrb, notch3, tagln, acta2, desma, cspg4 |
+| mural | mural cell `ZFA:0005944` · cell_type | pdgfrb, notch3, tagln, acta2 _(+desma, cspg4 scoring)_ |
 | endothelium † | vasculature `ZFA:0005249` + endothelial cell `ZFA:0009065` · cell_type | kdrl, fli1, etsrp, cdh5, pecam1a, flt1 |
 | blood_erythroid | blood `ZFA:0000007` + hematopoietic system `ZFA:0005023` · organ_system | gata1a, hbae1.1, hbbe2, alas2, klf1, slc4a1a, cahz |
 | immune_myeloid | immune system `ZFA:0001159` + hematopoietic system `ZFA:0005023` · organ_system | lcp1, mpeg1.1, coro1a, spi1b, mfap4.1, lyz, csf1ra |
 | blood_lymphoid | lymphocyte `ZFA:0009250` · cell_type | lck, rag1, rag2, il7r, cd8a |
-| pronephros | pronephros `ZFA:0000151` · organ | pax2a, wt1a, wt1b, slc20a1a, cdh17, slc12a1, pax8 |
-| mesenchyme | mesenchyme `ZFA:0000393` · tissue | dcn, twist1a, prrx1a, osr2, fn1a, col1a1a, col1a2 |
+| pronephros | pronephros `ZFA:0000151` · organ | pax2a, wt1a, wt1b, slc20a1a, cdh17, slc12a1, pax8, nphs1, nphs2 |
+| mesenchyme | mesenchyme `ZFA:0000393` · tissue | dcn, twist1a, prrx1a, osr2, fn1a _(+col1a1a, col1a2 scoring)_ |
 | cartilage † | cartilage element `ZFA:0001501` + chondrocyte `ZFA:0009084` · cell_type | sox9a, sox9b, col2a1a, acana, matn1, runx2b |
 | osteoblast † | osteoblast `ZFA:0009031` + bone tissue `ZFA:0005621` · cell_type | sp7, spp1, bglap, col10a1a, runx2a, runx2b |
 | notochord | notochord `ZFA:0000135` · tissue | tbxta, shha, col2a1a, col8a1a, noto |
@@ -102,7 +107,7 @@ tier; † = anchors span more than one rung.
 | endoderm_gut † | digestive system `ZFA:0000339` + presumptive endoderm `ZFA:0000416` · organ_system | sox32, sox17, foxa2, gata5, gata6, hhex |
 | liver | liver `ZFA:0000123` · organ | fabp10a, cp, tfa, gc, f2, serpina1l |
 | pancreas | pancreas `ZFA:0000140` · organ | ins, gcga, sst2, pdx1, prss1, cpa5 |
-| intestine | intestine `ZFA:0001338` · organ | fabp2, fabp6, cdx1b, slc15a1b, vil1 |
+| intestine | intestine `ZFA:0001338` · organ | fabp2, fabp6, cdx1b, slc15a1b, vil1, muc2.1 |
 
 ### Germline & endocrine
 
@@ -131,11 +136,11 @@ state is recorded separately.
   (`ZFA:0001074`) is one of its anchors — which share hair-cell and placodal markers
   (`atoh1a`, `eya1`, `six1b`) with `otic`. A cluster grounds under whichever anchor
   its expression supports; there is no separate taste-bud bucket at this broad altitude.
-- **mural** sits on a sparsely curated ZFA term, so its contractile markers (`tagln`,
-  `acta2`, `desma`, `cspg4`) mainly aid scoring rather than grounding the descent.
-- **mesenchyme** keeps the type-I collagens (`col1a1a`, `col1a2`) for scoring; they
-  ground in mature connective tissue rather than the embryonic mesenchyme term.
-- **pigment** keeps `xdh` (xanthophore) as a scoring marker.
+- **mural** sits on a sparsely curated ZFA term; `desma` and `cspg4` do not ground under it and are
+  kept in `scoring_markers` (`tagln` and `acta2` do ground and stay in the spine).
+- **mesenchyme** keeps the type-I collagens (`col1a1a`, `col1a2`) in `scoring_markers`: pan-ECM
+  genes that aid overlap but ground in mature connective tissue, not the embryonic mesenchyme term.
+- **pigment** keeps `xdh` (xanthophore) in `scoring_markers` — its ZFIN expression is too sparse to ground.
 - **cardiac** descends toward cardiac muscle (`ZFA:0005280`); Daniocell has no heart
   tissue, so this panel is exercised by other atlases rather than that benchmark.
 

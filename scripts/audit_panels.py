@@ -125,26 +125,35 @@ def main() -> int:
 
     dead: list[str] = []
     thin: list[str] = []
+    misclassified: list[str] = []  # grounding-spine markers that do not ground
     print(f"Auditing {len(panels)} panels against {DATA.name} (CONVERGENCE_MIN={CONVERGENCE_MIN}):\n")
     for panel in panels:
+        spine = panel.markers - panel.scoring_markers  # scoring_markers are exempt from grounding
         grounding = 0
         panel_dead: list[str] = []
+        panel_misclassified: list[str] = []
         for marker in sorted(panel.markers):
             symbols = resolved_symbols(marker)
             if not symbols:
                 panel_dead.append(marker)
                 continue
-            if panel.kind == KIND_IDENTITY and any(grounds(symbol, panel.ontology_anchor) for symbol in symbols):
+            if panel.kind != KIND_IDENTITY or marker not in spine:
+                continue
+            if any(grounds(symbol, panel.ontology_anchor) for symbol in symbols):
                 grounding += 1
+            else:
+                panel_misclassified.append(marker)
         dead.extend(f"{panel.bucket}:{marker}" for marker in panel_dead)
+        misclassified.extend(f"{panel.bucket}:{marker}" for marker in panel_misclassified)
 
         if panel.kind == KIND_IDENTITY:
-            ok = not panel_dead and grounding >= CONVERGENCE_MIN
+            ok = not panel_dead and not panel_misclassified and grounding >= CONVERGENCE_MIN
             if grounding < CONVERGENCE_MIN:
                 thin.append(f"{panel.bucket} ({grounding} grounding)")
             flag = "OK " if ok else "FAIL"
             tier = panel_tier(panel.ontology_anchor)
-            print(f"  [{flag}] {panel.bucket:18s} {grounding}/{len(panel.markers)} ground  ·  {tier:12s}", end="")
+            scoring_note = f"  (+{len(panel.scoring_markers)} scoring)" if panel.scoring_markers else ""
+            print(f"  [{flag}] {panel.bucket:18s} {grounding}/{len(spine)} spine ground{scoring_note}  {tier}", end="")
         else:
             flag = "OK " if not panel_dead else "FAIL"
             print(f"  [{flag}] {panel.bucket:18s} state ({len(panel.markers)} markers)", end="")
@@ -173,6 +182,12 @@ def main() -> int:
         print(f"\nFAIL: {len(dead)} dead marker(s) that do not resolve via the GAF: {', '.join(dead)}", file=sys.stderr)
     if thin:
         print(f"FAIL: identity panel(s) below CONVERGENCE_MIN grounding: {', '.join(thin)}", file=sys.stderr)
+    if misclassified:
+        print(
+            f"FAIL: grounding-spine marker(s) that do not ground: {', '.join(misclassified)}",
+            file=sys.stderr,
+        )
+        print("  Move them to the panel's scoring_markers (overlap-only), or fix the anchor.", file=sys.stderr)
     if gained_promiscuous:
         print(
             f"FAIL: attractor panel(s) gained promiscuous marker(s) beyond baseline: {', '.join(gained_promiscuous)}",
@@ -182,9 +197,9 @@ def main() -> int:
             "  Prefer a sharper marker; if the addition is intended and reviewed, update BASELINE_PROMISCUOUS.",
             file=sys.stderr,
         )
-    if dead or thin or gained_promiscuous:
+    if dead or thin or misclassified or gained_promiscuous:
         return 1
-    print("\nAll panels pass: markers resolve; identity panels converge; no new attractor promiscuity.")
+    print("\nAll panels pass: markers resolve; spines ground; identity panels converge; no new attractor promiscuity.")
     return 0
 
 
