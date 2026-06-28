@@ -159,15 +159,9 @@ def main() -> int:
     for panel in panels:
         if panel.kind != KIND_IDENTITY:
             continue
-        graded = [specificity.get(symbol, 1.0) for marker in panel.markers for symbol in resolved_symbols(marker)]
-        promiscuous = sorted(
-            {
-                symbol
-                for marker in panel.markers
-                for symbol in resolved_symbols(marker)
-                if specificity.get(symbol, 1.0) < PROMISCUOUS_BELOW
-            }
-        )
+        panel_symbols = [symbol for marker in panel.markers for symbol in resolved_symbols(marker)]
+        graded = [specificity.get(symbol, 1.0) for symbol in panel_symbols]
+        promiscuous = sorted({symbol for symbol in panel_symbols if specificity.get(symbol, 1.0) < PROMISCUOUS_BELOW})
         mean = sum(graded) / len(graded) if graded else 1.0
         tag = "ATTRACTOR" if panel.bucket in ATTRACTOR_BUCKETS else "         "
         print(f"  [{tag}] {panel.bucket:18s} mean_spec={mean:.3f}  promiscuous={promiscuous}")
