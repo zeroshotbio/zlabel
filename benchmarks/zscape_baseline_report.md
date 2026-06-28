@@ -3,22 +3,22 @@
 - clusters: 97  ·  scored: 96  ·  not_scored: 1
 
 ## Broad agreement (named + fallback, scored against the gold tissue)
-- agreement: 87.2% (34/39)
+- agreement: 87.5% (35/40)
 
 ## Coverage / split (over scored clusters)
-- coverage (non-abstain): 46.9% (45/96)
+- coverage (non-abstain): 47.9% (46/96)
 - named: 39.6% (38/96)
-- fallback: 1.0% (1/96)
+- fallback: 2.1% (2/96)
 - rollup: 6.2% (6/96)
-- abstain: 53.1% (51/96)
+- abstain: 52.1% (50/96)
 
 ## Agreement by prediction class
 - named: 86.8% (33/38)
-- fallback: 100.0% (1/1)
+- fallback: 100.0% (2/2)
 
 ## Confidence by correctness (named + fallback)
 - high: 100.0% (5/5)
-- medium: 66.7% (6/9)
+- medium: 70.0% (7/10)
 - low: 92.0% (23/25)
 
 ## Parent-child overcall audit (named calls)

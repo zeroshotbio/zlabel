@@ -79,7 +79,7 @@ tier; † = anchors span more than one rung.
 | lateral_line | lateral line system `ZFA:0000034` + taste bud `ZFA:0001074` · organ_system | atoh1a, myo6b, cldnb, six1b, eya1 |
 | olfactory † | olfactory system `ZFA:0001149` + olfactory epithelium `ZFA:0000554` · tissue | ompb, s100z, calb2b, gng8, neurod1 |
 | epidermis † | epidermis `ZFA:0000105` + integument `ZFA:0000368` · tissue | krt4, krt5, tp63, cldne, krt8, cldnb |
-| ionocyte | ionocyte `ZFA:0005323` · cell_type | foxi3a, foxi3b, ca2, slc12a10.2, trpv6, atp1b1b |
+| ionocyte | ionocyte `ZFA:0005323` · cell_type | foxi3a, foxi3b, ca2, slc12a10.2, trpv6, atp1b1b, clcn2c, slc4a4b, atp1a1a.1 |
 | pigment | pigment cell `ZFA:0009090` · cell_type | mitfa, dct, tyrp1b, gch2, slc45a2, ltk, pnp4a, aox5 _(+xdh scoring)_ |
 
 ### Mesoderm
@@ -93,11 +93,11 @@ tier; † = anchors span more than one rung.
 | blood_erythroid | blood `ZFA:0000007` + hematopoietic system `ZFA:0005023` · organ_system | gata1a, hbae1.1, hbbe2, alas2, klf1, slc4a1a, cahz |
 | immune_myeloid | immune system `ZFA:0001159` + hematopoietic system `ZFA:0005023` · organ_system | lcp1, mpeg1.1, coro1a, spi1b, mfap4.1, lyz, csf1ra |
 | blood_lymphoid | lymphocyte `ZFA:0009250` · cell_type | lck, rag1, rag2, il7r, cd8a |
-| pronephros | pronephros `ZFA:0000151` · organ | pax2a, wt1a, wt1b, slc20a1a, cdh17, slc12a1, pax8, nphs1, nphs2 |
+| pronephros | pronephros `ZFA:0000151` · organ | pax2a, wt1a, wt1b, slc20a1a, cdh17, slc12a1, pax8, nphs1, nphs2, aqp8b, slc26a1 |
 | mesenchyme | mesenchyme `ZFA:0000393` · tissue | dcn, twist1a, prrx1a, osr2, fn1a _(+col1a1a, col1a2 scoring)_ |
 | cartilage † | cartilage element `ZFA:0001501` + chondrocyte `ZFA:0009084` · cell_type | sox9a, sox9b, col2a1a, acana, matn1, runx2b |
 | osteoblast † | osteoblast `ZFA:0009031` + bone tissue `ZFA:0005621` · cell_type | sp7, spp1, bglap, col10a1a, runx2a, runx2b |
-| notochord | notochord `ZFA:0000135` · tissue | tbxta, shha, col2a1a, col8a1a, noto |
+| notochord | notochord `ZFA:0000135` · tissue | tbxta, shha, col2a1a, col8a1a, noto, matn3a, matn3b, chad |
 | fin | fin `ZFA:0000108` + fin bud `ZFA:0001383` · off-ladder | tbx5a, fgf24, hoxd13a, hoxa13a, msx1b, and1 |
 
 ### Endoderm
@@ -115,7 +115,7 @@ tier; † = anchors span more than one rung.
 |---|---|---|
 | germline | germ line cell `ZFA:0009016` · cell_type | ddx4, nanos3, dazl, piwil1 |
 | pituitary | adenohypophysis `ZFA:0001282` · organ | pou1f1, prl, gh1, pomca, tshba, cga |
-| interrenal | interrenal gland `ZFA:0001345` · organ | nr5a1a, cyp11a1.1, star, mc2r |
+| interrenal | interrenal gland `ZFA:0001345` · organ | nr5a1a, cyp11a1.1, star, mc2r, cyp21a2 |
 | pineal | epiphysis `ZFA:0000019` · organ | aanat2, exorh, otx5, asip2b |
 
 ### State (orthogonal to identity)
@@ -147,6 +147,14 @@ state is recorded separately.
 - **pigment** keeps `xdh` (xanthophore) in `scoring_markers` — its ZFIN expression is too sparse to ground.
 - **cardiac** descends toward cardiac muscle (`ZFA:0005280`); Daniocell has no heart
   tissue, so this panel is exercised by other atlases rather than that benchmark.
+- **pronephros** adds the differentiated tubule transporters `aqp8b` and `slc26a1`. The canonical
+  kidney-specific cadherin `cdh16` was held out: the thyroid follicle cluster co-expresses it with
+  `pax2a` and was over-called as pronephros, so it is a recall-vs-precision trade we decline.
+- **ionocyte** adds the ion-transport effectors `clcn2c`, `slc4a4b`, `atp1a1a.1`. These score
+  promiscuous (ion transport is tissue-shared), so the audit warns; they are kept because they are
+  canonical, ground under the ionocyte anchor, and ionocyte is not an attractor bucket.
+- **interrenal** / **notochord** add canonical sharp markers — `cyp21a2` (steroid 21-hydroxylase) and
+  the matrilin/chondroadherin sheath ECM (`matn3a`, `matn3b`, `chad`).
 
 ## Curation & validation
 
