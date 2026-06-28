@@ -17,6 +17,8 @@ from zlabel.genes import (
     STATUS_RESOLVED,
     STATUS_UNRESOLVED,
     NormalizedSymbol,
+    drop_uninformative,
+    is_uninformative,
     normalize_markers,
     normalize_symbol,
 )
@@ -52,6 +54,8 @@ __all__ = [
     "STATUS_RESOLVED",
     "STATUS_UNRESOLVED",
     "NormalizedSymbol",
+    "drop_uninformative",
+    "is_uninformative",
     "normalize_markers",
     "normalize_symbol",
     # label (the entry point; decide() + grounding helpers stay on submodules)

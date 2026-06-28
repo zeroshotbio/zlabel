@@ -61,6 +61,14 @@ def read_cell_meta(path: Path) -> tuple[dict[str, str], dict[str, dict[str, Any]
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Build a single-stage, downsampled Daniocell h5ad for zspine ingest.
+
+    Args:
+        argv (list[str] | None): Argument vector (defaults to sys.argv[1:]).
+
+    Returns:
+        int: 0 on success.
+    """
     parser = argparse.ArgumentParser(description="Build a single-stage Daniocell h5ad for zspine.")
     parser.add_argument("--stage", type=int, default=48, help="stage.integer to keep (hpf)")
     parser.add_argument("--cap", type=int, default=30000, help="max cells (random downsample, seeded)")

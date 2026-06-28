@@ -13,6 +13,8 @@ from zlabel import (
     STATUS_AMBIGUOUS,
     STATUS_RESOLVED,
     STATUS_UNRESOLVED,
+    drop_uninformative,
+    is_uninformative,
     load_gene_synonym_map,
     normalize_markers,
     normalize_symbol,
@@ -119,3 +121,28 @@ def test_normalize_markers_preserves_order_status_and_length(gaf_row, write_gaf)
 
 def test_normalize_markers_empty_input_returns_empty(synonym_map):
     assert normalize_markers([], synonym_map) == []
+
+
+def test_is_uninformative_clone_provisional_and_accession_tokens():
+    # Clone/provisional prefixes, NCBI placeholders, mito contigs, and clone/contig accessions.
+    for token in ("si:ch211-152c2.3", "zgc:114188", "zmp:0000000760", "wu:fb18f06", "im:7150988", "sb:cb470"):
+        assert is_uninformative(token)
+    assert is_uninformative("LOC100537342")
+    assert is_uninformative("NC-002333.4")  # mito contig, dash form
+    assert is_uninformative("NC_002333.2")  # mito contig, RefSeq underscore form
+    assert is_uninformative("BX000438.2")
+    assert is_uninformative("CABZ01021592.1")
+
+
+def test_is_uninformative_keeps_real_gene_symbols():
+    # Real zebrafish symbols are lowercase; the case-sensitive accession rule must not catch them,
+    # nor uppercase real symbols that lack the .version accession shape.
+    for symbol in ("cd63", "id1", "fn1a", "kdrl", "myod1", "col1a1a", "nr2f1a"):
+        assert not is_uninformative(symbol)
+    for symbol in ("ASS1", "COX3"):  # uppercase real symbols, no .version suffix
+        assert not is_uninformative(symbol)
+
+
+def test_drop_uninformative_preserves_rank_order():
+    markers = ["nova2", "si:ch211-137a8.4", "tuba1a", "zgc:114188", "BX000438.2", "elavl3"]
+    assert drop_uninformative(markers) == ["nova2", "tuba1a", "elavl3"]

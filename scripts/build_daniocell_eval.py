@@ -31,6 +31,8 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
+from zlabel.genes import is_uninformative
+
 # Daniocell GEO GSE223922 supplementary files.
 _GEO_BASE = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE223nnn/GSE223922/suppl/"
 FILES = {
@@ -75,11 +77,13 @@ def _is_technical(gene: str) -> bool:
 
 
 def top_positive_markers(ranked: list[tuple[str, float]], n: int = TOP_N) -> list[str]:
-    """Keep the first n score-ranked, up-regulated, non-technical genes.
+    """Keep the first n score-ranked, up-regulated, identity-informative genes.
 
-    Drops mitochondrial and ribosomal genes (a QC/technical signal, not cell identity) so the
-    benchmark feeds the labeler identity markers -- standard marker-selection practice, and
-    without it technical-dominated clusters look falsely unlabelable.
+    Drops two non-identity classes before truncating to n, so real markers backfill: mitochondrial
+    and ribosomal genes (a QC/technical signal -- standard marker-selection practice; without it
+    technical-dominated clusters look falsely unlabelable), and clone/provisional/accession tokens
+    that are not curated gene symbols (genes.is_uninformative -- they never match a panel and only
+    dilute the scorer when they resolve).
 
     Args:
         ranked (list[tuple[str, float]]): (gene, log_fold_change) pairs, already ordered by
@@ -87,9 +91,9 @@ def top_positive_markers(ranked: list[tuple[str, float]], n: int = TOP_N) -> lis
         n (int): How many markers to keep.
 
     Returns:
-        list[str]: The top n up-regulated, non-technical marker symbols, in rank order.
+        list[str]: The top n up-regulated, identity-informative marker symbols, in rank order.
     """
-    return [gene for gene, logfc in ranked if logfc > 0 and not _is_technical(gene)][:n]
+    return [gene for gene, logfc in ranked if logfc > 0 and not _is_technical(gene) and not is_uninformative(gene)][:n]
 
 
 def _modal(values: list[str]) -> str:
