@@ -3,28 +3,28 @@
 - clusters: 522  ·  scored: 511  ·  not_scored: 11
 
 ## Broad agreement (named + fallback, scored against the gold tissue)
-- agreement: 74.3% (127/171)
+- agreement: 74.4% (128/172)
 
 ## Coverage / split (over scored clusters)
-- coverage (non-abstain): 41.7% (213/511)
-- named: 32.7% (167/511)
+- coverage (non-abstain): 41.9% (214/511)
+- named: 32.9% (168/511)
 - fallback: 0.8% (4/511)
 - rollup: 8.2% (42/511)
-- abstain: 58.3% (298/511)
+- abstain: 58.1% (297/511)
 
 ## Agreement by prediction class
-- named: 74.3% (124/167)
+- named: 74.4% (125/168)
 - fallback: 75.0% (3/4)
 
 ## Confidence by correctness (named + fallback)
-- high: 100.0% (17/17)
+- high: 100.0% (20/20)
 - medium: 70.3% (26/37)
-- low: 71.8% (84/117)
+- low: 71.3% (82/115)
 
 ## Parent-child overcall audit (named calls)
-- named calls audited: 167
-- won with exactly CONVERGENCE_MIN=3 genes: 3.0% (5/167)
-- thin-support overcalls (won at min, broader parent had more support): 3.0% (5/167)
+- named calls audited: 168
+- won with exactly CONVERGENCE_MIN=3 genes: 3.0% (5/168)
+- thin-support overcalls (won at min, broader parent had more support): 3.0% (5/168)
 
 Lowest support-fraction named calls (child support / best-parent support), top 15:
 - musc.19: segmental plate (3) vs portion of tissue (22)  -> fraction 0.14

@@ -86,7 +86,7 @@ tier; † = anchors span more than one rung.
 
 | panel | anchor · rung | markers |
 |---|---|---|
-| muscle | musculature system `ZFA:0000548` · organ_system | myod1, myog, myf5, mylpfa, acta1b, tnnt3a, tnnc2.2, ckma, smyhc2, msc, myoz1a, pvalb3 |
+| muscle | musculature system `ZFA:0000548` · organ_system | myod1, myog, myf5, mylpfa, acta1b, tnnt3a, tnnc2.2, ckma, smyhc2, msc, myoz1a, pvalb3, ttn.1, neb, smyhc1, actc1b, ryr1a |
 | cardiac | heart `ZFA:0000114` · organ | myl7, myh6, myh7, nppa, tnnt2a, ttn.2 |
 | mural | mural cell `ZFA:0005944` · cell_type | pdgfrb, notch3, tagln, acta2 _(+desma, cspg4 scoring)_ |
 | endothelium † | vasculature `ZFA:0005249` + endothelial cell `ZFA:0009065` · cell_type | kdrl, fli1, etsrp, cdh5, pecam1a, flt1 |

@@ -6,11 +6,11 @@
 - agreement: 86.8% (33/38)
 
 ## Coverage / split (over scored clusters)
-- coverage (non-abstain): 42.7% (41/96)
+- coverage (non-abstain): 45.8% (44/96)
 - named: 38.5% (37/96)
 - fallback: 1.0% (1/96)
-- rollup: 3.1% (3/96)
-- abstain: 57.3% (55/96)
+- rollup: 6.2% (6/96)
+- abstain: 54.2% (52/96)
 
 ## Agreement by prediction class
 - named: 86.5% (32/37)
