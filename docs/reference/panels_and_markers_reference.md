@@ -154,7 +154,9 @@ state is recorded separately.
   promiscuous (ion transport is tissue-shared), so the audit warns; they are kept because they are
   canonical, ground under the ionocyte anchor, and ionocyte is not an attractor bucket.
 - **interrenal** / **notochord** add canonical sharp markers — `cyp21a2` (steroid 21-hydroxylase) and
-  the matrilin/chondroadherin sheath ECM (`matn3a`, `matn3b`, `chad`).
+  the matrilin/chondroadherin sheath ECM (`matn3a`, `matn3b`, `chad`). The notochord ECM markers are
+  also expressed in cartilage; the panels are discriminated by the notochord-specific TFs `tbxta` and
+  `noto`, so a future sweep adding markers on both sides should watch the cartilage/notochord boundary.
 
 ## Curation & validation
 

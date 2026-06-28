@@ -197,12 +197,13 @@ ionocyte:
   tissue: skin
   lineage: ionocyte
   kind: identity
-  cite: "ZFIN wt-expr (foxi3a, trpv6, slc12a10.2, clcn2c, slc4a4b); literature; see reference doc"
+  cite: "ZFIN wt-expr (foxi3a, trpv6, slc12a10.2, clcn2c, slc4a4b, atp1a1a.1); literature; see reference doc"
   ontology_anchor:
     - ZFA:0005323  # ionocyte
-  # Added the differentiated ion-transport effectors (clcn2c/slc4a4b/atp1a1a.1) alongside the
-  # foxi3 specification TFs; transport genes score promiscuous (ion transport is tissue-shared) but
-  # ground under ionocyte and are canonical -- ionocyte is not an attractor, so the audit only warns.
+  # Added the differentiated ion-transport effectors (clcn2c/slc4a4b/atp1a1a.1) alongside the foxi3
+  # specification TFs; transport genes score promiscuous (spec ~0.07-0.10: ion transport is tissue-
+  # shared, atp1a1a.1 the lowest as a pan-epithelial Na/K pump) but ground under ionocyte and are
+  # canonical -- ionocyte is not an attractor, so the audit only warns and the flips stay clean.
   markers:
     - foxi3a   # forkhead box I3a; ionocyte master TF
     - foxi3b   # forkhead box I3b; ionocyte specification
@@ -459,7 +460,7 @@ notochord:
   tissue: notochord
   lineage: axial mesoderm
   kind: identity
-  cite: "playbook §7; ZFIN wt-expr (tbxta, shha, col8a1a, matn3a, chad); literature; see reference doc"
+  cite: "playbook §7; ZFIN wt-expr (tbxta, shha, col8a1a, matn3a, matn3b, chad); literature; see reference doc"
   ontology_anchor:
     - ZFA:0000135  # notochord
   markers:
