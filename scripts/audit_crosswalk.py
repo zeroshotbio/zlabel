@@ -19,7 +19,7 @@ error. A reverse check (do other tissues' members wrongly ground here?) is futur
 
 Per-member verdicts:
   PASS  grounds under the tissue's anchors (the anchor itself or an is_a/part_of descendant)
-  INFO  broader than an anchor (an ancestor) -- a gloss, e.g. pron (kidney), not a gap
+  INFO  broader than an anchor (the member is an ancestor of an anchor -- a gloss), not a gap
   ACPT  a reviewed gap intentionally left open (see ACCEPTED_GAPS), not auto-closed
   GAP   resolves to a ZFA term that neither grounds nor is a gloss -- a curation miss (fails)
   ????  did not resolve to a ZFA name or synonym (a prose label, or a name gap); reported only
