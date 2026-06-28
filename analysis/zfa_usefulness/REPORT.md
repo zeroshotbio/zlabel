@@ -1,183 +1,146 @@
-# ZFA label usefulness — examination
+# ZFA label usefulness — examination (hardened) + evidence-backed posture
 
-**Read-only examination. No engine code or behavior changed.** This scores every ZFA term on a
-*usefulness* rubric, tiers the whole vocabulary from highly useful → very not useful, and audits the
-parent→child *steps* (edges/walks). It is the input to a later decision about how — or whether — to
-act on it. The deferred "how to handle it" recommendation is at the end.
+**Read-only analysis; no engine behavior changed.** This scores every ZFA term on a *usefulness*
+rubric, tiers the whole vocabulary highly-useful → very-not-useful, audits the parent→child *steps*,
+and — after an adversarial review that overturned the first recommendation — states where the real
+lever is. Companion: `RELATIONSHIPS.md` (the relationship-axis primer).
 
-- **Source:** ZFA `data-version: releases/2026-06-02`; ZFIN wildtype-expression corpus = 14,485 genes.
-- **Scope:** 3,107 ZFA term-nodes in the loaded graph. (obonet drops the 53 `is_obsolete: true`
-  terms, so they never reach the engine — already a non-problem.)
-- **Reproduce:** `uv run python analysis/zfa_usefulness/score_terms.py` → regenerates the three
-  artifacts below deterministically. All metrics reuse zlabel's own functions (`data.load_zfa`,
-  `data.load_zfin_expression`, `resolve.build_information_content`, `resolve._term_with_ancestors`,
-  `CONVERGENCE_MIN`, `STOPLIST`) so they match the engine exactly.
+- **Source:** ZFA `releases/2026-06-02`; ZFIN wildtype-expression corpus = 14,485 genes; 3,107 ZFA
+  term-nodes (obonet drops the 53 obsolete terms, so they never reach the engine).
+- **Reproduce:** `uv run python analysis/zfa_usefulness/score_terms.py` → regenerates every artifact
+  deterministically, reusing zlabel's own functions (`data.load_zfa`, `load_zfin_expression`,
+  `resolve.build_information_content`/`_term_with_ancestors`/`CONVERGENCE_MIN`/`STOPLIST`).
+- **Artifacts:** `zfa_term_usefulness.csv` (per term), `zfa_edges.csv` (per step), `sensitivity.csv`
+  (threshold sweep), `summary.json` (all aggregate numbers).
 
-Artifacts in this folder:
-- `zfa_term_usefulness.csv` — per term: sub-signals, composite score, tier, flags (3,107 rows).
-- `zfa_edges.csv` — per is_a/part_of edge: support both sides, gated discernibility, dead-step flag (5,377 rows).
-- `summary.json` — the aggregate numbers cited here.
+## Bottom line (what the evidence says to do)
 
----
+1. **The engine already cannot emit a useless label.** Of 173 named Daniocell calls, **0 are T4/T5**
+   (T1 135, T2 18, T3 20). It descends from curated T1–T3 anchors and `CONVERGENCE_MIN=3` *is* the T4
+   boundary — so a junk-tier term is structurally unreachable. → **Blocking/“rolling up” useless
+   labels is a non-problem. The cosmetic engine changes the first draft proposed are dropped.**
+2. **The lever is coverage, via the relationship axis the engine ignores.** zlabel walks `is_a`+
+   `part_of` only; `develops_from` (527 edges) is never followed. Adding it makes **+102 useful
+   (T1/T2) terms reachable** that nothing reaches today (somite, otic vesicle, endoderm, neuron
+   (neural-crest derived), swim bladder, dermal bone). See `RELATIONSHIPS.md`. → tested, gated, in
+   Phase 3.
+3. **A real curation backlog exists:** 350 ungroundable cell types, **255 reachable under a current
+   anchor, 50 within 1–2 ZFIN genes of nameable.**
 
 ## The principle
 
-You said it best: we want **hierarchical anatomical walks where each step is a real distinction
-discernible by expression** — so `anatomical system` or `cell` (pure containers with no expression
-signature) are useless, however deep the tree goes. A term is useful when (a) it names a biologically
-real entity, not an administrative grouping, and (b) there is *enough* in-vivo expression evidence to
-prove it has its own signature, distinct from its parent.
+We want **hierarchical walks where each step is a real distinction discernible by expression** —
+`anatomical system` or `cell` (containers with no signature) are useless however deep. A term is
+useful when it (a) names a real entity, not an administrative grouping, and (b) has *enough* in-vivo
+evidence to prove a signature of its own.
 
-## The one thing that makes this hard (and shapes the whole rubric)
+## The trap that shapes the rubric: sparsity masquerading as specificity
 
-**Naive "discernible by expression" is a sparsity illusion.** If you just compare a parent's genes to
-a child's genes, **5,334 of 5,377 edges (99.2%) look "discernible"** (Jaccard < 0.3). But that is an
-artifact of how *thin* the data is: 39% of ZFA terms have **zero** ZFIN grounding, and the median
-grounded term has only 7 genes. A child with 1 gene trivially looks "different" from its parent.
-
-Concretely: of those 5,334 "discernible-looking" edges, **2,750 cannot actually be judged** — one
-side has fewer than 3 genes. The same trap hits terms: a term credited by exactly 3 genes scores
-IC ≈ 12.2 ("looks highly specific") purely because the corpus is sparse. **So IC is not used to claim
-specificity. Credited-gene count (evidence sufficiency) is the primary axis;** IC is used only at the
-low end, where it reliably flags breadth (a term almost every gene rolls up into has near-zero IC).
-
----
+Naive "discernible by expression" is an illusion. Comparing a parent's genes to a child's, **5,334 of
+5,377 edges (99.2%) look discernible** (Jaccard < 0.3) — but **2,750 of those can't actually be
+judged** (a side has < 3 genes). 39% of terms have zero ZFIN grounding; the median grounded term has 7
+genes. The same trap hits terms: a 3-gene term scores IC ≈ 12 ("looks specific") purely from sparsity.
+**So IC never claims specificity here — credited-gene count (sufficiency) is the primary axis;** IC is
+used only at the low end, where it reliably flags breadth.
 
 ## The rubric
 
-Four signals per term, combined into a tier. Every signal is a real, reproducible quantity:
-
 | Dim | Signal | Source |
 |----|--------|--------|
-| **A. Entity vs. container** | `cell_slim` membership; `CL:` xref (the cell-type axis — 441 terms); name pattern (`anatomical *`, `portion of *`, bare `cell`/`organ`/`tissue` → container); child fan-out; `is_a` vs `part_of` profile; `STOPLIST` | `zfa.obo` |
-| **B. Grounding / sufficiency** | distinct credited genes (engine ancestor-credit); ≥ `CONVERGENCE_MIN` (3) = provable; Information Content | ZFIN + `build_information_content` |
-| **C. Step discernibility** | per-edge, **sufficiency-gated**: support retained parent→child, child-unique fraction vs siblings — only scored when *both* sides have ≥3 genes | ZFIN footprints |
-| **D. Curation / atlas cross-check** | membership in `panels.yaml`, the tissue crosswalks, `cell_population_coverage.yaml` (a human floor); atlas coverage sanity | curated YAML |
+| **A. Entity vs container** | `cell_slim`; `CL:` xref (cell-type axis, 441 terms); admin name pattern; child fan-out; `STOPLIST` | `zfa.obo` |
+| **B. Grounding / sufficiency** | distinct credited genes (engine ancestor-credit); ≥ `CONVERGENCE_MIN` = provable; IC for breadth | ZFIN |
+| **C. Step discernibility** | per-edge **sufficiency-gated** retained-support + child-unique fraction (scored only when both sides ≥ 3 genes) | ZFIN footprints |
+| **D. Curation cross-check** | membership in `panels.yaml` / crosswalks / `cell_population_coverage.yaml` (a human floor) | curated YAML |
+| **Hardening: pure-grouper guard** | a term with **0 direct genes** (credited only via descendants) borrows all its support — it has no signature of its own, so it is **capped below T1** | ZFIN direct vs credited |
 
-### Tiers (the deliverable)
+### Tiers
 
-| Tier | Meaning | Count | What's in it |
-|------|---------|------:|--------------|
-| **T1 — Highly useful** | Real entity, solid grounding (≥10 genes), discernible, specific | **964** | 195 cell types (neuron, endothelial cell, hepatocyte, adaxial cell, oocyte, germ line cell) + 769 specific structures (notochord, telencephalon, somite, intestine, gonad, pharyngeal arch) |
-| **T2 — Useful** | Real, grounded backbone label — coarser, or a vetted anchor | **481** | nervous system, central nervous system, eye, digestive system, musculature system, liver, retina, heart |
-| **T3 — Coarse / conditional** | Real but broad/promiscuous — coarse fallback only | **24** | brain, forebrain, midbrain, hindbrain, head, trunk, gut, mesoderm, muscle, gill, sensory/visual system |
-| **T4 — Real but ungroundable** | Biologically real, < 3 ZFIN genes — can't prove a signature *now* | **1,619** | 350 are real cell types (tendon cell, chromaffin cell, pancreatic acinar cell, photoreceptor subtypes), 179 with a CL xref |
-| **T5 — Not useful** | Content-free administrative / structural containers | **19** | anatomical structure/system/group/cluster/space/line/surface/conduit, cell, whole organism, portion of tissue, compound organ, organism subdivision, unspecified |
+| Tier | Meaning | Count | Examples |
+|------|---------|------:|----------|
+| **T1 — Highly useful** | real entity, solid grounding (≥10 genes), own signature, discernible | **906** | 174 cell types (neuron, endothelial cell, hepatocyte, oocyte, chondroblast) + 732 specific structures (notochord, somite, telencephalon, dorsal aorta) |
+| **T2 — Useful** | grounded backbone label — coarser, a vetted anchor, or a grouper capped from T1 | **539** | nervous system, eye, digestive system, liver, retina, heart, muscle precursor cell |
+| **T3 — Coarse/conditional** | real but broad/promiscuous — coarse fallback only | **24** | brain, forebrain, head, trunk, gut, mesoderm, muscle, gill |
+| **T4 — Real but ungroundable** | real, < 3 ZFIN genes — no signature *yet* | **1,619** | 350 cell types (tendon cell, chromaffin cell, pancreatic acinar cell, photoreceptor subtypes) |
+| **T5 — Not useful** | content-free admin/structural containers | **19** | anatomical structure/system/group/cluster/space/line/surface/conduit, cell, whole organism, portion of tissue, compound organ, organism subdivision |
 
-**Useful label space (T1–T3) = 1,469. Curation backlog (T4) = 1,619. Drop-forever (T5) = 19.**
+**Useful (T1–T3) = 1,469 · backlog (T4) = 1,619 · drop-forever (T5) = 19.** Over half the ontology is
+real anatomy ZFIN can't yet back with 3 genes — the dominant fact about the label space.
 
-Grounding distribution (the reason T4 is so large): `0 genes: 1,305 · 1–2: 314 · 3–9: 455 · 10–29:
-384 · 30–99: 315 · ≥100: 334`. **Over half the ontology (1,619 terms) is real anatomy ZFIN cannot
-yet back with 3 genes.** That, not the algorithm, is the dominant fact about the label space.
+## Validation — honest, de-circularized, and stable
 
----
-
-## Validation (does the rubric agree with humans?)
-
-- **62 / 62 curated anchors land T1–T2** (51 T1, 11 T2) — none lower. The data-driven rubric and the
-  hand curation agree completely on the positive set.
-- **5 / 5 `STOPLIST` terms land T5**, alongside 14 more content-free terms the STOPLIST doesn't list
-  yet (`anatomical cluster/space/line/surface/conduit`, `compound organ`, `organism subdivision`,
-  `portion of tissue`, `embryonic/presumptive structure`, …) → the STOPLIST is correct but
-  **incomplete**.
-- **One curation conflict, and it's a good one:** `ZFA:0001632 'portion of connective tissue'` is a
-  zscape-crosswalk anchor the human curator *themselves* tagged `# review`. The rubric independently
-  flagged it `curated_but_admin` (container-style name). Our automated rule rediscovered the exact
-  doubt the curator had flagged by hand.
-- **Spot-checked against raw OBO blocks** across all five tiers (endothelial cell → T1, liver → T2,
-  brain → T3, tendon cell → T4, anatomical system → T5): every tier matches the term's actual
-  definition (subset, CL xref, is_a parent).
-
----
+- **Curation agreement, floored: 62/62** anchors in T1–T2 (49 T1, 13 T2). But the curation *floor*
+  could manufacture that, so the real check is **un-floored: 51/62 land T1–T2 on data alone** (the
+  floor lifts 11 broad curated compartments that the data calls T3-coarse, e.g. nervous system, plus
+  the one admin-named anchor). 82% independent agreement; the 18% are explained, not silent.
+- **5/5 `STOPLIST` terms land T5**, plus 14 more content-free containers the STOPLIST omits → the
+  current STOPLIST is correct but incomplete.
+- **Threshold sensitivity (5×4 grid, `sensitivity.csv`):** **T4 (1,619) and T5 (19) are invariant
+  across every threshold** — the actionable verdicts (drop-list, backlog) don't depend on tuning.
+  Curated agreement is **62/62 at every grid point.** Only the T1↔T2 split moves with `SOLID_GENES`
+  (useful↔useful reshuffle). The boundaries are stable where it matters.
+- **One curation conflict, well-founded:** `ZFA:0001632 'portion of connective tissue'` (a zscape
+  anchor the curator hand-tagged `# review`) is independently flagged `curated_but_admin`.
+- Spot-checked against raw OBO blocks across all five tiers.
 
 ## Edge / walk findings
 
-Of 5,377 is_a/part_of edges: **2,609 are judgeable** (both sides ≥3 genes), **2,515 are genuinely
-discernible** steps, and **77 are "dead steps"** — the child retains ≥98% of the parent's footprint,
-so naming the child instead of the parent adds *no* expression-distinguishable information. Examples:
+Of 5,377 `is_a`/`part_of` edges: 2,609 judgeable, 2,515 genuinely discernible, **77 "dead steps"**
+(child retains ≥98% of the parent footprint — a pure renaming). After a direction-aware fix, only the
+**abstract** member of a renaming pair is flagged (7 terms): a directly-grounded child like `neuron`
+is never flagged just because an abstract parent (`electrically signaling cell`) renames onto it.
+Examples: `respiratory system→gill` (1.00), `solid compound organ→liver` (1.00), `posterior segment
+eye→retina` (0.99).
 
-```
-respiratory system        -> gill                      retained 1.00   (2031 -> 2031)
-solid compound organ      -> liver                     retained 1.00   (2334 -> 2334)
-electrically signaling cell -> neuron                  retained 1.00   (1352 -> 1352)
-liver and biliary system  -> liver                     retained 0.993  (2350 -> 2334)
-posterior segment eye     -> retina                    retained 0.993  (2268 -> 2252)
-```
+**Spines** show usefulness is path-dependent: `nervous system(T2)→CNS(T2)→brain(T3)→forebrain(T3)→
+diencephalon(T3)→epithalamus(T1)→pineal complex(T1)→parapineal organ(T1)` threads five coarse steps
+before anything specific, whereas `vasculature(T1)→blood vasculature(T1)→artery(T1)→dorsal aorta(T1)`
+is all-useful.
 
-These are pure renamings the ZFA hierarchy inserts — a descent could collapse them and lose nothing.
+## Notable findings
 
-**Useful spines** (greedy descent along discernible, non-T5 steps) show exactly where the walk earns
-its keep and where it idles:
+1. **Drop-list is tiny and safe (19 terms)** — the 5-term STOPLIST could extend to them with zero
+   output change (pure hygiene; see Recommendation).
+2. **The real story is the backlog:** 350 ungroundable cell types; **255 reachable under a current
+   anchor; 50 within 1–2 ZFIN genes of nameable** (pancreatic acinar cell, photoreceptor subtypes,
+   Golgi cell, corneal endothelial cell). These are the cell types zlabel can't name today.
+3. **Two "deferred" panels are groundable as terms:** `thyroid follicle` (29 genes) and `hatching
+   gland` (274) score T1 — worth revisiting.
+4. **Abstract grouping cell-types** (`electrically signaling/active cell`) are now correctly capped at
+   T2 by the pure-grouper guard (they have 0 direct genes — renamings of `neuron`).
+5. **A pure data rubric can't see "undifferentiated":** `blastomere` scores T1 but curators correctly
+   mark it `not_scored`. Keep a tiny human deny-list for states expression can't judge.
 
-```
-nervous system(T2) → central nervous system(T2) → brain(T3) → forebrain(T3)
-                   → diencephalon(T3) → epithalamus(T1) → pineal complex(T1) → parapineal organ(T1)
-vasculature(T1) → blood vasculature(T1) → artery(T1) → dorsal aorta(T1) → ventral wall of dorsal aorta(T1)
-musculature system(T2) → muscle(T3) → myotome(T1) → hypaxial myotome region(T1)
-liver(T2) → hepatocyte(T1)
-```
+## Limitations (and how they're handled)
 
-The neural spine is the whole problem in one line: it threads through **five coarse container steps
-(T2/T3)** before reaching anything specific. The vasculature spine, by contrast, is a clean ladder of
-all-useful steps. Usefulness is not uniform across the tree — it's path-dependent.
+- **ZFIN is the lens.** T4 = "unprovable *from ZFIN*," not biologically indistinct. ZFIN is tissue-
+  level and ≈81% concordant with in-situ; the atlas-marker per-term axis is the natural deepening
+  (Phase 4). External critique noted: **IC is annotation-density biased** (a documented, hard problem)
+  — which is exactly why this rubric demotes IC to a breadth-only role and leans on direct + credited
+  gene counts.
+- **Standard pattern, externally supported.** Tiering an ontology + rolling up to the most informative
+  ancestor is the GO-slim / Resnik–Lin MICA pattern, and ontology-aware coarsening is used by OnClass,
+  Azimuth, popV, and CASSIA. We are not inventing; we are applying it to ZFA.
+- **Dead-step footprint inflation** can make a specific organ (`gill`) look broad → T3; bounded and
+  visible in `zfa_edges.csv`.
+- **Thresholds provisional** but proven stable (above); raw signals are in the CSV so any cutoff is
+  re-derivable.
 
----
+## Recommendation (revised by the evidence)
 
-## Notable findings (the examination's payload)
+The first draft proposed "extend STOPLIST + roll up to nearest useful ancestor." The 0/173 finding
+**kills the roll-up** (it changes nothing and adds regression risk) and **demotes the STOPLIST
+extension to optional hygiene**. What is actually worth doing:
 
-1. **The drop-list is tiny and safe (19 terms).** Beyond the 5 STOPLIST roots, 14 more content-free
-   containers (`anatomical cluster/space/line/...`, `compound organ`, `portion of tissue`, …) are
-   never a useful label and could join the STOPLIST today with zero risk.
+1. **The lever — `develops_from` coverage (Phase 3, gated experiment).** Let the descent follow
+   `develops_into` (progenitor → marker-supported derivative) so it can reach the +102 useful terms it
+   currently can't. Judge strictly on `make gate-all`: **more correct named calls without raising the
+   parent-child overcall audit**, respecting the documented attractor-selection wall. If it regresses,
+   that is a real answer and we stop.
+2. **The backlog (Phase 4).** Ship the ranked list of 255 reachable ungroundable cell types (50 within
+   1–2 genes) as the concrete curation queue, and assess whether fuller ZFIN (`xpat_stage_anatomy`) or
+   atlas markers convert them.
+3. **Optional hygiene only.** Extend `STOPLIST` to the 19 T5 terms and add a CI guard that fails if a
+   future panel/crosswalk anchor is ever T4/T5/admin. Cheap, defensive, **not** a capability gain.
 
-2. **The real story is the backlog, not the noise.** 1,619 terms are real anatomy ZFIN can't ground
-   (≥ 3 genes). **350 of them are bona-fide cell types** (`cell_slim`/CL), 179 CL-xref'd — tendon
-   cell, chromaffin cell, pancreatic acinar cell, Golgi cell, UV/blue photoreceptor subtypes. These
-   are the cell types zlabel *structurally cannot name today*, and they're a ranked curation target.
-
-3. **Two "deferred" panels are actually groundable as terms.** `thyroid follicle` (29 genes) and
-   `hatching gland` (274 genes) score T1 — the term-level grounding exists even though the panels were
-   deferred on the ≥3-marker bar. Worth revisiting.
-
-4. **Abstract grouping cell-types pollute even T1.** `electrically active cell` (1,560) and
-   `electrically signaling cell` (1,352) are CL abstraction-layer terms that are *dead-step renamings
-   of `neuron`* — high grounding, near-zero meaning. The dead-step flag catches them.
-
-5. **A pure data rubric can't see "undifferentiated."** `blastomere` scores T1 (well-grounded,
-   specific) but the curators deliberately mark it `not_scored` — it's a real, distinct cell state
-   that is *not a useful identity call*. This is a genuine limit of any expression-only rubric and
-   argues for keeping a small human deny-list on top.
-
----
-
-## Limitations (so the tiers aren't over-trusted)
-
-- **ZFIN is the lens.** A term ungroundable in ZFIN may be perfectly discernible in the scRNA-seq
-  atlases — T4 means "unprovable *from ZFIN*," not "biologically indistinct." Atlas-marker per-term
-  discernibility is the natural deepening of dimension D and is left as follow-on.
-- **Dead-step footprint inflation:** a child in a dead-step pair inherits its parent's whole footprint,
-  which can make a fairly specific organ (e.g. `gill`) look broad and land T3. Bounded and visible in
-  `zfa_edges.csv`.
-- **Thresholds are provisional** (`SOLID_GENES=10`, `BROAD_FOOTPRINT=1000`, `IC_BROAD=3.0`) and chosen
-  to agree with curation; they're one edit away in the script and the CSV carries the raw signals so
-  any cutoff can be re-derived without recomputing.
-
----
-
-## Recommended handling (the deferred decision)
-
-You asked me to recommend. The rubric should become a **per-term usefulness annotation the engine
-consults**, in three escalating, independently-shippable steps:
-
-1. **Now, zero-risk — extend the deny-list.** Promote the 19 T5 terms into a principled superset of
-   today's 5-term `STOPLIST` (data-derived, regenerated by this script). Pure cleanup.
-2. **Next — roll up to the nearest useful term + skip dead steps.** Teach the descent to never *name*
-   a T4/T5 term and to collapse the 77 dead steps: when the walk lands on an ungroundable or
-   container term, report the nearest T1–T3 ancestor instead. This is the change that directly
-   improves zlabel's labels and is the natural home for the rubric.
-3. **Later — work the backlog.** Treat the 350 ungroundable cell types (and thyroid/hatching gland) as
-   a ranked curation queue: each is a cell type zlabel could name if its ZFIN/atlas grounding were
-   added. This is where coverage actually grows.
-
-Keep a tiny hand-maintained deny-list for the cases expression can't judge (`blastomere` and other
-undifferentiated states). Everything above is a separate implementation plan to be approved after you
-review this examination — **no engine change has been made.**
+Keep a small hand-maintained deny-list for undifferentiated states (`blastomere`). No engine change
+has been merged; Phase 3 is an experiment that must clear the gate to earn one.

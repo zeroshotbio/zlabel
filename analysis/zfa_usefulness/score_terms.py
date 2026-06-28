@@ -228,6 +228,102 @@ def jaccard(a: set[str], b: set[str]) -> float:
     return len(a & b) / len(union) if union else 0.0
 
 
+# --- tier decision (one pure function, reused by the main pass and the sensitivity sweep) -----
+
+
+def decide_tier(
+    *,
+    cred: int,
+    ic: float,
+    direct: int,
+    admin: bool,
+    structural: bool,
+    in_stop: bool,
+    dead_only: bool,
+    is_curated: bool,
+    solid: int,
+    ic_broad: float,
+) -> tuple[str, str, bool]:
+    """Assign a usefulness tier from a term's signals; grounding-driven (credited count is primary).
+
+    Returns the final tier, the pre-curation-floor tier (for de-circularized validation), and the
+    pure_grouper flag. pure_grouper (direct==0, credited only via descendants) means the term has no
+    expression signature of its own -- it borrows all support from children -- so it can never be T1
+    however high its inherited credited count (the ancestor-credit-inflation fix). The curation floor
+    lifts a vetted, groundable anchor to at least T2; tier_prefloor is what the data says without it.
+    """
+    pure_grouper = direct == 0 and cred > 0
+    broad_promiscuous = cred >= BROAD_FOOTPRINT and ic <= ic_broad
+    groundable = cred >= CONVERGENCE_MIN
+    if in_stop or admin or structural:
+        tier = "T5"
+    elif not groundable:
+        tier = "T4"
+    elif broad_promiscuous:
+        tier = "T3"
+    elif cred >= solid and not dead_only and not pure_grouper:
+        tier = "T1"
+    else:
+        tier = "T2"
+    tier_prefloor = tier
+    if is_curated and groundable and tier in ("T3", "T4", "T5"):
+        tier = "T2"
+    return tier, tier_prefloor, pure_grouper
+
+
+def sensitivity_sweep(signals: list[dict]) -> list[dict]:
+    """Re-tier every term across a grid of SOLID_GENES x IC_BROAD; report stability vs the defaults.
+
+    signals is one dict per term with the precomputed inputs to decide_tier. For each (solid, ic_broad)
+    pair this reports the tier counts, how many terms move tier vs the committed defaults, and the
+    curated-anchor agreement (anchors landing T1/T2) -- the evidence that the boundaries are stable,
+    not hand-tuned to one operating point.
+    """
+
+    def tiers_for(solid: int, ic_broad: float) -> dict[str, str]:
+        out: dict[str, str] = {}
+        for s in signals:
+            tier, _, _ = decide_tier(
+                cred=s["cred"],
+                ic=s["ic"],
+                direct=s["direct"],
+                admin=s["admin"],
+                structural=s["structural"],
+                in_stop=s["in_stop"],
+                dead_only=s["dead_only"],
+                is_curated=s["is_curated"],
+                solid=solid,
+                ic_broad=ic_broad,
+            )
+            out[s["zfa_id"]] = tier
+        return out
+
+    base = tiers_for(SOLID_GENES, IC_BROAD)
+    curated_ids = [s["zfa_id"] for s in signals if s["is_curated"]]
+    rows: list[dict] = []
+    for solid in (5, 8, 10, 15, 20):
+        for ic_broad in (2.0, 3.0, 4.0, 5.0):
+            t = tiers_for(solid, ic_broad)
+            counts = Counter(t.values())
+            moved = sum(1 for k in t if t[k] != base[k])
+            cur_ok = sum(1 for c in curated_ids if t[c] in ("T1", "T2"))
+            rows.append(
+                {
+                    "SOLID_GENES": solid,
+                    "IC_BROAD": ic_broad,
+                    "is_default": solid == SOLID_GENES and ic_broad == IC_BROAD,
+                    "T1": counts["T1"],
+                    "T2": counts["T2"],
+                    "T3": counts["T3"],
+                    "T4": counts["T4"],
+                    "T5": counts["T5"],
+                    "moved_vs_default": moved,
+                    "curated_in_T1T2": f"{cur_ok}/{len(curated_ids)}",
+                }
+            )
+    return rows
+
+
 # --- main ---------------------------------------------------------------------
 
 
@@ -305,6 +401,7 @@ def main() -> None:
 
     # ---- per-term scoring + tiering ----
     term_rows: list[dict] = []
+    signals: list[dict] = []  # decide_tier inputs per term, reused by the sensitivity sweep
     tier_counts: Counter[str] = Counter()
     for tid in zfa_nodes:
         attrs = graph.nodes[tid]
@@ -333,37 +430,47 @@ def main() -> None:
         dead_only = child_all_dead.get(tid, False)
         flags: list[str] = []
 
-        # --- tier decision (grounding-driven) ---
-        # T5 not useful: content-free / structural containers. T4 real but ungroundable: a real
-        # entity with too few ZFIN genes to prove any signature. Then sufficiency + breadth split
-        # the groundable real entities into T1 (solid, discernible), T2 (useful), T3 (broad/coarse).
-        # Breadth is judged by footprint + low IC only. Attractor membership is a FLAG, not a tier
-        # determinant: it would wrongly sink specific attractor-panel anchors (endothelial cell) while
-        # the real hazard is the broad anchor (vasculature), which low IC already catches.
-        broad_promiscuous = cred >= BROAD_FOOTPRINT and term_ic <= IC_BROAD
-        if in_stop or admin or structural_container:
-            tier = "T5"
-        elif not groundable:
-            tier = "T4"
-        elif broad_promiscuous:
-            tier = "T3"
-        elif cred >= SOLID_GENES and not dead_only:
-            tier = "T1"
-        else:
-            tier = "T2"
+        # Tier from the pure decision function (grounding-driven; pure-grouper + dead-step guards
+        # inside). tier_prefloor is the data-only verdict before the curation floor -- reported so the
+        # curated-anchor validation is independent, not a tautology of the floor it is validating.
+        tier, tier_prefloor, pure_grouper = decide_tier(
+            cred=cred,
+            ic=term_ic,
+            direct=dire,
+            admin=admin,
+            structural=structural_container,
+            in_stop=in_stop,
+            dead_only=dead_only,
+            is_curated=is_curated,
+            solid=SOLID_GENES,
+            ic_broad=IC_BROAD,
+        )
+        signals.append(
+            {
+                "zfa_id": tid,
+                "cred": cred,
+                "ic": term_ic,
+                "direct": dire,
+                "admin": admin,
+                "structural": structural_container,
+                "in_stop": in_stop,
+                "dead_only": dead_only,
+                "is_curated": is_curated,
+            }
+        )
 
-        # --- curation floor: a human-vetted, groundable anchor is at least T2 ---
-        if is_curated:
-            if admin:
-                flags.append("curated_but_admin")  # curation disagrees with the name rule -> investigate
-            if not groundable:
-                flags.append("curated_but_thin")  # vetted anchor lacks >=3 ZFIN genes -> curation backlog
-            elif tier in ("T3", "T4", "T5"):
-                tier = "T2"
-
+        # Flags (transparency; not tier determinants except where decide_tier already used them).
+        if is_curated and admin:
+            flags.append("curated_but_admin")  # curation used a container-style name -> investigate
+        if is_curated and not groundable:
+            flags.append("curated_but_thin")  # vetted anchor lacks >=3 ZFIN genes -> curation backlog
+        if pure_grouper:
+            flags.append("pure_grouper")  # no own signature; capped below T1 (ancestor-credit inflation fix)
         if tid in attractors:
-            flags.append("attractor_prone")  # known selection hazard (out-scores true lineages), still a useful label
-        if dead_only:
+            flags.append("attractor_prone")  # known selection hazard, still a useful label
+        # dead_step_only only on the ABSTRACT member of a renaming pair (direct==0): a directly grounded
+        # child like neuron must not be flagged just because an abstract parent renames onto it.
+        if dead_only and dire == 0:
             flags.append("dead_step_only")  # every grounded step into this term is a renaming
 
         tier_counts[tier] += 1
@@ -383,6 +490,7 @@ def main() -> None:
                 "zfa_id": tid,
                 "name": name,
                 "tier": tier,
+                "tier_prefloor": tier_prefloor,
                 "usefulness_score": usefulness,
                 "cell_slim": int(cell_slim),
                 "has_cl": int(has_cl),
@@ -398,6 +506,7 @@ def main() -> None:
                 "in_stoplist": int(in_stop),
                 "admin_container": int(admin),
                 "structural_container": int(structural_container),
+                "pure_grouper": int(pure_grouper),
                 "curated": int(is_curated),
                 "on_discernible_step": int(tid in child_is_discernible),
                 "flags": ";".join(flags),
@@ -410,10 +519,18 @@ def main() -> None:
     _write_csv(OUT / "zfa_term_usefulness.csv", term_rows)
     _write_csv(OUT / "zfa_edges.csv", edge_rows)
 
-    # ---- curation validation: where do the vetted anchors land? ----
+    # ---- curation validation: where do the vetted anchors land, WITH and WITHOUT the floor? ----
+    # The un-floored (tier_prefloor) distribution is the honest check -- the floor can't manufacture
+    # agreement because it isn't applied. Closeness of the two is the real evidence.
+    by_id = {r["zfa_id"]: r for r in term_rows}
     curated_in_graph = sorted(c for c in curated if c in graph)
-    curated_tiers = Counter(next(r["tier"] for r in term_rows if r["zfa_id"] == c) for c in curated_in_graph)
-    stoplist_tiers = Counter(next(r["tier"] for r in term_rows if r["zfa_id"] == s) for s in STOPLIST if s in graph)
+    curated_tiers = Counter(by_id[c]["tier"] for c in curated_in_graph)
+    curated_tiers_prefloor = Counter(by_id[c]["tier_prefloor"] for c in curated_in_graph)
+    stoplist_tiers = Counter(by_id[s]["tier"] for s in STOPLIST if s in graph)
+
+    # ---- threshold sensitivity (the stability evidence) ----
+    sweep = sensitivity_sweep(signals)
+    _write_csv(OUT / "sensitivity.csv", sweep)
 
     n_terms = len(term_rows)
     grounded_terms = sum(1 for r in term_rows if r["credited_genes"] > 0)
@@ -429,6 +546,8 @@ def main() -> None:
         "tier_counts": dict(sorted(tier_counts.items())),
         "curated_anchor_count": len(curated_in_graph),
         "curated_anchor_tiers": dict(sorted(curated_tiers.items())),
+        "curated_anchor_tiers_prefloor": dict(sorted(curated_tiers_prefloor.items())),
+        "pure_grouper_terms": sum(1 for r in term_rows if r["pure_grouper"]),
         "stoplist_tiers": dict(sorted(stoplist_tiers.items())),
         "edges_total": len(edge_rows),
         "edges_sufficient": sum(r["sufficient"] for r in edge_rows),
@@ -437,6 +556,13 @@ def main() -> None:
         "naive_jaccard_says_discernible": naive_says_discernible,
         "naive_but_insufficient": naive_but_insufficient,
         "credited_bands": _credited_bands(term_rows),
+        "sensitivity_stability": {
+            "grid": "SOLID_GENES x IC_BROAD = 5x4",
+            "T1_range": [min(r["T1"] for r in sweep), max(r["T1"] for r in sweep)],
+            "T5_range": [min(r["T5"] for r in sweep), max(r["T5"] for r in sweep)],
+            "max_moved_vs_default": max(r["moved_vs_default"] for r in sweep),
+            "curated_T1T2_worst": min(r["curated_in_T1T2"] for r in sweep),
+        },
         "thresholds": {
             "SOLID_GENES": SOLID_GENES,
             "BROAD_FOOTPRINT": BROAD_FOOTPRINT,
@@ -452,9 +578,25 @@ def main() -> None:
 
     # ---- console summary ----
     print(json.dumps(summary, indent=2))
+    print("\nThreshold sensitivity (SOLID_GENES x IC_BROAD); * = committed default:")
+    print(
+        f"  {'SOLID':>5} {'IC_BROAD':>8} {'T1':>5} {'T2':>5} {'T3':>4} {'T4':>5} {'T5':>4} {'moved':>6}  curated_T1T2"
+    )
+    for r in sweep:
+        star = " *" if r["is_default"] else "  "
+        print(
+            f"{star}{r['SOLID_GENES']:>4} {r['IC_BROAD']:>8} {r['T1']:>5} {r['T2']:>5} {r['T3']:>4} "
+            f"{r['T4']:>5} {r['T5']:>4} {r['moved_vs_default']:>6}  {r['curated_in_T1T2']}"
+        )
+    print(
+        f"\nCurated anchors T1/T2: floored {curated_tiers.get('T1', 0) + curated_tiers.get('T2', 0)}"
+        f"/{len(curated_in_graph)}  |  UN-floored (independent) "
+        f"{curated_tiers_prefloor.get('T1', 0) + curated_tiers_prefloor.get('T2', 0)}/{len(curated_in_graph)}"
+    )
+    print(f"pure_grouper terms (capped below T1): {summary['pure_grouper_terms']}")
     print("\nCurated anchors NOT in T1/T2 (investigate):")
     for c in curated_in_graph:
-        row = next(r for r in term_rows if r["zfa_id"] == c)
+        row = by_id[c]
         if row["tier"] not in ("T1", "T2"):
             print(
                 f"  {c} {row['name']!r}: {row['tier']} ic={row['ic']} cred={row['credited_genes']} flags={row['flags']}"

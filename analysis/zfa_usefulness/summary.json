@@ -8,17 +8,24 @@
   "cl_xref_terms": 441,
   "obsolete_terms": 0,
   "tier_counts": {
-    "T1": 964,
-    "T2": 481,
+    "T1": 906,
+    "T2": 539,
     "T3": 24,
     "T4": 1619,
     "T5": 19
   },
   "curated_anchor_count": 62,
   "curated_anchor_tiers": {
-    "T1": 51,
-    "T2": 11
+    "T1": 49,
+    "T2": 13
   },
+  "curated_anchor_tiers_prefloor": {
+    "T1": 49,
+    "T2": 2,
+    "T3": 10,
+    "T5": 1
+  },
+  "pure_grouper_terms": 127,
   "stoplist_tiers": {
     "T5": 5
   },
@@ -35,6 +42,19 @@
     "10-29 (solid)": 384,
     "30-99 (strong)": 315,
     ">=100 (broad)": 334
+  },
+  "sensitivity_stability": {
+    "grid": "SOLID_GENES x IC_BROAD = 5x4",
+    "T1_range": [
+      634,
+      1181
+    ],
+    "T5_range": [
+      19,
+      19
+    ],
+    "max_moved_vs_default": 286,
+    "curated_T1T2_worst": "62/62"
   },
   "thresholds": {
     "SOLID_GENES": 10,
