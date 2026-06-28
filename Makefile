@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup setup-core setup-upgrade format lint lint-docstrings type test verify audit eval gate eval-zscape gate-zscape eval-zebrahub gate-zebrahub gate-all hooks notebook
+.PHONY: help setup setup-core setup-upgrade format lint lint-docstrings type test verify audit eval gate eval-zscape gate-zscape eval-zebrahub gate-zebrahub gate-all scorecard hooks notebook
 
 help:  ## Show this help
 	@awk 'BEGIN {FS = ":.*## "; print "Usage: make <target>\n"} /^##@/ {printf "\n%s\n", substr($$0, 5)} /^[a-zA-Z0-9_.-]+:.*## / {printf "  %-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -57,6 +57,9 @@ gate-zebrahub:  ## Held-out wall: Zebrahub report drift, with a directional read
 	uv run python scripts/atlas_eval.py check --atlas zebrahub
 
 gate-all: gate gate-zscape gate-zebrahub  ## All regression walls: Daniocell (hard) + ZSCAPE + Zebrahub (held-out)
+
+scorecard:  ## Print the multi-atlas scorecard: accuracy + coverage + N + vocab-hit, all atlases (needs data/ontologies)
+	uv run python scripts/scorecard.py
 
 ##@ Development
 hooks:  ## Install the git pre-commit hook (runs make gate-all on engine/panel/benchmark changes)
