@@ -1,0 +1,455 @@
+zfa_id,name,tier,cell_identity,credited_genes,reach
+ZFA:0000632,reproductive system,T1,0,1782,unreachable
+ZFA:0001306,pharyngeal arch,T1,0,1750,unreachable
+ZFA:0000413,gonad,T1,0,1740,unreachable
+ZFA:0001678,immature eye,T1,0,1599,unreachable
+ZFA:0009128,electrically active cell,T1,1,1560,unreachable
+ZFA:0000155,somite,T1,0,1555,via_develops_from
+ZFA:0000016,ectoderm,T1,0,1453,unreachable
+ZFA:0001486,epithelium,T1,0,1448,unreachable
+ZFA:0000303,female organism,T1,0,1396,unreachable
+ZFA:0001135,neural tube,T1,0,1372,unreachable
+ZFA:0000403,ovary,T1,0,1354,unreachable
+ZFA:0005023,hematopoietic system,T1,0,1306,unreachable
+ZFA:0000242,male organism,T1,0,1285,unreachable
+ZFA:0000368,integument,T1,0,1268,unreachable
+ZFA:0000598,testis,T1,0,1224,unreachable
+ZFA:0000434,skeletal system,T1,0,1215,unreachable
+ZFA:0000051,otic vesicle,T1,0,1141,via_develops_from
+ZFA:0000393,mesenchyme,T1,0,1113,unreachable
+ZFA:0000737,cranium,T1,0,1035,unreachable
+ZFA:0000151,pronephros,T1,0,989,unreachable
+ZFA:0001216,splanchnocranium,T1,0,953,via_develops_from
+ZFA:0000135,notochord,T1,0,941,unreachable
+ZFA:0001309,neurogenic placode,T1,0,918,unreachable
+ZFA:0000077,tail bud,T1,0,810,unreachable
+ZFA:0000098,proliferative region,T1,0,745,unreachable
+ZFA:0005249,vasculature,T1,0,727,unreachable
+ZFA:0007038,anterior neural tube,T1,0,709,unreachable
+ZFA:0000132,neural plate,T1,0,700,unreachable
+ZFA:0007039,midbrain neural tube,T1,0,680,unreachable
+ZFA:0001117,post-vent region,T1,0,636,unreachable
+ZFA:0000088,yolk syncytial layer,T1,0,604,unreachable
+ZFA:0001310,dorsolateral placode,T1,0,588,unreachable
+ZFA:0001204,axial mesoderm,T1,0,545,unreachable
+ZFA:0001383,fin bud,T1,0,545,unreachable
+ZFA:0000131,neural keel,T1,0,543,unreachable
+ZFA:0000050,optic vesicle,T1,0,503,unreachable
+ZFA:0001679,solid lens vesicle,T1,0,444,unreachable
+ZFA:0000060,prechordal plate,T1,0,430,unreachable
+ZFA:0000133,neural rod,T1,0,413,unreachable
+ZFA:0005494,skeletal element,T1,0,406,unreachable
+ZFA:0001357,alar plate midbrain region,T1,0,403,unreachable
+ZFA:0001185,periderm,T1,0,399,unreachable
+ZFA:0000058,polster,T1,0,376,unreachable
+ZFA:0001202,optic cup,T1,0,374,unreachable
+ZFA:0000017,endoderm,T1,0,368,via_develops_from
+ZFA:0001110,ovarian follicle,T1,0,365,unreachable
+ZFA:0000360,heart tube,T1,0,361,unreachable
+ZFA:0000045,neural crest,T1,0,360,unreachable
+ZFA:0000083,ventral mesoderm,T1,0,360,unreachable
+ZFA:0000111,germ ring,T1,0,350,unreachable
+ZFA:0001176,blastoderm,T1,0,348,unreachable
+ZFA:0000092,axis,T1,0,334,unreachable
+ZFA:0009016,germ line cell,T1,1,333,unreachable
+ZFA:0001612,pharyngeal arch 1,T1,0,332,unreachable
+ZFA:0009009,neuron neural crest derived,T1,1,319,via_develops_from
+ZFA:0001175,blastodisc,T1,0,314,unreachable
+ZFA:0005830,hematopoietic cell,T1,1,310,unreachable
+ZFA:0007024,anterior neural keel,T1,0,304,unreachable
+ZFA:0009034,epithelial cell,T1,1,300,unreachable
+ZFA:0000761,basal plate midbrain region,T1,0,292,unreachable
+ZFA:0000076,swim bladder,T1,0,284,via_develops_from
+ZFA:0000026,hatching gland,T1,0,274,unreachable
+ZFA:0000038,margin,T1,0,270,unreachable
+ZFA:0000093,blastomere,T1,1,247,unreachable
+ZFA:0000590,oral region,T1,0,247,unreachable
+ZFA:0001501,cartilage element,T1,0,247,unreachable
+ZFA:0001227,mandibular arch skeleton,T1,0,231,via_develops_from
+ZFA:0000121,lateral plate mesoderm,T1,0,231,unreachable
+ZFA:0000117,hypoblast,T1,0,223,unreachable
+ZFA:0001120,neuroectoderm,T1,0,223,unreachable
+ZFA:0001514,bone element,T1,0,220,unreachable
+ZFA:0000162,trigeminal placode,T1,0,217,unreachable
+ZFA:0009136,motile cell,T1,1,216,unreachable
+ZFA:0000086,EVL,T1,0,204,unreachable
+ZFA:0000001,Kupffer's vesicle,T1,0,200,unreachable
+ZFA:0000115,heart rudiment,T1,0,195,unreachable
+ZFA:0007017,posterior neural plate,T1,0,195,unreachable
+ZFA:0001611,pharyngeal arch 2,T1,0,186,unreachable
+ZFA:0007022,hindbrain neural plate,T1,0,184,unreachable
+ZFA:0005957,stem cell,T1,1,174,unreachable
+ZFA:0007023,posterior neural keel,T1,0,173,unreachable
+ZFA:0009020,multi fate stem cell,T1,1,160,unreachable
+ZFA:0000149,primitive heart tube,T1,0,157,unreachable
+ZFA:0000040,median fin fold,T1,0,154,unreachable
+ZFA:0007025,midbrain neural keel,T1,0,154,unreachable
+ZFA:0007029,hindbrain neural keel,T1,0,152,unreachable
+ZFA:0007031,anterior neural rod,T1,0,152,unreachable
+ZFA:0000023,forerunner cell group,T1,0,150,unreachable
+ZFA:0001065,lateral mesoderm,T1,0,146,unreachable
+ZFA:0000031,hypochord,T1,0,145,via_develops_from
+ZFA:0007037,posterior neural tube,T1,0,145,unreachable
+ZFA:0001263,ovarian follicle stage I,T1,0,140,unreachable
+ZFA:0001265,ovarian follicle stage II,T1,0,139,unreachable
+ZFA:0007089,embryonic cell,T1,1,138,unreachable
+ZFA:0001071,presumptive neural retina,T1,0,137,unreachable
+ZFA:0000317,postcranial axial skeleton,T1,0,132,via_develops_from
+ZFA:0001378,axial hypoblast,T1,0,130,unreachable
+ZFA:0009130,lining cell,T1,1,127,unreachable
+ZFA:0001206,intermediate mesoderm,T1,0,127,unreachable
+ZFA:0000382,acellular anatomical structure,T1,0,125,unreachable
+ZFA:0001266,ovarian follicle stage III,T1,0,124,unreachable
+ZFA:0009090,pigment cell,T1,1,123,unreachable
+ZFA:0007042,spinal cord neural tube,T1,0,123,unreachable
+ZFA:0000574,presumptive diencephalon,T1,0,121,unreachable
+ZFA:0001264,ovarian follicle stage IV,T1,0,121,unreachable
+ZFA:0009065,endothelial cell,T1,1,119,unreachable
+ZFA:0000071,shield,T1,0,116,unreachable
+ZFA:0001276,pharyngeal arch 2 skeleton,T1,0,115,via_develops_from
+ZFA:0000004,anterior axial hypoblast,T1,0,115,unreachable
+ZFA:0007026,forebrain neural keel,T1,0,114,unreachable
+ZFA:0005620,endochondral element,T1,0,113,unreachable
+ZFA:0001273,ventral mandibular arch,T1,0,112,via_develops_from
+ZFA:0000028,heart primordium,T1,0,111,unreachable
+ZFA:0000570,optic primordium,T1,0,110,unreachable
+ZFA:0001580,neurocranium,T1,0,110,unreachable
+ZFA:0000091,axial chorda mesoderm,T1,0,105,unreachable
+ZFA:0009096,endocrine cell,T1,1,104,unreachable
+ZFA:0009039,squamous epithelial cell,T1,1,102,unreachable
+ZFA:0001424,chondrocranium,T1,0,100,unreachable
+ZFA:0000084,yolk,T1,1,90,unreachable
+ZFA:0009019,neuronal stem cell,T1,1,90,unreachable
+ZFA:0005345,adipose tissue,T1,0,90,unreachable
+ZFA:0000571,presumptive telencephalon,T1,0,89,unreachable
+ZFA:0005042,posterior lateral plate mesoderm,T1,0,88,unreachable
+ZFA:0007032,midbrain neural rod,T1,0,87,unreachable
+ZFA:0009324,myeloid cell,T1,1,83,via_develops_from
+ZFA:0000351,olfactory region,T1,0,82,unreachable
+ZFA:0007068,otic epithelium,T1,0,82,unreachable
+ZFA:0000018,epiblast,T1,0,81,unreachable
+ZFA:0005619,skeletal tissue,T1,0,79,unreachable
+ZFA:0005041,anterior lateral plate mesoderm,T1,0,78,unreachable
+ZFA:0007030,posterior neural rod,T1,0,78,unreachable
+ZFA:0009011,neuroblast,T1,1,77,unreachable
+ZFA:0001272,palatoquadrate arch,T1,0,75,via_develops_from
+ZFA:0001377,presumptive mesoderm,T1,0,75,unreachable
+ZFA:0001702,apical ectodermal ridge,T1,0,73,unreachable
+ZFA:0001123,axial fin skeleton,T1,0,72,via_develops_from
+ZFA:0001402,ventral hyoid arch,T1,0,69,via_develops_from
+ZFA:0000063,presumptive neural plate,T1,0,68,unreachable
+ZFA:0001570,unfertilized egg,T1,1,65,via_develops_from
+ZFA:0000555,opercular flap,T1,0,65,unreachable
+ZFA:0007034,forebrain neural rod,T1,0,65,unreachable
+ZFA:0005621,bone tissue,T1,0,61,unreachable
+ZFA:0009032,ciliated cell,T1,1,60,unreachable
+ZFA:0009035,ciliated epithelial cell,T1,1,58,unreachable
+ZFA:0001401,dorsal hyoid arch,T1,0,57,via_develops_from
+ZFA:0009168,neuroblast (sensu Vertebrata),T1,1,57,unreachable
+ZFA:0007045,midbrain hindbrain boundary neural keel,T1,0,57,unreachable
+ZFA:0005335,swim bladder bud,T1,0,56,via_develops_from
+ZFA:0000067,pronephric mesoderm,T1,0,56,unreachable
+ZFA:0001462,somite border,T1,0,54,via_develops_from
+ZFA:0000863,dermatocranium,T1,0,54,unreachable
+ZFA:0009025,myoblast,T1,1,53,unreachable
+ZFA:0001690,groove,T1,0,53,unreachable
+ZFA:0007036,hindbrain neural rod,T1,0,52,unreachable
+ZFA:0000053,presumptive segmental plate,T1,0,51,unreachable
+ZFA:0001212,presumptive rhombomere 4,T1,0,51,unreachable
+ZFA:0007046,midbrain hindbrain boundary neural rod,T1,0,51,unreachable
+ZFA:0005958,early palate,T1,0,50,unreachable
+ZFA:0001082,chordo neural hinge,T1,0,49,unreachable
+ZFA:0005040,posterior lateral mesoderm,T1,0,49,unreachable
+ZFA:0007016,anterior neural plate,T1,0,49,unreachable
+ZFA:0009100,peptide hormone secreting cell,T1,1,48,unreachable
+ZFA:0000122,lens placode,T1,0,47,unreachable
+ZFA:0001559,vertebral column,T1,0,46,via_develops_from
+ZFA:0000711,DEL,T1,0,46,unreachable
+ZFA:0005759,visceral fat,T1,0,45,unreachable
+ZFA:0009139,endodermal cell,T1,1,43,via_develops_from
+ZFA:0009354,hematopoietic multipotent progenitor cell,T1,1,43,via_develops_from
+ZFA:0005076,primordial vasculature,T1,0,42,unreachable
+ZFA:0001376,presumptive ectoderm,T1,0,41,unreachable
+ZFA:0009292,radial glial cell,T1,1,40,unreachable
+ZFA:0005738,intestinal bulb primordium,T1,0,39,via_develops_from
+ZFA:0000146,presumptive brain,T1,0,39,unreachable
+ZFA:0001213,presumptive rhombomere 3,T1,0,39,unreachable
+ZFA:0000250,opercle,T1,0,38,via_develops_from
+ZFA:0000591,presumptive paraxial mesoderm,T1,0,37,unreachable
+ZFA:0005323,ionocyte,T1,1,35,unreachable
+ZFA:0009183,epidermal cell,T1,1,35,unreachable
+ZFA:0009258,angioblastic mesenchymal cell,T1,1,34,unreachable
+ZFA:0001211,presumptive rhombomere 5,T1,0,34,unreachable
+ZFA:0001262,gonad primordium,T1,0,34,unreachable
+ZFA:0007070,otic sensory epithelium,T1,0,34,unreachable
+ZFA:0009306,neuroepithelial cell,T1,1,33,unreachable
+ZFA:0001453,pectoral fin field,T1,0,33,unreachable
+ZFA:0000816,oral epithelium,T1,0,32,unreachable
+ZFA:0001069,ventral fin fold,T1,0,32,unreachable
+ZFA:0001200,corpuscles of Stannius,T1,0,32,unreachable
+ZFA:0005077,vascular cord,T1,0,32,unreachable
+ZFA:0000124,liver primordium,T1,0,31,via_develops_from
+ZFA:0001080,sclerotome,T1,0,31,via_develops_from
+ZFA:0009081,mesenchymal cell,T1,1,31,unreachable
+ZFA:0009386,somatic cell,T1,1,31,unreachable
+ZFA:0001208,presumptive rhombomere 2,T1,0,31,unreachable
+ZFA:0001719,presumptive cardiac ventricle heart tube,T1,0,31,unreachable
+ZFA:0000541,marginal blastomere,T1,1,30,unreachable
+ZFA:0001072,thyroid follicle,T1,0,29,via_develops_from
+ZFA:0000064,presumptive retinal pigmented epithelium,T1,0,29,unreachable
+ZFA:0001198,adenohypophyseal placode,T1,0,29,unreachable
+ZFA:0009097,enteroendocrine cell,T1,1,28,unreachable
+ZFA:0000106,extension,T1,0,28,unreachable
+ZFA:0001634,perichondrium,T1,0,28,unreachable
+ZFA:0007035,spinal cord neural rod,T1,0,28,unreachable
+ZFA:0001189,vertebra,T1,0,27,via_develops_from
+ZFA:0009325,erythroid lineage cell,T1,1,26,via_develops_from
+ZFA:0009106,steroid hormone secreting cell,T1,1,26,unreachable
+ZFA:0001207,presumptive rhombomere 1,T1,0,26,unreachable
+ZFA:0001284,optic fissure,T1,0,26,unreachable
+ZFA:0005039,anterior lateral mesoderm,T1,0,26,unreachable
+ZFA:0007018,forebrain neural plate,T1,0,26,unreachable
+ZFA:0000006,ball,T1,0,25,unreachable
+ZFA:0001410,orbital region,T1,0,25,unreachable
+ZFA:0005509,palate,T1,0,25,unreachable
+ZFA:0007044,midbrain hindbrain boundary neural plate,T1,0,25,unreachable
+ZFA:0005242,multi-ciliated epithelial cell,T1,1,24,unreachable
+ZFA:0001596,joint,T1,0,24,unreachable
+ZFA:0009356,myeloid lineage restricted progenitor cell,T1,1,23,unreachable
+ZFA:0000568,presumptive blood,T1,0,23,unreachable
+ZFA:0001178,non neural ectoderm,T1,0,23,unreachable
+ZFA:0001675,ligament,T1,0,23,unreachable
+ZFA:0005272,immature gonad,T1,0,23,unreachable
+ZFA:0007028,spinal cord neural keel,T1,0,23,unreachable
+ZFA:0009031,osteoblast,T1,1,22,via_develops_from
+ZFA:0000189,otic region,T1,0,22,unreachable
+ZFA:0007059,neurogenic field,T1,0,22,unreachable
+ZFA:0001554,lepidotrichium,T1,0,21,via_develops_from
+ZFA:0005134,dental epithelium,T1,0,21,via_develops_from
+ZFA:0001210,presumptive rhombomere 6,T1,0,21,unreachable
+ZFA:0009355,lymphoid progenitor cell,T1,1,20,unreachable
+ZFA:0009021,common myeloid progenitor,T1,1,19,via_develops_from
+ZFA:0000561,parasphenoid,T1,0,19,via_develops_from
+ZFA:0001414,occipital region,T1,0,19,unreachable
+ZFA:0000270,maxilla,T1,0,18,via_develops_from
+ZFA:0000476,branchiostegal ray,T1,0,18,via_develops_from
+ZFA:0000732,somite 3,T1,0,18,via_develops_from
+ZFA:0001081,thyroid primordium,T1,0,18,via_develops_from
+ZFA:0009082,fat cell,T1,1,18,unreachable
+ZFA:0009236,skeletal muscle myoblast,T1,1,18,unreachable
+ZFA:0000414,presumptive cephalic mesoderm,T1,0,18,unreachable
+ZFA:0000526,intermuscular bone,T1,0,17,via_develops_from
+ZFA:0009026,fibroblast,T1,1,17,unreachable
+ZFA:0009285,podocyte,T1,1,17,unreachable
+ZFA:0001121,presumptive shield,T1,0,17,unreachable
+ZFA:0005762,subcutaneous fat,T1,0,17,unreachable
+ZFA:0007043,hindbrain neural tube,T1,0,17,unreachable
+ZFA:0000072,somite 1,T1,0,16,via_develops_from
+ZFA:0000191,dentary,T1,0,16,via_develops_from
+ZFA:0001280,branchiostegal ray 3,T1,0,16,via_develops_from
+ZFA:0001484,superficial blastomere,T1,1,16,unreachable
+ZFA:0001218,presumptive floor plate,T1,0,16,unreachable
+ZFA:0009249,melanoblast,T1,1,15,via_develops_from
+ZFA:0000728,somite 2,T1,0,15,via_develops_from
+ZFA:0001473,deep blastomere,T1,1,15,unreachable
+ZFA:0009101,insulin secreting cell,T1,1,15,unreachable
+ZFA:0000416,presumptive endoderm,T1,0,15,unreachable
+ZFA:0007014,anterior presumptive neural plate,T1,0,15,unreachable
+ZFA:0009015,erythroid progenitor cell,T1,1,14,via_develops_from
+ZFA:0000102,dorsal fin fold,T1,0,14,unreachable
+ZFA:0005463,oral ectoderm,T1,0,14,unreachable
+ZFA:0005606,cranial vault,T1,0,14,unreachable
+ZFA:0009251,granulocyte monocyte progenitor cell,T1,1,13,via_develops_from
+ZFA:0000857,somite 4,T1,0,13,via_develops_from
+ZFA:0009143,brush border epithelial cell,T1,1,13,unreachable
+ZFA:0001209,presumptive rhombomere 7,T1,0,13,unreachable
+ZFA:0005136,inner dental epithelium,T1,0,12,via_develops_from
+ZFA:0009133,Sertoli cell,T1,1,12,unreachable
+ZFA:0009137,ectodermal cell,T1,1,12,unreachable
+ZFA:0009369,fast muscle myoblast,T1,1,12,unreachable
+ZFA:0000309,external yolk syncytial layer,T1,0,12,unreachable
+ZFA:0001718,presumptive atrium heart tube,T1,0,12,unreachable
+ZFA:0000073,somite 5,T1,0,11,via_develops_from
+ZFA:0009002,early embryonic cell,T1,1,11,unreachable
+ZFA:0009138,mesodermal cell,T1,1,11,unreachable
+ZFA:0000054,pericardium,T1,0,11,unreachable
+ZFA:0001430,pneumatic duct,T1,0,11,unreachable
+ZFA:0005147,regenerating tissue,T1,0,11,unreachable
+ZFA:0007013,preplacodal ectoderm,T1,0,11,unreachable
+ZFA:0007015,posterior presumptive neural plate,T1,0,11,unreachable
+ZFA:0007019,midbrain neural plate,T1,0,11,unreachable
+ZFA:0001373,migratory slow muscle precursor cell,T1,1,10,via_develops_from
+ZFA:0000672,hyomandibula,T1,0,10,via_develops_from
+ZFA:0000692,symplectic,T1,0,10,via_develops_from
+ZFA:0001334,presumptive enteric nervous system,T1,0,10,via_develops_from
+ZFA:0005772,fertilized egg,T1,1,10,unreachable
+ZFA:0009010,glioblast,T1,1,10,unreachable
+ZFA:0009105,somatostatin secreting cell,T1,1,10,unreachable
+ZFA:0009227,granulosa cell,T1,1,10,unreachable
+ZFA:0009234,cardiac muscle myoblast,T1,1,10,unreachable
+ZFA:0000068,proneural cluster,T1,0,10,unreachable
+ZFA:0000385,lymphatic system,T1,0,10,unreachable
+ZFA:0001214,presumptive rhombomere 8,T1,0,10,unreachable
+ZFA:0007021,spinal cord neural plate,T1,0,10,unreachable
+ZFA:0007082,neural plate border,T1,0,10,unreachable
+ZFA:0000396,nervous system,T2,0,7744,unreachable
+ZFA:0000339,digestive system,T2,0,4079,unreachable
+ZFA:0001158,endocrine system,T2,0,2728,unreachable
+ZFA:0000548,musculature system,T2,0,2551,unreachable
+ZFA:0000114,heart,T2,0,2108,unreachable
+ZFA:0000108,fin,T2,0,1915,unreachable
+ZFA:0009190,electrically responsive cell,T2,1,1560,unreachable
+ZFA:0001159,immune system,T2,0,1534,unreachable
+ZFA:0009193,electrically signaling cell,T2,1,1352,unreachable
+ZFA:0005171,duct,T2,0,859,unreachable
+ZFA:0001495,unilaminar epithelium,T2,0,201,unreachable
+ZFA:0009307,somatic stem cell,T2,1,172,unreachable
+ZFA:0009132,barrier cell,T2,1,154,unreachable
+ZFA:0001635,intramembranous bone,T2,0,136,via_develops_from
+ZFA:0001590,dermal bone,T2,0,136,via_develops_from
+ZFA:0001632,portion of connective tissue,T2,0,128,unreachable
+ZFA:0001628,replacement bone,T2,0,112,unreachable
+ZFA:0005624,replacement element,T2,0,112,unreachable
+ZFA:0001591,endochondral bone,T2,0,111,via_develops_from
+ZFA:0001693,chondral bone,T2,0,111,unreachable
+ZFA:0000444,suspensorium,T2,0,97,via_develops_from
+ZFA:0001498,simple squamous epithelium,T2,0,94,unreachable
+ZFA:0009038,columnar/cuboidal epithelial cell,T2,1,82,unreachable
+ZFA:0001496,simple columnar epithelium,T2,0,72,unreachable
+ZFA:0009226,stromal cell,T2,1,61,unreachable
+ZFA:0009162,extracellular matrix secreting cell,T2,1,54,unreachable
+ZFA:0009093,GAG secreting cell,T2,1,54,unreachable
+ZFA:0009287,collagen secreting cell,T2,1,54,unreachable
+ZFA:0001489,compound organ component,T2,0,53,unreachable
+ZFA:0005882,spermatogenic cyst,T2,0,46,unreachable
+ZFA:0000290,sphenoid region,T2,0,22,unreachable
+ZFA:0005138,dental organ,T2,0,20,via_develops_from
+ZFA:0001642,tooth row,T2,0,20,unreachable
+ZFA:0001137,ventral tooth row,T2,0,20,unreachable
+ZFA:0009157,keratin accumulating cell,T2,1,18,unreachable
+ZFA:0009158,keratinocyte,T2,1,18,unreachable
+ZFA:0009134,insulating cell,T2,1,15,unreachable
+ZFA:0009163,myelin accumulating cell,T2,1,15,unreachable
+ZFA:0009107,testosterone secreting cell,T2,1,14,unreachable
+ZFA:0009108,Leydig cell,T2,1,14,unreachable
+ZFA:0005425,serous membrane,T2,0,12,unreachable
+ZFA:0005237,erythroblast,T2,1,9,via_develops_from
+ZFA:0000211,gill lamella,T2,0,9,via_develops_from
+ZFA:0000578,ceratohyal bone,T2,0,9,via_develops_from
+ZFA:0000657,entopterygoid,T2,0,9,via_develops_from
+ZFA:0000667,gill filament,T2,0,9,via_develops_from
+ZFA:0009080,neurectodermal cell,T2,1,9,unreachable
+ZFA:0009169,glioblast (sensu Vertebrata),T2,1,9,unreachable
+ZFA:0000265,presumptive dorsal mesoderm,T2,0,9,unreachable
+ZFA:0000712,internal yolk syncytial layer,T2,0,9,unreachable
+ZFA:0005156,fibrous joint,T2,0,9,unreachable
+ZFA:0000467,anguloarticular,T2,0,8,via_develops_from
+ZFA:0001712,presumptive bulbus arteriosus,T2,0,8,via_develops_from
+ZFA:0005244,auditory epithelial support cell,T2,1,8,unreachable
+ZFA:0009013,single fate stem cell,T2,1,8,unreachable
+ZFA:0009098,neuroendocrine cell,T2,1,8,unreachable
+ZFA:0009103,glucagon secreting cell,T2,1,8,unreachable
+ZFA:0000569,presumptive hindbrain,T2,0,8,unreachable
+ZFA:0001027,oral cavity,T2,0,8,unreachable
+ZFA:0005490,myocardial precursor,T2,0,8,unreachable
+ZFA:0005903,cartilaginous projection,T2,0,8,unreachable
+ZFA:0007033,forebrain midbrain boundary neural rod,T2,0,8,unreachable
+ZFA:0007062,olfactory field,T2,0,8,unreachable
+ZFA:0009028,ameloblast,T2,1,7,via_develops_from
+ZFA:0005771,ectomesenchyme,T2,0,7,via_develops_from
+ZFA:0005773,embryonic blood vessel endothelial progenitor cell,T2,1,7,unreachable
+ZFA:0009184,osteoprogenitor cell,T2,1,7,unreachable
+ZFA:0009229,theca cell,T2,1,7,unreachable
+ZFA:0009271,androgen secreting cell,T2,1,7,unreachable
+ZFA:0009277,acinar cell,T2,1,7,unreachable
+ZFA:0009291,muscle precursor cell,T2,1,7,unreachable
+ZFA:0000062,presumptive forebrain,T2,0,7,unreachable
+ZFA:0001070,presumptive pronephric mesoderm,T2,0,7,unreachable
+ZFA:0001112,granulosa cell layer,T2,0,7,unreachable
+ZFA:0001187,presumptive midbrain hindbrain boundary,T2,0,7,unreachable
+ZFA:0005608,frontal-parietal joint,T2,0,7,unreachable
+ZFA:0005622,cartilage tissue,T2,0,7,unreachable
+ZFA:0005647,tendon,T2,0,7,unreachable
+ZFA:0007047,midbrain hindbrain boundary neural tube,T2,0,7,unreachable
+ZFA:0009047,osteoclast,T2,1,6,via_develops_from
+ZFA:0000271,radial,T2,0,6,via_develops_from
+ZFA:0000326,caudal vertebra,T2,0,6,via_develops_from
+ZFA:0000514,frontal bone,T2,0,6,via_develops_from
+ZFA:0000725,somite 11,T2,0,6,via_develops_from
+ZFA:0000982,somite 6,T2,0,6,via_develops_from
+ZFA:0001281,branchiostegal ray 2,T2,0,6,via_develops_from
+ZFA:0005737,intestinal rod,T2,0,6,via_develops_from
+ZFA:0005599,ghrelin secreting cell,T2,1,6,unreachable
+ZFA:0007123,ionocyte progenitor cell,T2,1,6,unreachable
+ZFA:0009166,mesenchyme condensation cell,T2,1,6,unreachable
+ZFA:0009392,connective tissue cell,T2,1,6,unreachable
+ZFA:0000717,apical ectodermal ridge median fin fold,T2,0,6,unreachable
+ZFA:0001113,thecal cell layer,T2,0,6,unreachable
+ZFA:0005922,migratory muscle precursor stream,T2,0,6,unreachable
+ZFA:0007061,epibranchial field,T2,0,6,unreachable
+ZFA:0005923,anterior migratory muscle precursor stream,T2,0,6,unreachable
+ZFA:0005924,middle migratory muscle precursor stream,T2,0,6,unreachable
+ZFA:0005925,posterior migratory muscle precursor stream,T2,0,6,unreachable
+ZFA:0005245,xanthoblast,T2,1,5,via_develops_from
+ZFA:0005328,iridoblast,T2,1,5,via_develops_from
+ZFA:0000726,somite 14,T2,0,5,via_develops_from
+ZFA:0000733,somite 7,T2,0,5,via_develops_from
+ZFA:0000851,somite 12,T2,0,5,via_develops_from
+ZFA:0009151,hatching gland cell,T2,1,5,unreachable
+ZFA:0009177,blastoderm cell,T2,1,5,unreachable
+ZFA:0009264,corneal epithelial cell,T2,1,5,unreachable
+ZFA:0001125,organizer inducing center,T2,0,5,unreachable
+ZFA:0001201,ventral lateral mesoderm,T2,0,5,unreachable
+ZFA:0001217,presumptive hypochord,T2,0,5,unreachable
+ZFA:0001342,presumptive intervening zone,T2,0,5,unreachable
+ZFA:0001714,presumptive ventral mesoderm,T2,0,5,unreachable
+ZFA:0001722,presumptive sinus venosus,T2,0,5,unreachable
+ZFA:0001723,presumptive atrioventricular canal,T2,0,5,unreachable
+ZFA:0005153,synovial joint,T2,0,5,unreachable
+ZFA:0005867,cephalic mesoderm,T2,0,5,unreachable
+ZFA:0007041,forebrain neural tube,T2,0,5,unreachable
+ZFA:0005484,quadrate-anguloarticular joint,T2,0,5,unreachable
+ZFA:0009023,common lymphoid progenitor,T2,1,4,via_develops_from
+ZFA:0000419,pterosphenoid,T2,0,4,via_develops_from
+ZFA:0000422,retroarticular,T2,0,4,via_develops_from
+ZFA:0000519,hemal arch,T2,0,4,via_develops_from
+ZFA:0000974,somite 10,T2,0,4,via_develops_from
+ZFA:0000975,somite 13,T2,0,4,via_develops_from
+ZFA:0001066,neural arch,T2,0,4,via_develops_from
+ZFA:0001277,anterior chamber swim bladder,T2,0,4,via_develops_from
+ZFA:0001278,posterior chamber swim bladder,T2,0,4,via_develops_from
+ZFA:0001437,ductus communicans,T2,0,4,via_develops_from
+ZFA:0001513,dermomyotome,T2,0,4,via_develops_from
+ZFA:0001646,anal fin radial,T2,0,4,via_develops_from
+ZFA:0009050,sensory epithelial cell,T2,1,4,unreachable
+ZFA:0009092,exocrine cell,T2,1,4,unreachable
+ZFA:0009182,gastrula cell,T2,1,4,unreachable
+ZFA:0009272,skeletal muscle satellite cell,T2,1,4,unreachable
+ZFA:0009352,neutrophil progenitor cell,T2,1,4,unreachable
+ZFA:0001485,basal lamina,T2,0,4,unreachable
+ZFA:0005102,presumptive median fin fold,T2,0,4,unreachable
+ZFA:0005435,actinotrichium,T2,0,4,unreachable
+ZFA:0005472,inter-frontal joint,T2,0,4,unreachable
+ZFA:0005808,proepicardial cluster,T2,0,4,unreachable
+ZFA:0009045,epithelial cell of pancreas,T2,1,3,via_develops_from
+ZFA:0009383,endo-epithelial cell,T2,1,3,via_develops_from
+ZFA:0009398,hepatoblast,T2,1,3,via_develops_from
+ZFA:0000126,centrum,T2,0,3,via_develops_from
+ZFA:0000264,preopercle,T2,0,3,via_develops_from
+ZFA:0000486,parietal bone,T2,0,3,via_develops_from
+ZFA:0000567,premaxilla,T2,0,3,via_develops_from
+ZFA:0000858,somite 8,T2,0,3,via_develops_from
+ZFA:0000983,somite 9,T2,0,3,via_develops_from
+ZFA:0001336,neural spine,T2,0,3,via_develops_from
+ZFA:0005243,single ciliated epithelial cell,T2,1,3,unreachable
+ZFA:0005745,structural cell,T2,1,3,unreachable
+ZFA:0009040,mesothelial cell,T2,1,3,unreachable
+ZFA:0009129,absorptive cell,T2,1,3,unreachable
+ZFA:0009372,duct epithelial cell,T2,1,3,unreachable
+ZFA:0000148,presumptive midbrain,T2,0,3,unreachable
+ZFA:0001126,noninvoluting endocytic marginal cell cluster,T2,0,3,unreachable
+ZFA:0001448,ultimobranchial body,T2,0,3,unreachable
+ZFA:0005489,endocardial precursor,T2,0,3,unreachable
+ZFA:0005607,inter-parietal joint,T2,0,3,unreachable
+ZFA:0005930,lumen,T2,0,3,unreachable
+ZFA:0007027,forebrain midbrain boundary neural keel,T2,0,3,unreachable

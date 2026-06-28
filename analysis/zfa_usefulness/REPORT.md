@@ -19,11 +19,12 @@ lever is. Companion: `RELATIONSHIPS.md` (the relationship-axis primer).
    (T1 135, T2 18, T3 20). It descends from curated T1–T3 anchors and `CONVERGENCE_MIN=3` *is* the T4
    boundary — so a junk-tier term is structurally unreachable. → **Blocking/“rolling up” useless
    labels is a non-problem. The cosmetic engine changes the first draft proposed are dropped.**
-2. **The lever is coverage, via the relationship axis the engine ignores.** zlabel walks `is_a`+
-   `part_of` only; `develops_from` (527 edges) is never followed. Adding it makes **+102 useful
-   (T1/T2) terms reachable** that nothing reaches today (somite, otic vesicle, endoderm, neuron
-   (neural-crest derived), swim bladder, dermal bone). See `RELATIONSHIPS.md`. → tested, gated, in
-   Phase 3.
+2. **The most plausible coverage lever — the ignored `develops_from` axis — was tested and is a
+   NO-GO.** zlabel walks `is_a`+`part_of` only; adding `develops_into` makes +102 useful terms
+   graph-reachable (`RELATIONSHIPS.md`), but the Phase-3 experiment realised **0 new labels** (the
+   +102 is an unconverted ceiling) and *degraded* quality (`otic vesicle → otolith`, an acellular
+   biomineral). The binding constraint is the selection/marker layer, not reachability — exactly
+   design.md's documented boundary. See `develops_from_experiment.md`.
 3. **A real curation backlog exists:** 350 ungroundable cell types, **255 reachable under a current
    anchor, 50 within 1–2 ZFIN genes of nameable.**
 
@@ -127,20 +128,25 @@ is all-useful.
 
 ## Recommendation (revised by the evidence)
 
-The first draft proposed "extend STOPLIST + roll up to nearest useful ancestor." The 0/173 finding
-**kills the roll-up** (it changes nothing and adds regression risk) and **demotes the STOPLIST
-extension to optional hygiene**. What is actually worth doing:
+Two of the three first-draft ideas are now ruled out **with evidence**, which is the value of this
+phase:
 
-1. **The lever — `develops_from` coverage (Phase 3, gated experiment).** Let the descent follow
-   `develops_into` (progenitor → marker-supported derivative) so it can reach the +102 useful terms it
-   currently can't. Judge strictly on `make gate-all`: **more correct named calls without raising the
-   parent-child overcall audit**, respecting the documented attractor-selection wall. If it regresses,
-   that is a real answer and we stop.
-2. **The backlog (Phase 4).** Ship the ranked list of 255 reachable ungroundable cell types (50 within
-   1–2 genes) as the concrete curation queue, and assess whether fuller ZFIN (`xpat_stage_anatomy`) or
-   atlas markers convert them.
-3. **Optional hygiene only.** Extend `STOPLIST` to the 19 T5 terms and add a CI guard that fails if a
-   future panel/crosswalk anchor is ever T4/T5/admin. Cheap, defensive, **not** a capability gain.
+1. **Roll-up / STOPLIST extension — not a capability gain.** The 0/173 finding kills the roll-up
+   (changes nothing, adds risk); the STOPLIST extension is optional hygiene only.
+2. **`develops_from` coverage — TESTED, NO-GO.** The most plausible lever realised 0 new labels and
+   introduced `otolith`-type regressions (`develops_from_experiment.md`). The descent edge set stays
+   `is_a`+`part_of`.
 
-Keep a small hand-maintained deny-list for undifferentiated states (`blastomere`). No engine change
-has been merged; Phase 3 is an experiment that must clear the gate to earn one.
+What is actually worth doing:
+
+- **Work the curation backlog (Phase 4) — the only lever that grows coverage.** Ship the ranked list of
+  255 reachable ungroundable cell types (50 within 1–2 ZFIN genes of nameable) as the concrete curation
+  queue, and assess whether fuller ZFIN (`xpat_stage_anatomy`) or atlas markers convert them. Coverage
+  grows by adding *grounding*, not by changing the walk.
+- **Optional hygiene:** extend `STOPLIST` to the 19 T5 terms + a CI guard failing if any future
+  panel/crosswalk anchor is ever T4/T5/admin. Cheap, defensive, not a capability gain.
+- **Keep the rubric as a standing audit:** it is trustworthy (stable thresholds, 51/62 independent
+  curation agreement) and its real product is the backlog + the QA guard.
+
+Keep a small hand-maintained deny-list for undifferentiated states (`blastomere`). **No engine change
+was merged** — the one experiment that could have earned one did not clear the bar.
