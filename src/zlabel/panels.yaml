@@ -58,7 +58,7 @@ neural:
   tissue: nervous system
   lineage: neural/neuroectoderm
   kind: identity
-  cite: "playbook §7; ZFIN wt-expr (elavl3, neurod1, sox3); literature"
+  cite: "playbook §7; ZFIN wt-expr (elavl3, neurod1, sox3, nova2, elavl4, srrm4, rbfox3a); literature; see reference doc"
   ontology_anchor:
     - ZFA:0000396  # nervous system
   markers:
@@ -70,6 +70,10 @@ neural:
     - her4.1   # hairy/enhancer-of-split; Notch target; radial glia-like
     - ascl1a   # achaete-scute homolog; proneural bHLH
     - gfap     # glial fibrillary acidic protein; astrocytes and radial glia
+    - nova2    # neuro-oncological ventral antigen 2; neuronal splicing factor (differentiating neurons)
+    - elavl4   # ELAV-like 4 (HuD); pan-neuronal RNA-binding protein
+    - srrm4    # serine/arginine repetitive matrix 4 (nSR100); neural-specific alternative splicing
+    - rbfox3a  # RNA-binding fox-1 homolog 3a (NeuN); post-mitotic neuronal marker
 
 glia:
   germ_layer: ectoderm
