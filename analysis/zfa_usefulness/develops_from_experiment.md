@@ -9,7 +9,14 @@ that no `is_a`/`part_of` path reaches (see `RELATIONSHIPS.md`, `coverage.md`).
 
 - **Prototype:** one line in `resolve.py:_descend` — add `develops_from` to the descent's `children()`
   edge types so the walk can step progenitor → marker-supported derivative. Everything else (ancestor
-  credit, IC, support floors, STOPLIST) unchanged.
+  credit, IC, support floors, STOPLIST) unchanged. The exact change (reverted after measuring):
+
+  ```python
+  # baseline:
+  for child in children(zfa_ontology, current)
+  # prototype:
+  for child in children(zfa_ontology, current, edge_types=("is_a", "part_of", "develops_from"))
+  ```
 - **Measure:** regenerate all three atlas reports and the per-cluster named terminal, vs the committed
   `origin/main` baseline. Bar (from the plan): **more correct named calls without raising the
   parent-child overcall audit**, respecting the attractor wall.

@@ -16,9 +16,12 @@ lever is. Companion: `RELATIONSHIPS.md` (the relationship-axis primer).
 ## Bottom line (what the evidence says to do)
 
 1. **The engine already cannot emit a useless label.** Of 176 named Daniocell calls, **0 are T4/T5**
-   (T1 137, T2 19, T3 20). It descends from curated T1–T3 anchors and `CONVERGENCE_MIN=3` *is* the T4
-   boundary — so a junk-tier term is structurally unreachable. → **Blocking/“rolling up” useless
-   labels is a non-problem. The cosmetic engine changes the first draft proposed are dropped.**
+   (T1 137, T2 19, T3 20). Two structural reasons: (a) the descent only names a term with
+   `support >= CONVERGENCE_MIN` (3) genes, which *is* the T4 boundary, so no T4 is nameable; (b) it
+   descends *downward* from curated T1–T3 anchors and never ascends, and all 19 T5 terms are DAG
+   *ancestors* of the anchors (verified: 0/19 are descendants) — only 5 are in `STOPLIST`; the other
+   14 are blocked by topology, not a deny-list. → **Blocking/“rolling up” useless labels is a
+   non-problem. The cosmetic engine changes the first draft proposed are dropped.**
 2. **The most plausible coverage lever — the ignored `develops_from` axis — was tested and is a
    NO-GO.** zlabel walks `is_a`+`part_of` only; adding `develops_into` makes +102 useful terms
    graph-reachable (`RELATIONSHIPS.md`), but the Phase-3 experiment realised **0 new labels** (the
@@ -39,7 +42,7 @@ evidence to prove a signature of its own.
 
 Naive "discernible by expression" is an illusion. Comparing a parent's genes to a child's, **5,334 of
 5,377 edges (99.2%) look discernible** (Jaccard < 0.3) — but **2,750 of those can't actually be
-judged** (a side has < 3 genes). 39% of terms have zero ZFIN grounding; the median grounded term has 7
+judged** (a side has < 3 genes). 42% of terms (1,305/3,107) have zero ZFIN grounding; the median grounded term has 7
 genes. The same trap hits terms: a 3-gene term scores IC ≈ 12 ("looks specific") purely from sparsity.
 **So IC never claims specificity here — credited-gene count (sufficiency) is the primary axis;** IC is
 used only at the low end, where it reliably flags breadth.
