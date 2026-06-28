@@ -238,11 +238,13 @@ muscle:
   tissue: muscle
   lineage: skeletal muscle
   kind: identity
-  cite: "playbook §7; ZFIN wt-expr (myod1, mylpfa, acta1b, smyhc2); literature"
+  cite: "playbook §7; ZFIN wt-expr (myod1, mylpfa, acta1b, smyhc2, ttn.1, neb, smyhc1, actc1b, ryr1a); literature; see reference doc"
   ontology_anchor:
     - ZFA:0000548  # musculature system
-  # The scored marker list was fast-fiber-biased; smyhc2 adds slow fiber, msc/myoz1a/pvalb3
-  # add regulatory + Z-disc + calcium-handling breadth.
+  # Fast-fiber TFs + sarcomere breadth, plus mature/structural markers (titin, nebulin, slow myosin,
+  # SR calcium) that cross-atlas late/cranial-muscle clusters express. Cardiac paralogs kept OUT
+  # (ttn.2, actc1a/actc1c, tpm1 are heart-primary); pax3a held out too (myogenic but leaks into
+  # neural crest / dorsal neural tube).
   markers:
     - myod1    # myogenic regulatory factor; master TF for myoblast commitment
     - myog     # myogenin; terminal myogenic differentiation
@@ -256,6 +258,11 @@ muscle:
     - msc      # musculin; myogenic bHLH (cranial/fin muscle)
     - myoz1a   # myozenin 1a; sarcomeric Z-disc
     - pvalb3   # parvalbumin 3; myotome/skeletal-muscle calcium buffering
+    - ttn.1    # titin, tandem duplicate 1; giant sarcomere protein (runzel); mature skeletal muscle
+    - neb      # nebulin; thin-filament length regulator; mature skeletal muscle
+    - smyhc1   # slow myosin heavy chain 1; slow skeletal fiber
+    - actc1b   # actin alpha cardiac 1b; despite the name, the skeletal-enriched sarcomeric actin
+    - ryr1a    # ryanodine receptor 1a; SR calcium release; mature skeletal muscle
 
 cardiac:
   germ_layer: mesoderm
