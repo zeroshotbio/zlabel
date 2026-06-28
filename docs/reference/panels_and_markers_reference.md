@@ -18,7 +18,7 @@ coarse prior, not the namer: biological resolution comes from the ontology walk 
 
 Three fields drive the engine:
 
-- **`markers`** — current ZFIN gene symbols. The scorer ranks buckets by how a
+- **`markers`** — current ZFIN gene symbols (the grounding spine). The scorer ranks buckets by how a
   cluster's genes overlap each panel's markers; the best overlap wins. This is the
   only field that selects a bucket.
 - **`ontology_anchor`** — one or more ZFA terms. The winning panel's anchor seeds the
@@ -26,6 +26,11 @@ Three fields drive the engine:
   for ZFA terms, and the walk steps down from the anchor to the deepest term the genes
   converge on. This is the only field that sets where naming starts.
 - **`kind`** — `identity` or `state`.
+
+An optional **`scoring_markers`** list holds markers kept for overlap scoring only — they aid
+bucket selection but are not required to express under the anchor in ZFIN. `Panel.markers` is the
+union of the spine and `scoring_markers` (what the scorer sees); the grounding audit
+(`scripts/audit_panels.py`) requires only the spine to ground, and fails if a spine marker does not.
 
 `germ_layer` / `tissue` / `lineage` supply a fallback label when the evidence does not
 converge; `cite` records provenance. A panel proposes a neighbourhood; the ZFA
@@ -131,11 +136,11 @@ state is recorded separately.
   (`ZFA:0001074`) is one of its anchors — which share hair-cell and placodal markers
   (`atoh1a`, `eya1`, `six1b`) with `otic`. A cluster grounds under whichever anchor
   its expression supports; there is no separate taste-bud bucket at this broad altitude.
-- **mural** sits on a sparsely curated ZFA term, so its contractile markers (`tagln`,
-  `acta2`, `desma`, `cspg4`) mainly aid scoring rather than grounding the descent.
-- **mesenchyme** keeps the type-I collagens (`col1a1a`, `col1a2`) for scoring; they
-  ground in mature connective tissue rather than the embryonic mesenchyme term.
-- **pigment** keeps `xdh` (xanthophore) as a scoring marker.
+- **mural** sits on a sparsely curated ZFA term; `desma` and `cspg4` do not ground under it and are
+  kept in `scoring_markers` (`tagln` and `acta2` do ground and stay in the spine).
+- **mesenchyme** keeps the type-I collagens (`col1a1a`, `col1a2`) in `scoring_markers`: pan-ECM
+  genes that aid overlap but ground in mature connective tissue, not the embryonic mesenchyme term.
+- **pigment** keeps `xdh` (xanthophore) in `scoring_markers` — its ZFIN expression is too sparse to ground.
 - **cardiac** descends toward cardiac muscle (`ZFA:0005280`); Daniocell has no heart
   tissue, so this panel is exercised by other atlases rather than that benchmark.
 

@@ -58,14 +58,17 @@ class Panel:
         tissue (str): Tissue or organ system (e.g. muscle, blood).
         lineage (str): Lineage or cell-type category (e.g. erythroid, skeletal
             muscle).
-        markers (frozenset[str]): Lowercased current ZFIN symbols that define
-            this bucket. Lowercased at load time so lookup is O(1) and
-            case-insensitive.
+        markers (frozenset[str]): The full scored vocabulary for this bucket
+            (the grounding spine plus scoring_markers), lowercased current ZFIN
+            symbols. Lowercased at load time so lookup is O(1) and case-insensitive.
         cite (str): Citation or provenance of this panel's marker list.
         kind (str): identity or state.
         ontology_anchor (frozenset[str]): ZFA ids the bucket's markers should
             express under. Used by Phase 3 grounding to compute the grounding
             confidence component. Empty for state panels.
+        scoring_markers (frozenset[str]): The subset of markers kept for overlap
+            scoring only, not required to express under the anchor. The grounding
+            spine is markers minus scoring_markers. Empty for most panels.
     """
 
     bucket: str
@@ -76,6 +79,7 @@ class Panel:
     cite: str
     kind: str
     ontology_anchor: frozenset[str] = field(default_factory=frozenset)
+    scoring_markers: frozenset[str] = field(default_factory=frozenset)
 
 
 @dataclass(frozen=True)
@@ -163,9 +167,10 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
     """Load all panels from a YAML file.
 
     Expects a top-level mapping from bucket name to a dict with keys
-    germ_layer, tissue, lineage, kind, markers, cite, and an optional
-    ontology_anchor list. Markers are lowercased at load time. Raises ValueError
-    for an unrecognized kind or an empty marker list.
+    germ_layer, tissue, lineage, kind, markers, cite, and optional
+    ontology_anchor and scoring_markers lists. Markers (and scoring_markers) are
+    lowercased at load time; Panel.markers is their union (the scored vocabulary).
+    Raises ValueError for an unrecognized kind or an empty marker list.
 
     Args:
         path (str | os.PathLike[str]): Path to a YAML panel file (typically
@@ -201,7 +206,12 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
         markers_raw: list[str] = entry.get("markers", [])  # type: ignore[assignment]
         if not markers_raw:
             raise ValueError(f"panel {bucket!r} has no markers")
-        markers = frozenset(marker.lower() for marker in markers_raw)
+        # markers is the grounding spine; scoring_markers (optional) aid the overlap score but are not
+        # required to ground. The scorer matches the full vocabulary (the union); the audit's grounding
+        # bar applies to the spine = markers minus scoring_markers.
+        scoring_raw: list[str] = entry.get("scoring_markers", [])  # type: ignore[assignment]
+        scoring_markers = frozenset(marker.lower() for marker in scoring_raw)
+        markers = frozenset(marker.lower() for marker in markers_raw) | scoring_markers
 
         # Anchor must be a list of ids; a bare scalar (ontology_anchor: ZFA:0000548)
         # would otherwise become a frozenset of characters instead of failing.
@@ -220,6 +230,7 @@ def load_panels(path: str | os.PathLike[str]) -> list[Panel]:
                 cite=str(entry.get("cite", "")),
                 kind=kind,
                 ontology_anchor=ontology_anchor,
+                scoring_markers=scoring_markers,
             )
         )
     return panels
