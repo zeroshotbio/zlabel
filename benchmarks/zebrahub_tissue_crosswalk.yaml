@@ -1,0 +1,38 @@
+# Zebrahub broad-class crosswalk -- eval-only, gold-side (held-out 3rd-atlas generalization check).
+#
+# Maps each Zebrahub `cell_type` class (Lange et al. 2024; CZ Biohub reference) to one or more broad
+# ZFA anchor terms, in ZFA-ancestry space. evaluate.py scores broad agreement as
+# any(grounds_under(prediction_zfa_id, anchors)).
+#
+# COARSE WALL. The local Zebrahub file is the scANVI reference, annotated at only 10 broad classes on
+# a developmental-domain axis (paraxial/lateral/intermediate mesoderm, ...), each with a native ZFA id
+# (kept in a comment below). zlabel grounds via is_a+part_of only (not develops_from), so a class is
+# mapped to the broad ZFA anchor(s) its NAME canonically denotes, at the altitude where a correct broad
+# call grounds -- e.g. CNS includes nervous system; paraxial mesoderm includes its principal muscle
+# fate. Anchors are curated GOLD-BLIND from each class's standard biology, NOT from the cluster's
+# observed markers and NOT to help or hurt zlabel; every id was verified to exist in zfa.obo by name.
+# Coarse pooling means a class need not converge to its canonical fate (e.g. this reference's
+# intermediate_mesoderm is endothelial-dominated) -- such honest disagreements are expected.
+# FAILS CLOSED: every class is mapped or explicitly not_scored. `review:` tags the least-certain anchors.
+
+tissues:
+  neural_crest:
+    anchors: [ZFA:0000045]                          # neural crest (native ZFA:0000045)
+  central_nervous_system:
+    anchors: [ZFA:0000012, ZFA:0000396]             # central nervous system (native); nervous system
+  paraxial_mesoderm:
+    anchors: [ZFA:0000255, ZFA:0000548]             # paraxial mesoderm (native); musculature system  # review: somite -> trunk muscle is the principal fate
+  lateral_mesoderm:
+    not_scored: true                                # native ZFA:0001065; multi-lineage (heart/blood/vessel/kidney/fin) -- no single broad anchor
+  mesenchyme:
+    anchors: [ZFA:0000393]                          # mesenchyme (native ZFA:0000393)
+  intermediate_mesoderm:
+    anchors: [ZFA:0001206, ZFA:0000151, ZFA:0000529]  # intermediate mesoderm (native); pronephros; kidney  # review: IM -> (pro)nephros is the canonical fate
+  hematopoietic_system:
+    anchors: [ZFA:0005023, ZFA:0000007, ZFA:0001159]  # hematopoietic system (native); blood; immune system
+  periderm:
+    anchors: [ZFA:0001185, ZFA:0000105]             # periderm (native); epidermis (periderm is the outer epidermal layer)
+  notochord:
+    anchors: [ZFA:0000135]                          # notochord (native ZFA:0000135)
+  endoderm:
+    anchors: [ZFA:0000017, ZFA:0000339]             # endoderm (native); digestive system

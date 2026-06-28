@@ -20,7 +20,7 @@ Types: feat, fix, chore, refactor, test, docs, ci, perf.
 
 ```bash
 make verify    # lint + docstrings + types + tests
-make gate-all  # both regression walls: Daniocell (hard) + held-out ZSCAPE (directional read)
+make gate-all  # all regression walls: Daniocell (hard) + ZSCAPE + Zebrahub (held-out, directional)
 ```
 
 `make gate-all` needs `data/ontologies`; install it once as a pre-commit hook with `make hooks` so

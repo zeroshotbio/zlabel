@@ -188,7 +188,7 @@ can and cannot do, and why.
 **Generalization, measured on a 2nd atlas (ZSCAPE, 2026-06-27).** The claim above was put to a held-out
 test: zlabel UNCHANGED (committed default thresholds) on the wild-type-control subset of the ZSCAPE
 perturbation atlas (Saunders 2023), genes harmonized ENSDARG→ZFIN symbol (93% map), scored gold-blind
-against benchmarks/zscape_tissue_crosswalk.yaml (scripts/build_zscape_eval.py, run_zscape_eval.py).
+against benchmarks/zscape_tissue_crosswalk.yaml (scripts/build_zscape_eval.py; scripts/atlas_eval.py).
 Where zlabel makes a named call it **generalizes — 88.9% broad agreement (16/18), above Daniocell's
 71.3%** — and its characteristic confusions reproduce (hatching-gland → epidermis), so the boundary is a
 property of the method, not Daniocell overfitting. Coverage is lower (22% vs 35% non-abstain): of the 75
@@ -201,6 +201,16 @@ the right panel under threshold → honest abstention. Caveats: the named-N is o
 overlaps Daniocell's 71.3%, so read this as consistent-with-generalization, not proof of higher accuracy)
 and the ZSCAPE key is itself fallible. Actionable read: broadening panel marker vocabulary would lift
 cross-atlas coverage; the anchors hold.
+
+**Generalization, a 3rd atlas (Zebrahub, 2026-06-28).** Added as a held-out wall through one
+atlas-parameterized harness (scripts/atlas_eval.py drives ZSCAPE and Zebrahub from a small registry;
+Daniocell stays the hard byte-gate). zlabel UNCHANGED on the CZ-Biohub Zebrahub reference (Lange 2024)
+— an independent lab and wild-type design. This reference is **coarse**: 10 broad germ-layer classes,
+each with a native ZFA id, so it is a broad-lineage cross-lab sanity check, not a fine cell-type eval
+(lateral_mesoderm is multi-lineage → not_scored). The 2nd-atlas finding reproduces: 100% agreement on
+the 2 named calls but 67% abstain — the same Daniocell-tuned marker-vocabulary gap (e.g. the CNS class
+leads with nova2, absent from the neural panel). A finer Zebrahub/ZCL wall is a fast-follow; make
+gate-all now runs all three walls.
 
 ## Public surface (the whole API)
 
