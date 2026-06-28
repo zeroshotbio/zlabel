@@ -217,6 +217,20 @@ the 2 named calls but 67% abstain — the same Daniocell-tuned marker-vocabulary
 leads with nova2, absent from the neural panel). A finer Zebrahub/ZCL wall is a fast-follow; make
 gate-all now runs all three walls.
 
+**Generalization, the marker-vocabulary broadening (shipped, 2026-06-28).** The actionable read above
+was executed. Seven lineages were broadened with canonical, ZFIN-grounded markers (neural, muscle,
+endothelium, then pronephros, ionocyte, interrenal, notochord), sourced gold-blind behind a tiered
+firewall (atlas DE only *seeds* candidates; ZFIN expression + literature *justify* them) and validated
+leave-one-atlas-out. Committed pre-arc baseline (b91f75e) → current: **ZSCAPE coverage 21.9% → 47.9%**
+(more than doubled, accuracy held ~87% on a larger, more stable N); Daniocell 71.8% → 76.1% agreement
+at 37.2% → 42.7% coverage; Zebrahub 22.2% → 33.3% (N=3) — and **thin-support overcalls stayed flat
+(5 / 0 / 0) on every atlas**, so no precision was traded for the recall. This attacks the *recall* gap,
+orthogonal to the selection wall above: the attractor panels are the most promiscuous, not the largest,
+so adding *sharp* markers both closes the gap and lowers their attractor pull — while adding promiscuous
+ones would worsen both, which is why connective (all-promiscuous candidates) stays walled and pigment/eye
+was a measured NO-GO. Full record, per-lineage tables, and the no-forcing-vs-soft-set forcing frontier:
+[`docs/reference/cross_atlas_marker_broadening.md`](reference/cross_atlas_marker_broadening.md).
+
 ## Public surface (the whole API)
 
 ### Phase 2 primitives (lower-level API)
