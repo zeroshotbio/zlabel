@@ -49,7 +49,10 @@ make test     # pytest
 make verify   # lint + docstrings + types + tests
 make eval     # regenerate the Daniocell baseline report (needs data/ontologies)
 make gate     # regression wall: regenerate baseline, fail on drift / overcall regression
-make hooks    # install the pre-commit hook that runs `make gate` on engine/panel/benchmark changes
+make eval-zscape  # regenerate the held-out ZSCAPE 2nd-atlas report (needs data/ontologies)
+make gate-zscape  # held-out wall: ZSCAPE report drift, with a directional (generalization) read
+make gate-all     # both regression walls: Daniocell (hard) + ZSCAPE (held-out)
+make hooks    # install the pre-commit hook that runs `make gate-all` on engine/panel/benchmark changes
 ```
 
 ## Tech stack

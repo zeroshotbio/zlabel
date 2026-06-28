@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup setup-core setup-upgrade format lint lint-docstrings type test verify audit eval gate hooks notebook
+.PHONY: help setup setup-core setup-upgrade format lint lint-docstrings type test verify audit eval gate eval-zscape gate-zscape gate-all hooks notebook
 
 help:  ## Show this help
 	@awk 'BEGIN {FS = ":.*## "; print "Usage: make <target>\n"} /^##@/ {printf "\n%s\n", substr($$0, 5)} /^[a-zA-Z0-9_.-]+:.*## / {printf "  %-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -44,8 +44,16 @@ eval:  ## Regenerate the Daniocell baseline report (needs data/ontologies)
 gate:  ## Regression wall: fail on baseline drift / overcall-audit regression (needs data/ontologies)
 	uv run python scripts/check_baseline.py
 
+eval-zscape:  ## Regenerate the held-out ZSCAPE 2nd-atlas report (needs data/ontologies)
+	uv run python scripts/run_zscape_eval.py
+
+gate-zscape:  ## Held-out wall: regenerate the ZSCAPE report, fail on drift with a directional read (needs data/ontologies)
+	uv run python scripts/check_zscape_baseline.py
+
+gate-all: gate gate-zscape  ## Both regression walls: Daniocell (hard) + ZSCAPE (held-out)
+
 ##@ Development
-hooks:  ## Install the git pre-commit hook (runs make gate on engine/panel/benchmark changes)
+hooks:  ## Install the git pre-commit hook (runs make gate-all on engine/panel/benchmark changes)
 	install -m 0755 scripts/hooks/pre-commit .git/hooks/pre-commit
 	@echo "installed .git/hooks/pre-commit"
 
