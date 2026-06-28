@@ -28,7 +28,7 @@ def main() -> int:
     """Score zlabel on the ZSCAPE eval set and write/print the report. Returns 0, or 1 if data is absent."""
     required = [DATA / "zfa.obo", DATA / "zfin_wildtype_expression.txt", DATA / "zfin.gaf"]
     if not all(path.exists() for path in required):
-        print("SKIP run-zscape-eval: data/ontologies absent (run scripts/setup_data.sh).")
+        print("run-zscape-eval: cannot regenerate, data/ontologies absent (run scripts/setup_data.sh).")
         return 1
 
     resources = load_resources(

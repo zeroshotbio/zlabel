@@ -19,13 +19,13 @@ Types: feat, fix, chore, refactor, test, docs, ci, perf.
 ## Before opening a PR
 
 ```bash
-make verify   # lint + docstrings + types + tests
-make gate     # regression wall: regenerate the baseline, fail on drift / overcall regression
+make verify    # lint + docstrings + types + tests
+make gate-all  # both regression walls: Daniocell (hard) + held-out ZSCAPE (directional read)
 ```
 
-`make gate` needs `data/ontologies`; install it once as a pre-commit hook with `make hooks` so
-the overcall-audit + baseline wall runs automatically on engine/panel/benchmark changes (see
-[`workflow.md`](workflow.md) for when to regenerate the baseline).
+`make gate-all` needs `data/ontologies`; install it once as a pre-commit hook with `make hooks` so
+the overcall-audit + baseline walls run automatically on engine/panel/benchmark changes (see
+[`workflow.md`](workflow.md) for when to regenerate the baselines).
 
 ## Pull requests
 

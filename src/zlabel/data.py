@@ -353,5 +353,7 @@ def load_ensdarg_to_symbol(path: str | os.PathLike[str]) -> dict[str, str]:
             symbol = fields[_ENS_COL_SYMBOL].strip().lower()
             ensembl = fields[_ENS_COL_ENSEMBL].strip()
             if symbol and ensembl:
+                # Last row wins on a repeated Ensembl id; the file is a documented 1-to-1 map, so
+                # duplicates are not expected and the choice is immaterial in practice.
                 mapping[ensembl] = symbol
     return mapping
