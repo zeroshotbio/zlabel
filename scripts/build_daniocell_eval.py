@@ -12,7 +12,7 @@ imported lazily behind the optional [eval] extra, so importing this module needs
 core deps.
 
 Marker defaults (also recorded in benchmarks/README.md): group by clust, scanpy
-rank_genes_groups (default method t-test -- scanpy's own default and about 4x faster than wilcoxon
+rank_genes_groups (default method t-test -- scanpy's own default and about 4× faster than wilcoxon
 at this scale, ~15 vs ~66 min on the 489k-cell matrix; the two are NOT interchangeable at the gene
 level, so set MARKER_METHOD = "wilcoxon" only for a rigorous run -- see the t-test vs wilcoxon note
 in benchmarks/README.md), positive (logfoldchange > 0), non-technical (mitochondrial/ribosomal
@@ -43,7 +43,7 @@ FILES = {
     "metadata": "GSE223922_Sur2023_metadata.tsv.gz",
 }
 
-# t-test is scanpy's default and ~4x faster than wilcoxon at this scale (489k cells x 522
+# t-test is scanpy's default and ~4× faster than wilcoxon at this scale (489k cells × 522
 # clusters): ~15 vs ~66 min. The two do NOT give the same gene lists -- measured top-25 overlap is
 # ~75% (only 10/522 clusters identical), and t-test skews toward housekeeping genes (ribosomal,
 # histone, splicing) on low-signal clusters; at the label level the two still agree in aggregate

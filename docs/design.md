@@ -136,8 +136,8 @@ the same expression path but are strictly weaker — any label→ZFA crosswalk r
 their gene vocabularies are not ZFA-native, and their annotation sets are smaller than ZFIN's. The
 same conclusion held when the marker *source*, not the reference, was improved: recomputing the
 benchmark's DEGs with wilcoxon (vs the committed t-test) recovers the lineage markers t-test buries
-in low-signal clusters (hox, vsx2, meox1) yet moves the labels only marginally — broad agreement
-74→76%, rescuing the odd buried call (otic.19) while the blind-spots stay abstained — better
+in low-signal clusters (`hox`, `vsx2`, `meox1`) yet moves the labels only marginally — broad agreement
+74→76%, rescuing the odd buried call (`otic.19`) while the blind-spots stay abstained — better
 evidence, same downstream wall (measured 2026-06-28; see benchmarks/README.md).
 
 Two corrections fell out: **periderm is not a blind-spot** — it is evidence-rich (97% reachable) and
