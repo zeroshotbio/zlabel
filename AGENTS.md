@@ -54,6 +54,7 @@ make gate-zscape    # held-out wall: ZSCAPE report drift, with a directional (ge
 make eval-zebrahub  # regenerate the held-out Zebrahub 3rd-atlas report (needs data/ontologies)
 make gate-zebrahub  # held-out wall: Zebrahub report drift, with a directional (generalization) read
 make gate-all       # all regression walls: Daniocell (hard) + ZSCAPE + Zebrahub (held-out)
+make scorecard      # print the multi-atlas scorecard (accuracy + coverage + N + vocab-hit, all atlases)
 make hooks    # install the pre-commit hook that runs `make gate-all` on engine/panel/benchmark changes
 ```
 
