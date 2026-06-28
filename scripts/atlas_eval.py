@@ -135,8 +135,16 @@ def directional_read(committed: str, fresh: str, tolerance_pct: float) -> list[s
             continue
         delta = now - was
         tolerance = tolerance_pct if name == "agreement" else 0.0
-        worsened = -delta > tolerance if direction == "up" else delta > tolerance
-        mark = "REGRESSION" if worsened else ("improved" if delta else "flat")
+        better = delta > 0 if direction == "up" else delta < 0
+        worsened = (-delta > tolerance) if direction == "up" else (delta > tolerance)
+        if worsened:
+            mark = "REGRESSION"
+        elif not delta:
+            mark = "flat"
+        elif better:
+            mark = "improved"
+        else:
+            mark = "within tolerance"  # moved the wrong way but inside the guard band
         lines.append(f"  {name}: {was:.1f}% -> {now:.1f}% ({delta:+.1f} pts) [{mark}]")
 
     was_oc, now_oc = _overcalls(committed), _overcalls(fresh)
