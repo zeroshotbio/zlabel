@@ -302,10 +302,13 @@ endothelium:
   tissue: vasculature
   lineage: endothelium
   kind: identity
-  cite: "playbook §7; ZFIN wt-expr (kdrl, fli1, cdh5); literature"
+  cite: "playbook §7; ZFIN wt-expr (kdrl, fli1, cdh5, egfl7, stab2, flt4); literature; see reference doc"
   ontology_anchor:
     - ZFA:0005249  # vasculature
     - ZFA:0009065  # endothelial cell
+  # Broadened with sharp endothelial markers (egfl7, stab2, flt4) that RAISE the panel's mean
+  # specificity -- this is an attractor bucket, so only sharp grounders are added (esama held: too
+  # promiscuous; would trip the curation promiscuity guard).
   markers:
     - kdrl     # kinase insert domain receptor like (VEGFR2); vascular endothelium
     - fli1     # Friend leukemia integration 1; pan-endothelial ETS factor (prev. fli1a)
@@ -313,6 +316,9 @@ endothelium:
     - cdh5     # cadherin 5 (VE-cadherin); endothelial cell-cell junction
     - pecam1a  # platelet endothelial cell adhesion molecule 1a; pan-endothelial (prev. pecam1)
     - flt1     # fms related receptor tyrosine kinase 1 (VEGFR1); venous/tip cells
+    - egfl7    # EGF-like domain 7; endothelial-secreted; highly vascular-specific
+    - stab2    # stabilin 2; sinusoidal/venous endothelium scavenger receptor
+    - flt4     # fms related receptor tyrosine kinase 4 (VEGFR3); lymphatic/venous endothelium
 
 blood_erythroid:
   germ_layer: mesoderm

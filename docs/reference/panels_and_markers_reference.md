@@ -89,7 +89,7 @@ tier; † = anchors span more than one rung.
 | muscle | musculature system `ZFA:0000548` · organ_system | myod1, myog, myf5, mylpfa, acta1b, tnnt3a, tnnc2.2, ckma, smyhc2, msc, myoz1a, pvalb3, ttn.1, neb, smyhc1, actc1b, ryr1a |
 | cardiac | heart `ZFA:0000114` · organ | myl7, myh6, myh7, nppa, tnnt2a, ttn.2 |
 | mural | mural cell `ZFA:0005944` · cell_type | pdgfrb, notch3, tagln, acta2 _(+desma, cspg4 scoring)_ |
-| endothelium † | vasculature `ZFA:0005249` + endothelial cell `ZFA:0009065` · cell_type | kdrl, fli1, etsrp, cdh5, pecam1a, flt1 |
+| endothelium † | vasculature `ZFA:0005249` + endothelial cell `ZFA:0009065` · cell_type | kdrl, fli1, etsrp, cdh5, pecam1a, flt1, egfl7, stab2, flt4 |
 | blood_erythroid | blood `ZFA:0000007` + hematopoietic system `ZFA:0005023` · organ_system | gata1a, hbae1.1, hbbe2, alas2, klf1, slc4a1a, cahz |
 | immune_myeloid | immune system `ZFA:0001159` + hematopoietic system `ZFA:0005023` · organ_system | lcp1, mpeg1.1, coro1a, spi1b, mfap4.1, lyz, csf1ra |
 | blood_lymphoid | lymphocyte `ZFA:0009250` · cell_type | lck, rag1, rag2, il7r, cd8a |

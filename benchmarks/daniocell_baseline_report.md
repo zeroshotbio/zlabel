@@ -3,28 +3,28 @@
 - clusters: 522  ·  scored: 511  ·  not_scored: 11
 
 ## Broad agreement (named + fallback, scored against the gold tissue)
-- agreement: 74.4% (128/172)
+- agreement: 74.0% (128/173)
 
 ## Coverage / split (over scored clusters)
-- coverage (non-abstain): 41.9% (214/511)
-- named: 32.9% (168/511)
+- coverage (non-abstain): 42.1% (215/511)
+- named: 33.1% (169/511)
 - fallback: 0.8% (4/511)
 - rollup: 8.2% (42/511)
-- abstain: 58.1% (297/511)
+- abstain: 57.9% (296/511)
 
 ## Agreement by prediction class
-- named: 74.4% (125/168)
+- named: 74.0% (125/169)
 - fallback: 75.0% (3/4)
 
 ## Confidence by correctness (named + fallback)
 - high: 100.0% (20/20)
 - medium: 70.3% (26/37)
-- low: 71.3% (82/115)
+- low: 70.7% (82/116)
 
 ## Parent-child overcall audit (named calls)
-- named calls audited: 168
-- won with exactly CONVERGENCE_MIN=3 genes: 3.0% (5/168)
-- thin-support overcalls (won at min, broader parent had more support): 3.0% (5/168)
+- named calls audited: 169
+- won with exactly CONVERGENCE_MIN=3 genes: 3.0% (5/169)
+- thin-support overcalls (won at min, broader parent had more support): 3.0% (5/169)
 
 Lowest support-fraction named calls (child support / best-parent support), top 15:
 - musc.19: segmental plate (3) vs portion of tissue (22)  -> fraction 0.14
@@ -57,15 +57,15 @@ Lowest support-fraction named calls (child support / best-parent support), top 1
 - fin.3: gold fin, predicted 'epidermis' (named)
 - fin.5: gold fin, predicted 'epidermis' (named)
 - fin.9: gold fin, predicted 'fin fold pectoral fin bud' (named)
-- hema.18: gold hema, predicted 'blood vasculature' (named)
+- hema.2: gold hema, predicted 'blood vessel' (named)
 - hema.24: gold hema, predicted 'dorsal aorta' (named)
-- ... and 29 more
+- ... and 30 more
 
 ## Marker visibility (vocab-hit-rate)
 - median fraction of a cluster's markers in the panel vocabulary (scored): 12.0%
 
 ## Attractor over-attribution (named scored disagreements grounding under each attractor)
 - epidermis: 24
-- endothelium: 4
+- endothelium: 5
 - mesenchyme: 2
 - neural: 11
