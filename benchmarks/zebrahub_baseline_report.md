@@ -6,11 +6,11 @@
 - agreement: 100.0% (2/2)
 
 ## Coverage / split (over scored clusters)
-- coverage (non-abstain): 33.3% (3/9)
+- coverage (non-abstain): 22.2% (2/9)
 - named: 22.2% (2/9)
 - fallback: 0.0% (0/9)
-- rollup: 11.1% (1/9)
-- abstain: 66.7% (6/9)
+- rollup: 0.0% (0/9)
+- abstain: 77.8% (7/9)
 
 ## Agreement by prediction class
 - named: 100.0% (2/2)
@@ -31,7 +31,7 @@ Lowest support-fraction named calls (child support / best-parent support), top 1
 ## Failure gallery (scored disagreements)
 
 ## Marker visibility (vocab-hit-rate)
-- median fraction of a cluster's markers in the panel vocabulary (scored): 8.0%
+- median fraction of a cluster's markers in the panel vocabulary (scored): 12.0%
 
 ## Attractor over-attribution (named scored disagreements grounding under each attractor)
 - epidermis: 0

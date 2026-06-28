@@ -16,6 +16,7 @@ dedicated ZFIN alias/previous-symbol table will be added in a later phase.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 
@@ -151,3 +152,45 @@ def resolved_symbols(normalized_markers: list[NormalizedSymbol]) -> list[str]:
         for normalized_marker in normalized_markers
         if normalized_marker.status == STATUS_RESOLVED
     ]
+
+
+# Clone/provisional/accession token patterns -- not curated gene symbols. Differential-expression
+# marker lists carry these; they never match a panel and only dilute the scorer when they resolve.
+_PROVISIONAL_PREFIXES = ("si:", "zgc:", "zmp:", "wu:", "im:", "sb:")  # Sanger/genomic clone names
+_LOC_RE = re.compile(r"^LOC\d+")  # NCBI placeholder gene ids, e.g. LOC100537342
+_MITO_CONTIG_RE = re.compile(r"^NC-")  # mito-genome contig tokens, e.g. NC-002333.4
+_ACCESSION_RE = re.compile(r"^[A-Z]{2,}\d+\.\d+")  # clone/contig accessions, e.g. BX000438.2, CABZ01021592.1
+
+
+def is_uninformative(symbol: str) -> bool:
+    """Whether a marker token is a clone/provisional name or accession, not a real gene symbol.
+
+    Differential-expression marker lists often carry tokens that are not curated gene symbols:
+    Sanger/genomic clone names (the si:, zgc:, zmp:, wu:, im:, sb: prefixes), NCBI placeholder ids
+    (LOC...), mito-contig tokens (NC-...), and clone/contig accessions (BX..., CABZ...). These never
+    match a panel and, when they resolve through the GAF, only dilute the scorer; dropping them at
+    marker-selection time lets real markers backfill. The accession check is case-sensitive: a real
+    zebrafish symbol is lowercase (cd63, id1, fn1a), so the uppercase rule never catches one.
+
+    Args:
+        symbol (str): A marker token.
+
+    Returns:
+        bool: True when the token is a clone/provisional name or an accession, not a gene symbol.
+    """
+    stripped = symbol.strip()
+    if stripped.lower().startswith(_PROVISIONAL_PREFIXES):
+        return True
+    return bool(_LOC_RE.match(stripped) or _MITO_CONTIG_RE.match(stripped) or _ACCESSION_RE.match(stripped))
+
+
+def drop_uninformative(markers: Iterable[str]) -> list[str]:
+    """Drop clone/provisional/accession tokens, preserving input (rank) order.
+
+    Args:
+        markers (Iterable[str]): Marker tokens, most significant first.
+
+    Returns:
+        list[str]: The informative markers, order preserved (see is_uninformative).
+    """
+    return [marker for marker in markers if not is_uninformative(marker)]
