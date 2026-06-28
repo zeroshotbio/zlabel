@@ -197,9 +197,13 @@ ionocyte:
   tissue: skin
   lineage: ionocyte
   kind: identity
-  cite: "ZFIN wt-expr (foxi3a, trpv6, slc12a10.2); literature"
+  cite: "ZFIN wt-expr (foxi3a, trpv6, slc12a10.2, clcn2c, slc4a4b, atp1a1a.1); literature; see reference doc"
   ontology_anchor:
     - ZFA:0005323  # ionocyte
+  # Added the differentiated ion-transport effectors (clcn2c/slc4a4b/atp1a1a.1) alongside the foxi3
+  # specification TFs; transport genes score promiscuous (spec ~0.07-0.10: ion transport is tissue-
+  # shared, atp1a1a.1 the lowest as a pan-epithelial Na/K pump) but ground under ionocyte and are
+  # canonical -- ionocyte is not an attractor, so the audit only warns and the flips stay clean.
   markers:
     - foxi3a   # forkhead box I3a; ionocyte master TF
     - foxi3b   # forkhead box I3b; ionocyte specification
@@ -207,6 +211,9 @@ ionocyte:
     - slc12a10.2  # Na-Cl cotransporter; NCC ionocytes
     - trpv6    # calcium channel; Ca2+-transporting ionocytes
     - atp1b1b  # Na/K-ATPase beta 1b; ion transport
+    - clcn2c   # chloride channel 2c; Cl- transport in ionocytes
+    - slc4a4b  # sodium bicarbonate cotransporter 4a4b; HCO3- handling
+    - atp1a1a.1  # Na/K-ATPase alpha 1a.1; sodium pump in Na-absorbing ionocytes
 
 pigment:
   germ_layer: neural crest
@@ -376,11 +383,13 @@ pronephros:
   tissue: kidney
   lineage: nephron
   kind: identity
-  cite: "ZFIN wt-expr (pax2a, cdh17, slc12a1, nphs1, nphs2); literature"
+  cite: "ZFIN wt-expr (pax2a, cdh17, slc12a1, aqp8b, slc26a1); literature; see reference doc"
   ontology_anchor:
     - ZFA:0000151  # pronephros
   # Podocytes were represented only by the TFs wt1a/wt1b; nphs1/nphs2 add the differentiated
-  # slit-diaphragm markers that identify the mature podocyte.
+  # slit-diaphragm markers that identify the mature podocyte. The tubule was thin on transporters,
+  # so aqp8b/slc26a1 add the differentiated solute-transport markers. cdh16 (KSP-cadherin) was held
+  # out: the thyroid follicle cluster co-expresses it with pax2a and was over-called as pronephros.
   markers:
     - pax2a    # paired box 2a; pronephric/nephron progenitor TF
     - wt1a     # Wilms tumor 1a; podocyte/glomerulus
@@ -391,6 +400,8 @@ pronephros:
     - pax8     # paired box 8; nephron progenitor
     - nphs1    # nephrin; differentiated podocyte slit diaphragm
     - nphs2    # podocin; differentiated podocyte slit diaphragm
+    - aqp8b    # aquaporin 8b; renal tubule water transport
+    - slc26a1  # solute carrier 26a1 (sulfate/anion exchanger); renal tubule
 
 mesenchyme:
   germ_layer: mesoderm
@@ -449,7 +460,7 @@ notochord:
   tissue: notochord
   lineage: axial mesoderm
   kind: identity
-  cite: "playbook §7; ZFIN wt-expr (tbxta, shha, col8a1a); literature"
+  cite: "playbook §7; ZFIN wt-expr (tbxta, shha, col8a1a, matn3a, matn3b, chad); literature; see reference doc"
   ontology_anchor:
     - ZFA:0000135  # notochord
   markers:
@@ -458,6 +469,9 @@ notochord:
     - col2a1a  # collagen type II alpha 1a; notochord sheath ECM (shared with cartilage)
     - col8a1a  # collagen type VIII alpha 1a; notochord sheath ECM
     - noto     # notochord homeobox; notochord-specific TF
+    - matn3a   # matrilin 3a; notochord sheath / vacuolated-cell ECM
+    - matn3b   # matrilin 3b; notochord sheath ECM
+    - chad     # chondroadherin; notochord/sheath ECM (leucine-rich proteoglycan)
 
 fin:
   germ_layer: mesoderm
@@ -583,7 +597,7 @@ interrenal:
   tissue: interrenal gland
   lineage: steroidogenic
   kind: identity
-  cite: "ZFIN wt-expr (nr5a1a, cyp11a1.1, star); literature"
+  cite: "ZFIN wt-expr (nr5a1a, cyp11a1.1, star, cyp21a2); literature; see reference doc"
   ontology_anchor:
     - ZFA:0001345  # interrenal gland (teleost adrenal homolog)
   markers:
@@ -591,6 +605,7 @@ interrenal:
     - cyp11a1.1 # cholesterol side-chain cleavage; steroidogenesis
     - star     # steroidogenic acute regulatory protein; steroidogenesis
     - mc2r     # melanocortin 2 receptor (ACTH receptor); interrenal
+    - cyp21a2  # steroid 21-hydroxylase; cortisol/mineralocorticoid synthesis (canonical interrenal)
 
 pineal:
   germ_layer: ectoderm
