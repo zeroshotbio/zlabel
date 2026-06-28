@@ -344,8 +344,22 @@ specific term winning on the bare `CONVERGENCE_MIN` while a broader parent had m
 calls in 146 named clusters. The engine is untouched by the eval; the audit replays the vote tally
 privately. Daniocell's broad labels cannot validate
 within-bucket fine-naming, so depth correctness there is reported by the structural audit, not
-checked against truth — finer-reference depth validation (ZSCAPE/Zebrahub) and bare-LLM /
-panels-only baselines are deferred to a future calibration pass.
+checked against truth; finer-reference depth validation (ZSCAPE/Zebrahub) is deferred to a future pass.
+
+**Measured against off-the-shelf annotators** (the `zlabel-bench` companion). Given the same marker
+lists zlabel sees, the abstaining engine was compared head-to-head with a frontier LLM marker-namer
+(gpt-5.4) and CASSIA (the reference-free multi-agent SOTA), both markers-only. zlabel calls ~30% of
+clusters at **71% broad agreement**; the forced callers commit on ~85–90% but are right only
+**29–43%** of the time — and on precisely the clusters zlabel abstains on they crater to **21–38%**
+(vs 47–63% on the ones it calls). The abstention is therefore *calibrated*: it declines exactly where
+the task is hard for everyone. Under a net-utility score (`correct − λ·wrong`, an abstention scored
+0), zlabel is the only method that creates positive value once a confident wrong call costs more than
+~0.4× a correct one; the forced callers go net-negative (more confident errors than correct calls).
+And the `ood` flag behaves as §Resolution intends: forcing only `in_set` abstentions stays
+net-positive and beats every forced LLM, while forcing the `structural`/`doublet`/`no_signal`
+blind-spots tips it negative — direct confirmation that `in_set` is the soft, force-able residual and
+the others are not. (Grading equalizes the ZFA tissue/cell-type axis uniformly across methods; see
+the companion's eval spec.)
 
 ## Build order (7 phases, one PR each)
 

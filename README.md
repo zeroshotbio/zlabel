@@ -49,6 +49,8 @@ Built in [7 phases, one PR each](.claude/docs/workflow.md):
 - [ ] **Phase 6** — Notebooks 02/03 (scanpy clustering → markers → zlabel; end-to-end 48 hpf)
 - [ ] **Phase 7** — LLM (optional) (`explain.py` narrator behind the `[llm]` extra)
 
+**Validated against off-the-shelf annotators** — the `zlabel-bench` companion runs a frontier LLM marker-namer (gpt-5.4) and CASSIA (the reference-free SOTA) on the same Daniocell substrate. zlabel's calibrated abstention is the only net-positive policy; the forced callers — wrong 60–80% of the time on the clusters zlabel declines — go net-negative. See `docs/design.md` §Validation.
+
 ## Usage
 
 Phases 1–4a ship, plus the Phase 4b Daniocell evaluation harness. All loaders run offline (no network after `setup_data.sh`).
