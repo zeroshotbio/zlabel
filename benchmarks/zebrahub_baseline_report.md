@@ -29,3 +29,12 @@ Lowest support-fraction named calls (child support / best-parent support), top 1
 - periderm: epidermis (17) vs organism subdivision (20)  -> fraction 0.85
 
 ## Failure gallery (scored disagreements)
+
+## Marker visibility (vocab-hit-rate)
+- median fraction of a cluster's markers in the panel vocabulary (scored): 8.0%
+
+## Attractor over-attribution (named scored disagreements grounding under each attractor)
+- epidermis: 0
+- endothelium: 0
+- mesenchyme: 0
+- neural: 0

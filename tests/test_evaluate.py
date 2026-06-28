@@ -194,6 +194,28 @@ def test_cluster_outcomes_abstain_reason_no_panel(resources):
     assert outcome.agrees is None
 
 
+def test_cluster_outcomes_vocab_hit_rate(resources):
+    # Panel-vocabulary markers give a positive hit rate; clone/provisional tokens give zero.
+    bench = [evaluate.BenchmarkRow("musc.1", MUSCLE_MARKERS, "musc", "somites", 48.0)]
+    crosswalk = evaluate.Crosswalk(anchors={"musc": frozenset({"ZFA:0000548"})}, not_scored=frozenset())
+    outcome = evaluate.cluster_outcomes(bench, crosswalk, resources)[0]
+    assert outcome.vocab_hit_rate > 0.0
+    junk = [evaluate.BenchmarkRow("junk.1", ["si:ch211-1a1.1", "zgc:12345"], "musc", "somites", 48.0)]
+    junk_outcome = evaluate.cluster_outcomes(junk, crosswalk, resources)[0]
+    assert junk_outcome.vocab_hit_rate == 0.0
+
+
+def test_render_report_includes_visibility_and_attractor_sections():
+    # The two broadening-indicator sections render with their values, appended after the gallery.
+    report = evaluate.Report(total=3, not_scored=0)
+    report.vocab_hit_rates = [0.0, 0.2, 0.4]  # median 0.2 -> 20.0%
+    report.attractor_disagreements[evaluate.ATTRACTOR_BUCKETS[0]] = 5
+    rendered = evaluate.render_report(report)
+    assert "panel vocabulary (scored): 20.0%" in rendered
+    assert "Attractor over-attribution" in rendered
+    assert f"- {evaluate.ATTRACTOR_BUCKETS[0]}: 5" in rendered
+
+
 def test_label_row_forwards_specificity_blend(resources):
     # The evaluator must forward Resources.alpha + marker_specificity into the scorer.
     # mylpfa+acta1b (ranks 1-2) hit muscle; kdrl (rank 3) hits endothelium. At alpha=0

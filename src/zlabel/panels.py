@@ -30,6 +30,11 @@ from zlabel.genes import STATUS_RESOLVED, NormalizedSymbol
 KIND_IDENTITY = "identity"  # a cell-type lineage bucket
 KIND_STATE = "state"  # a transcriptional program, not a lineage
 
+# The broad, promiscuous-marker panels that out-score true lineages on low-resolution clusters
+# (the measured selection wall in docs/design.md). The eval reports their over-attribution and the
+# curation audit caps their promiscuity; named here once so both read the same set.
+ATTRACTOR_BUCKETS = ("epidermis", "endothelium", "mesenchyme", "neural")
+
 # Panel-specificity for a marker absent from the specificity map. 1.0 means "no
 # specificity evidence, no demotion": an unmapped marker keeps its full rank
 # weight at any blend strength, so absence is neutral rather than penalizing.
