@@ -1,0 +1,98 @@
+cluster_id,gold,tissue_name,stage_hpf,kind,scored,agrees,agrees_overlay,confidence,confidence_score,margin,ood,abstain_reason,n_resolved,n_markers,vocab_hit_rate,depth,zfa_id,bucket,panel_bucket,convergent_genes,attractor_groundings,thin_overcall,support_fraction,n_candidates
+adrenal_gland,Endocrine,adrenal gland,48.0,fallback,1,1,1,medium,0.7026,0.1654,in_set,,24,25,0.08,3,ZFA:0001345,interrenal,interrenal,,,,,1
+anterior_migratory_muscle,Cranial Muscle (Late),anterior migratory muscle,36.0,abstain,1,,,,,0.0958,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,1
+basal_cell,Epidermis,basal cell,48.0,named,1,1,1,low,0.3862,0.058,in_set,,25,25,0.16,6,ZFA:0000105,epidermis,epidermis,cldni;col11a1a;col18a1a;col1a1a;col1a1b;col1a2;col2a1b;col4a5;krt4;krt5;krt91;myh9a;pleca;postnb;rbp4;sparc,epidermis,0,0.727,2
+cardiomyocyte,Heart,cardiomyocyte,48.0,rollup,1,,,medium,0.8696,0.1934,in_set,,25,25,0.2,1,,mesoderm,mesoderm,,,,,2
+chondrocranium,Pharyngeal Arch,chondrocranium,72.0,abstain,1,,,,,0.0,no_signal,no_panel,22,25,0.0,0,,mixed/unresolved,,,,,,0
+connective_tissue_meninges_dermal_fb,Connective Tissue,connective tissue-meninges-dermal FB,48.0,abstain,1,,,,,0.065,structural,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,2
+contains_head_vasculature,Connective Tissue,contains head vasculature?,24.0,abstain,1,,,,,0.0262,in_set,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,1
+cranial_muscle_early,Pharyngeal Arch,cranial muscle (early),48.0,abstain,1,,,,,0.0394,in_set,weak_signal,23,25,0.16,0,,mixed/unresolved,,,,,,4
+cranial_muscle_late,Cranial Muscle (Late),cranial muscle (late),72.0,rollup,1,,,medium,0.8396,0.1445,in_set,,23,25,0.28,1,,mesoderm,mesoderm,,,,,3
+cranial_muscle_mid,Pharyngeal Arch,cranial muscle (mid),48.0,abstain,1,,,,,0.0193,in_set,weak_signal,24,25,0.16,0,,mixed/unresolved,,,,,,3
+cranial_muscle_non_somitic_fast_twitch,Cranial Muscle (Late),"cranial muscle (non-somitic, fast-twitch)",48.0,abstain,1,,,,,0.0897,structural,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,2
+cranial_muscle_progenitor,Pharyngeal Arch,cranial muscle (progenitor),24.0,abstain,1,,,,,0.0,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,3
+cranial_neural_crest,Cranial NC,cranial neural crest,36.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.0,0,,mixed/unresolved,,,,,,0
+differentiating_neuron_1,Central Nervous System,differentiating neuron 1,36.0,named,1,1,1,high,0.9706,0.2706,in_set,,24,25,0.12,5,ZFA:0000008,brain,neural,brsk2b;cux2b;dacha;dla;dlb;ebf1a;ebf2;ebf3a;ek1;elavl3;gdf11;myt1a;myt1b;nova2;pcdh19;plxna2;pou2f2a;rhbdl3;srrm4;tenm4,neural,0,0.952,1
+differentiating_neuron_2,Central Nervous System,differentiating neuron 2,36.0,named,1,1,1,medium,0.6686,0.1482,in_set,,24,25,0.12,8,ZFA:0000079,telencephalon,neural,cux2b;dla;dlb;ebf2;ebf3a;elavl3;nova2;pax2b;rhbdl3;robo3;srrm4;thsd7aa;zfhx3b,neural,0,0.591,1
+differentiating_neuron_hindbrain,Central Nervous System,differentiating neuron (hindbrain),36.0,named,1,1,1,low,0.591,0.1032,in_set,,23,25,0.08,5,ZFA:0000008,brain,neural,adgrv1;brsk2b;cntfr;dacha;ek1;gdf11;ncam1b;ndst3;notch3;nova2;npas3;ntn1a;pax3a;pcdh19;rfx4;tenm4;znf536,neural,0,0.895,2
+dorsal_spinal_cord_neuron,Central Nervous System,dorsal spinal cord neuron,48.0,named,1,1,1,low,0.424,0.0288,in_set,,24,25,0.12,8,ZFA:0000079,telencephalon,neural,atp1a1b;clstn2a;dab1a;dacha;gfap;grid2;ndst3;notch3;nova2;npas3;ntrk3a;zbtb20,neural,0,0.545,3
+endothelium_dorsal_aorta,Endothelial,endothelium (dorsal aorta),48.0,named,1,1,1,high,0.9234,0.2681,in_set,,24,25,0.2,6,ZFA:0001079,blood vasculature,endothelium,akap12b;arhgef9b;cdh5;col4a1;dll4;esama;fgd5a;fli1;flt1;fmnl3;kdrl;ldb2a;mcamb,endothelium,0,0.765,1
+endothelium_f8_clic2,Endothelial,"endothelium (f8+, clic2+)",48.0,named,1,1,1,medium,0.6559,0.1735,in_set,,24,25,0.16,15,ZFA:0000477,posterior cardinal vein,endothelium,cdh5;esama;fgd5a;fli1;flt1;itga9;rasip1;tie1;yrk,endothelium,0,0.474,1
+endothelium_vein_early_artery,Endothelial,endothelium (vein + early artery),36.0,named,1,1,1,high,0.859,0.2561,in_set,,24,25,0.2,15,ZFA:0000477,posterior cardinal vein,endothelium,cdh5;esama;fgd5a;fli1;flt4;mcamb;mrc1a;rasip1;stab1;stab2;tie1,endothelium,0,0.55,1
+eye_optic_cup,Eye,"eye, optic cup",36.0,named,1,1,1,low,0.3757,0.033,in_set,,23,25,0.04,12,ZFA:0000152,retina,neural,cadm3;cdon;crb2a;dachd;efna3b;ephb2a;nova2;pax6a;pcbp4;pcdh17;pcdh19;rorb;sdk1b;unc5b;vax2,neural,0,0.882,1
+fast_committed_myocyte,Cranial Muscle (Late),fast-committed myocyte,18.0,abstain,1,,,,,0.0943,doublet,mixed,24,25,0.16,0,,mixed/unresolved,,,,,,4
+fin_bud_mesoderm_pectoral,Fin,fin bud mesoderm (pectoral),48.0,named,1,1,1,low,0.3565,0.0932,in_set,,24,25,0.08,5,ZFA:0001161,pectoral fin,fin,and1;and2;cntfr;col1a1a;robo3;serpinh1b;vcanb,,0,0.389,2
+fin_fold,Fin,fin fold,48.0,named,1,1,1,low,0.4185,0.0468,in_set,,24,25,0.08,5,ZFA:0001161,pectoral fin,fin,and1;and2;bcam;col18a1a;col1a1a;fras1;frem2a;lama5;myh9a;vcanb;wnt9a,,0,0.611,2
+fin_mesenchyme,Fin,fin mesenchyme,24.0,abstain,1,,,,,0.066,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,1
+floor_plate,Central Nervous System,floor plate,36.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.0,0,,mixed/unresolved,,,,,,0
+glia,Central Nervous System,glia,72.0,abstain,1,,,,,0.0,structural,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,2
+hair_cell,Lateral Line,hair cell,72.0,named,1,1,1,low,0.5576,0.0799,in_set,,24,25,0.08,6,ZFA:0000243,neuromast,lateral_line,eya1;eya4;myo6b;otofb;pcdh15a;pcsk5a,neural,0,0.333,2
+hatching_gland,Hatching Gland,hatching gland,48.0,named,1,0,0,medium,0.7195,0.2099,in_set,,22,25,0.12,6,ZFA:0000105,epidermis,epidermis,cast;ckap4;cyt1;evpla;evplb;fut9d;gmds;krt4;krt5;pleca;ppl;tent5ba,epidermis,0,0.667,1
+head_eye_connective_tissue,Connective Tissue,head/eye connective tissue,24.0,abstain,1,,,,,0.0055,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,2
+head_mesenchyme,Pharyngeal Arch,head mesenchyme,36.0,abstain,1,,,,,0.0586,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,2
+head_mesenchyme_maybe_ventral_hand2,Pharyngeal Arch,"head mesenchyme (maybe ventral, hand2+)",48.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.0,0,,mixed/unresolved,,,,,,0
+head_mesenchyme_pa_cartilage,Pharyngeal Arch,head mesenchyme/PA cartilage,36.0,abstain,1,,,,,0.0,no_signal,no_panel,22,25,0.0,0,,mixed/unresolved,,,,,,0
+hypochord,Hypochord,hypochord,36.0,abstain,1,,,,,0.031,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,3
+hypophysis_locus_coeruleus,Central Nervous System,hypophysis/locus coeruleus,48.0,fallback,1,1,1,low,0.3874,0.0367,in_set,,23,25,0.04,3,ZFA:0001282,pituitary,pituitary,,,,,1
+intestine,Intestine,intestine,72.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.0,0,,mixed/unresolved,,,,,,0
+ionocyte_goblet_cell,Epidermis,ionocyte/goblet cell,36.0,abstain,1,,,,,0.1183,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,1
+iridophore,Pigment,iridophore,48.0,abstain,1,,,,,0.0841,in_set,weak_signal,21,25,0.08,0,,mixed/unresolved,,,,,,1
+jaw_chondrocyte,Pharyngeal Arch,jaw chondrocyte,72.0,abstain,1,,,,,0.0702,doublet,mixed,24,25,0.16,0,,mixed/unresolved,,,,,,3
+ka_neuron,Central Nervous System,KA neuron,36.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.0,0,,mixed/unresolved,,,,,,0
+lens,Eye,lens,48.0,named,1,1,1,low,0.4512,0.0616,in_set,,24,25,0.08,12,ZFA:0000035,lens,eye,capn3a;cryba1b;cryba1l1;cryba2b;cryba4;crybb1;crybb1l1;crybb1l2;crygn2;dacha;fgfrl1b;ivns1abpa;lim2.4;mipa;rbm24a;trpm3;vcana,neural,0,0.85,1
+liver,Liver,liver,72.0,abstain,1,,,,,0.0574,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+mature_fast_muscle,Cranial Muscle (Late),mature fast muscle,36.0,named,1,1,1,high,0.975,0.3394,in_set,,24,25,0.36,5,ZFA:0001056,myotome,muscle,acta1b;actc1b;actn3a;atp2a1;ckma;ckmb;mybphb;myl1;mylpfa;myom1a;neb;ryr3;tnnt3a;tnnt3b;tpma;ttn.1;ttn.2;xirp2a,,0,0.783,1
+mature_slow_muscle,Cranial Muscle (Late),mature slow muscle,36.0,rollup,1,,,medium,0.8824,0.1824,in_set,,24,25,0.32,1,,mesoderm,mesoderm,,,,,3
+melanophore,Epidermis,melanophore,48.0,abstain,1,,,,,0.1292,in_set,weak_signal,23,25,0.12,0,,mixed/unresolved,,,,,,1
+mesodermal_progenitor_cells_contains_psm,Paraxial Mesoderm,mesodermal progenitor cells (contains PSM),18.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.0,0,,mixed/unresolved,,,,,,0
+motor_neuron,Central Nervous System,motor neuron,48.0,named,1,1,1,medium,0.658,0.164,in_set,,24,25,0.16,8,ZFA:0000079,telencephalon,neural,aplp1;cadm4;dab1a;elavl3;elavl4;kcnma1a;nlgn3a;nova2;ppp3ca;rbfox1;slit3;tenm4;unc5a,neural,0,0.619,1
+myeloid_cell,Blood,myeloid cell,48.0,abstain,1,,,,,0.0729,in_set,weak_signal,22,25,0.08,0,,mixed/unresolved,,,,,,1
+myoblast,Cranial Muscle (Late),myoblast,18.0,abstain,1,,,,,0.0055,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,3
+neural_crest_pigment_cell_progenitor,Pigment,neural crest + pigment cell progenitor,18.0,abstain,1,,,,,0.0343,in_set,weak_signal,22,25,0.04,0,,mixed/unresolved,,,,,,1
+neural_progenitor_hindbrain,Central Nervous System,neural progenitor (hindbrain),24.0,named,1,1,1,low,0.4608,0.0669,in_set,,23,25,0.04,5,ZFA:0000008,brain,neural,adgrv1;cntfr;crb2a;dacha;ek1;epha4a;epha4b;fgfr3;lrp2a;ncam1b;ndst3;nova2;ntn1a;pax3a;pcdh19;rfx4;tenm4;zbtb16a;znf536,neural,0,0.95,1
+neural_progenitor_hindbrain_r7_8,Central Nervous System,neural progenitor (hindbrain R7/8),24.0,named,1,1,1,low,0.2312,0.0373,in_set,,23,25,0.08,7,ZFA:0000029,hindbrain,neural,cntfr;col18a1a;crb2a;dacha;hoxb3a;ncam1b;ndst3;notch3;ntn1a;pax3a;pcdh19;pkd1b;rfx4;rhbdl3;tenm4;zbtb16a,neural,0,0.8,2
+neural_progenitor_mhb,Central Nervous System,neural progenitor (MHB),24.0,named,1,1,1,low,0.4127,0.0501,in_set,,22,25,0.04,5,ZFA:0000008,brain,neural,cntfr;crb2a;dacha;efna2a;efna3b;foxp4;ndst3;nova2;pax3a;pax5;pax7a;pax7b;pcdh19;rfx4;tenm3;tenm4;wnt3;znf536,neural,0,0.947,1
+neural_progenitor_telencephalon_diencephalon,Central Nervous System,neural progenitor (telencephalon/diencephalon),48.0,named,1,1,1,low,0.4435,0.1557,in_set,,20,25,0.04,8,ZFA:0000101,diencephalon,neural,adgrv1;cntfr;dab1a;dacha;ek1;lrp2a;ndst3;npas3;pcdh19;tenm3;tenm4;znf536,neural,0,0.75,1
+neural_tube_like_connective_tissue_taste_bud,Connective Tissue,neural tube-like connective tissue (+ taste bud),48.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.0,0,,mixed/unresolved,,,,,,0
+neuromast_support_cell,Lateral Line,neuromast support cell,48.0,rollup,1,,,low,0.5569,0.0287,in_set,,23,25,0.08,1,,ectoderm,ectoderm,,,,,2
+neuron_cranial_ganglia_sensory_rohon_beard,Peripheral Nervous System,"neuron (cranial ganglia sensory, Rohon-Beard)",48.0,named,1,0,0,medium,0.7217,0.1932,in_set,,25,25,0.12,7,ZFA:0000109,forebrain,neural,aplp1;bnc2;cadm3;cbfb;clstn2a;ebf3a;elavl3;elavl4;fgf13a;pcbp4;plxna4;rbfox1;rtn4r;scn8aa,neural,0,0.667,1
+neuron_cranial_ganglion,Peripheral Nervous System,neuron (cranial ganglion),48.0,named,1,0,0,low,0.4044,0.0649,in_set,,25,25,0.12,8,ZFA:0000101,diencephalon,neural,cdh6;cntfr;cntn2;ebf3a;elavl3;eya1;mdga1;msi2a;ntrk3a;pcbp4;pde5ab;prkg1a,neural,0,0.632,3
+neuron_dopaminergic,Central Nervous System,neuron (dopaminergic),48.0,named,1,1,1,low,0.4036,0.041,in_set,,25,25,0.04,8,ZFA:0000079,telencephalon,neural,cadm4;celf5a;dab1a;elavl4;gria3b;kcnd3;kcnma1a;ncam2b;nrxn2a;ntrk3a;syt1a;th,neural,0,0.571,1
+neuron_spinal_cord,Central Nervous System,neuron (+ spinal cord),36.0,named,1,1,1,medium,0.6717,0.1499,in_set,,24,25,0.16,8,ZFA:0000079,telencephalon,neural,cux2b;ebf2;ebf3a;elavl3;elavl4;nova2;pcdh17;robo3;spock1;srrm4;thsd7aa,neural,0,0.55,1
+neuron_telencephalon_glutamatergic,Central Nervous System,"neuron (telencephalon, glutamatergic)",48.0,named,1,1,1,low,0.4554,0.0615,in_set,,25,25,0.04,8,ZFA:0000079,telencephalon,neural,aplp1;celf5a;elavl4;gabbr2;grm8b;kcnma1a;ncam2b;nlgn1;nrxn2a;ntrk3a;syt1a;tenm2a;unc5a,neural,0,0.65,1
+neurons_differentiating_contains_peripheral,Central Nervous System,"neurons (differentiating, contains peripheral)",48.0,named,1,1,1,medium,0.742,0.2013,in_set,,25,25,0.12,8,ZFA:0000079,telencephalon,neural,aplp1;cadm4;celf5a;ebf3a;elavl3;nova2;pbx3b;rbfox1;robo3;spock1;thsd7aa;zfhx3b,neural,0,0.571,1
+neurons_gabaergic_glutamatergic,Central Nervous System,"neurons (gabaergic, glutamatergic)",48.0,named,1,1,1,low,0.4675,0.0927,in_set,,25,25,0.12,8,ZFA:0000079,telencephalon,neural,aplp1;cadm4;celf5a;dab1a;elavl4;fgf13a;gria3b;kcnma1a;nova2;nrxn2a;pbx3b;rbfox1;tenm2a;unc5a,neural,0,0.7,1
+neurons_gabaergic_glutamatergic_contains_purkinje,Central Nervous System,"neurons (gabaergic, glutamatergic; contains Purkinje)",72.0,named,1,1,1,low,0.3719,0.0285,in_set,,25,25,0.04,8,ZFA:0000079,telencephalon,neural,celf5a;dab1a;elavl4;gabbr2;gria3b;grid2;kcnma1a;nlgn1;nrxn2a;rbfox1;tenm2a;unc5a,neural,0,0.571,1
+notochord,Notochord,notochord,36.0,abstain,1,,,,,0.06,doublet,mixed,24,25,0.12,0,,mixed/unresolved,,,,,,2
+odontoblast,Tooth,odontoblast,72.0,abstain,0,,,,,0.0368,structural,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+olfactory_vesicle_bulb,Olfactory,olfactory vesicle/bulb,48.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.0,0,,mixed/unresolved,,,,,,0
+osteoblast,Bone,osteoblast,72.0,rollup,1,,,low,0.5469,0.0191,in_set,,24,25,0.2,1,,mesoderm,mesoderm,,,,,3
+pancreas,Pancreas,pancreas,72.0,abstain,1,,,,,0.0306,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,1
+pectoral_fin_bud_osteoblast,Fin,pectoral fin bud (osteoblast+),24.0,abstain,1,,,,,0.0295,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+periderm,Epidermis,periderm,48.0,named,1,1,1,medium,0.7632,0.2186,in_set,,23,25,0.12,6,ZFA:0000105,epidermis,epidermis,abca12;capn9;cast;cav1;cyt1;evpla;evplb;hsd17b12a;krt4;krt5;pleca;ppl,epidermis,0,0.6,1
+periocular_mesenchyme,Head Mesoderm,periocular mesenchyme,48.0,abstain,1,,,,,0.0279,structural,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+pharyngeal_arch_contains_muscle_early_cartilage,Pharyngeal Arch,"pharyngeal arch (contains muscle, early cartilage)",72.0,abstain,1,,,,,0.0,in_set,weak_signal,22,25,0.12,0,,mixed/unresolved,,,,,,4
+pharyngeal_arch_early,Pharyngeal Arch,pharyngeal arch (early),48.0,abstain,1,,,,,0.0595,structural,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,1
+pharyngeal_arch_nc_derived,Pharyngeal Arch,pharyngeal arch (NC-derived),24.0,abstain,1,,,,,0.0101,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,2
+pharynx,Pharynx,pharynx,24.0,abstain,1,,,,,0.033,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,1
+posterior_lateral_line_primordium,Lateral Line,posterior lateral line primordium,24.0,abstain,1,,,,,0.0369,in_set,weak_signal,23,25,0.12,0,,mixed/unresolved,,,,,,3
+posterior_spinal_cord_progenitors,Central Nervous System,posterior spinal cord progenitors,36.0,named,1,1,1,low,0.1702,0.0287,in_set,,24,25,0.04,8,ZFA:0000101,diencephalon,neural,adgrv1;aopep;cntfr;col18a1a;dacha;foxj1a;lrp2a;ntn1a;pacrg;pcdh19;prickle2b;rfx4,neural,0,0.571,1
+primordial_germ_cell,Germ Line,primordial germ cell,24.0,named,1,1,1,low,0.5465,0.0688,in_set,,25,25,0.16,5,ZFA:0009288,primordial germ cell,germline,ca15b;ddx4;dnd1;nanos3;tdrd7a,,0,0.333,3
+pronephric_duct,Kidney,pronephric duct,36.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.0,0,,mixed/unresolved,,,,,,0
+pronephric_podocyte,Kidney,pronephric podocyte,48.0,named,1,1,1,low,0.5205,0.0915,in_set,,23,25,0.08,6,ZFA:0000151,pronephros,pronephros,bcam;cdon;dachc;iqgap2;kirrel1b;lama5;lmx1bb;magi2a;nphs1;podxl;wt1a,,0,0.647,1
+pronephros_distal_tubule,Kidney,pronephros distal tubule,36.0,abstain,1,,,,,0.0792,in_set,weak_signal,21,25,0.04,0,,mixed/unresolved,,,,,,1
+pronephros_proximal_tubule,Kidney,pronephros proximal tubule,36.0,abstain,1,,,,,0.0478,in_set,weak_signal,22,25,0.04,0,,mixed/unresolved,,,,,,1
+red_blood_cell,Blood,red blood cell,24.0,named,1,1,1,high,0.8123,0.222,in_set,,22,25,0.12,3,ZFA:0000033,intermediate cell mass of mesoderm,blood_erythroid,adrb3a;alas2;blf;cahz;drll.1;drll.2;hbae3;hbae5;hbbe3;mllt3;slc4a1a;spns2;sptb;zfpm1,,0,0.824,1
+retinal_neuron,Eye,retinal neuron,48.0,named,1,0,0,low,0.5273,0.0899,in_set,,25,25,0.08,8,ZFA:0000079,telencephalon,neural,aplp1;cadm3;celf5a;ebf3a;elavl3;kcnma1a;nova2;npas3;nrxn2a;pbx3b;pcdh17;rbfox1;thsd7aa;unc5a,neural,0,0.609,1
+retinal_pigmented_epithelium_early,Eye,retinal pigmented epithelium (early),48.0,abstain,1,,,,,0.1019,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,1
+retinal_pigmented_epithelium_late,Retina,retinal pigmented epithelium (late),72.0,named,1,1,1,low,0.3669,0.036,in_set,,24,25,0.08,15,ZFA:0000144,retinal pigmented epithelium,eye,col18a1a;lrp2a;pmela;pmelb;rpe65a;slc24a4a;stra6;trpm1a;tyrp1b,neural,0,0.562,2
+roof_plate_flexural_subcommissural_organ,Central Nervous System,"roof plate, flexural + subcommissural organ",48.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.0,0,,mixed/unresolved,,,,,,0
+satellite_cells,Cranial Muscle (Late),satellite cells,24.0,abstain,1,,,,,0.0488,doublet,mixed,24,25,0.24,0,,mixed/unresolved,,,,,,4
+slow_committed_myocyte,Cranial Muscle (Late),slow-committed myocyte,18.0,rollup,1,,,medium,0.6205,0.082,in_set,,24,25,0.12,1,,mesoderm,mesoderm,,,,,2
+support_cells_otic_vesicle,Ear,support cells/otic vesicle,48.0,named,1,1,1,low,0.4309,0.0236,in_set,,24,25,0.16,2,ZFA:0000051,otic vesicle,otic,col11a1a;col2a1a;dacha;eya1;lmx1bb;lrp2a;matn4;ncam1b;ntm;otomp;pcdh19;prom1a;slc4a4b;stm,,0,1.0,5
+swim_bladder_primordium,Swim Bladder,swim bladder primordium,72.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.0,0,,mixed/unresolved,,,,,,0
+thyroid_follicle_cell,Endocrine,thyroid follicle cell,36.0,abstain,1,,,,,0.0562,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,1
+unknown_dcn_col6,Cranial Muscle (Late),"unknown (dcn+, col6+)",48.0,named,1,0,0,medium,0.7093,0.2147,in_set,,25,25,0.12,2,ZFA:0000393,mesenchyme,mesenchyme,col12a1a;col2a1b;col5a2a;col6a4a;dcn;hhip;loxl3b;nfatc1,mesenchyme,0,0.381,1
+unknown_k_channel_ciliated,Central Nervous System,"unknown (K+ channel, ciliated)",72.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.0,0,,mixed/unresolved,,,,,,0
+vascular_smooth_muscle,Pharyngeal Arch,vascular smooth muscle,72.0,abstain,1,,,,,0.0261,structural,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,2
+xanthophore,Epidermis,xanthophore,48.0,named,1,1,1,low,0.4589,0.0504,in_set,,22,25,0.12,6,ZFA:0009198,xanthophore,pigment,aox5;bscl2l;csf1ra;gch2;igsf11;pax7b;slc2a11b;slc2a15a,epidermis,0,0.421,2

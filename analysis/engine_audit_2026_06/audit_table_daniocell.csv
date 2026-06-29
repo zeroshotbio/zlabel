@@ -1,0 +1,523 @@
+cluster_id,gold,tissue_name,stage_hpf,kind,scored,agrees,agrees_overlay,confidence,confidence_score,margin,ood,abstain_reason,n_resolved,n_markers,vocab_hit_rate,depth,zfa_id,bucket,panel_bucket,convergent_genes,attractor_groundings,thin_overcall,support_fraction,n_candidates
+axia.1,axia,axial,36.0,abstain,1,,,,,0.1,doublet,mixed,23,25,0.2,0,,mixed/unresolved,,,,,,3
+axia.10,axia,axial,5.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+axia.11,axia,axial,5.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+axia.12,axia,axial,14.0,abstain,1,,,,,0.16,doublet,mixed,25,25,0.12,0,,mixed/unresolved,,,,,,2
+axia.13,axia,axial,14.0,named,1,1,1,low,0.5282,0.0693,in_set,,24,25,0.12,2,ZFA:0000135,notochord,notochord,col15a1a;fn1a;gjc4b;noto;ntd5;ppib;sec61g;selenon;ssr3;ssr4;tbxta,,0,0.688,2
+axia.14,axia,axial,10.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.0,0,,mixed/unresolved,,,,,,0
+axia.15,axia,axial,14.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.0,0,,mixed/unresolved,,,,,,0
+axia.16,axia,axial,120.0,abstain,1,,,,,0.1427,doublet,mixed,24,25,0.28,0,,mixed/unresolved,,,,,,3
+axia.17,axia,axial,24.0,abstain,1,,,,,0.0798,doublet,mixed,24,25,0.16,0,,mixed/unresolved,,,,,,3
+axia.18,axia,axial,48.0,rollup,1,,,medium,0.6761,0.1424,in_set,,21,25,0.08,1,,ectoderm,ectoderm,,,,,2
+axia.19,axia,axial,16.0,abstain,1,,,,,0.2481,doublet,mixed,24,25,0.16,0,,mixed/unresolved,,,,,,2
+axia.2,axia,axial,48.0,abstain,1,,,,,0.1005,doublet,mixed,23,25,0.24,0,,mixed/unresolved,,,,,,3
+axia.20,axia,axial,24.0,abstain,1,,,,,0.0279,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+axia.21,axia,axial,18.0,abstain,1,,,,,0.091,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,2
+axia.22,axia,axial,4.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+axia.23,axia,axial,48.0,abstain,1,,,,,0.0355,in_set,weak_signal,25,25,0.16,0,,mixed/unresolved,,,,,,4
+axia.24,axia,axial,36.0,abstain,1,,,,,0.0677,doublet,mixed,23,25,0.16,0,,mixed/unresolved,,,,,,3
+axia.25,axia,axial,104.0,named,1,1,1,low,0.3855,0.0624,in_set,,22,25,0.2,2,ZFA:0000135,notochord,notochord,cebpd;cnmd;col11a1a;col2a1a;col9a1b;col9a2;col9a3;epyc;krt8;matn3a;sparc,,0,0.55,3
+axia.3,axia,axial,8.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+axia.4,axia,axial,8.0,named,1,1,1,low,0.3699,0.0283,in_set,,25,25,0.08,2,ZFA:0000135,notochord,notochord,fthl27;gjc4b;hspb1;noto,,0,0.267,1
+axia.5,axia,axial,10.0,named,1,1,1,low,0.5232,0.0883,in_set,,25,25,0.08,2,ZFA:0000135,notochord,notochord,asph;foxa;hspb1;lrrc59;noto;ntd5;plod1a;pmp22b;sec61b;sec61g;serpinh1b;ssr1;tbxta;twist2,,0,0.778,1
+axia.6,axia,axial,108.0,abstain,1,,,,,0.2482,doublet,mixed,24,25,0.32,0,,mixed/unresolved,,,,,,3
+axia.7,axia,axial,48.0,abstain,1,,,,,0.1952,doublet,mixed,24,25,0.28,0,,mixed/unresolved,,,,,,2
+axia.8,axia,axial,8.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+axia.9,axia,axial,72.0,abstain,1,,,,,0.1524,doublet,mixed,24,25,0.32,0,,mixed/unresolved,,,,,,3
+blas.1,blas,blastomeres,5.0,abstain,0,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+blas.10,blas,blastomeres,5.0,abstain,0,,,,,0.0,no_signal,no_panel,24,25,0.04,0,,mixed/unresolved,,,,,,0
+blas.11,blas,blastomeres,3.0,abstain,0,,,,,0.0,no_signal,no_panel,24,25,0.0,0,,mixed/unresolved,,,,,,0
+blas.2,blas,blastomeres,4.0,abstain,0,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+blas.3,blas,blastomeres,4.0,abstain,0,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+blas.4,blas,blastomeres,5.0,abstain,0,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+blas.5,blas,blastomeres,5.0,abstain,0,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+blas.6,blas,blastomeres,5.0,abstain,0,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+blas.7,blas,blastomeres,5.0,abstain,0,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+blas.8,blas,blastomeres,6.0,abstain,0,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+blas.9,blas,blastomeres,5.0,abstain,0,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+ceph,ceph,cephalic,10.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+endo.1,endo,endoderm,108.0,named,1,1,1,medium,0.6026,0.1198,in_set,,25,25,0.12,5,ZFA:0000123,liver,liver,afp4;ahcy;aldob;ambp;apoa1b;apoa2;apoa4b.1;apom;bhmt;fabp10a;fgg;gamt;gapdh;gpd1b;grhprb;hpda;prdx2;rbp2b;scp2a;serpina1;serpina1l;suclg1;tfa;uox,,0,0.96,1
+endo.10,endo,endoderm,84.0,abstain,1,,,,,0.0343,in_set,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,1
+endo.11,endo,endoderm,108.0,abstain,1,,,,,0.0615,in_set,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,1
+endo.12,endo,endoderm,108.0,abstain,1,,,,,0.041,in_set,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,1
+endo.13,endo,endoderm,108.0,named,1,1,1,low,0.34,0.0366,in_set,,25,25,0.12,7,ZFA:0001338,intestine,intestine,aldh9a1a.1;aldob;anxa2b;cldn15la;gapdh;gnpda1;gsta.1;gstp1.2;gstr;mgst3a;pklr;s100a10a;serpinb1;serpinb1l3;vil1,,0,0.625,2
+endo.14,endo,endoderm,100.0,named,1,1,1,low,0.3716,0.0301,in_set,,23,25,0.08,7,ZFA:0001338,intestine,intestine,cldn15la;fosab;jun;pklr;rack1;tm4sf4;ucp2;vil1,,0,0.4,1
+endo.15,endo,endoderm,84.0,named,1,1,1,low,0.3428,0.037,in_set,,23,25,0.12,7,ZFA:0001338,intestine,intestine,agr2;anxa2b;cldn15la;pdia3;serpinb1;serpinb1l3;tm4sf4;ucp2;vil1,,0,0.429,2
+endo.16,endo,endoderm,120.0,named,1,1,1,low,0.3481,0.0103,in_set,,23,25,0.12,7,ZFA:0001338,intestine,intestine,anpepb.1;ca2;cfd;cldn15la;gstp1.2;pklr;serpinb1l3;tm4sf4;vil1,,0,0.5,3
+endo.17,endo,endoderm,104.0,named,1,1,1,low,0.3461,0.0026,in_set,,23,25,0.12,7,ZFA:0001338,intestine,intestine,cldn15la;cldn3c;fosab;jun;tm4sf4;vil1,,0,0.286,2
+endo.18,endo,endoderm,112.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.0,0,,mixed/unresolved,,,,,,0
+endo.19,endo,endoderm,84.0,named,1,1,1,low,0.3415,0.0,in_set,,23,25,0.12,7,ZFA:0001338,intestine,intestine,arxa;cldn15la;cldn3c;elovl1b;fosab;jun;mgst3a;pklr;st3gal7;tm4sf4;vil1,,0,0.478,3
+endo.2,endo,endoderm,120.0,named,1,1,1,medium,0.6152,0.1247,in_set,,25,25,0.16,5,ZFA:0000123,liver,liver,ahcy;aldob;ambp;apoa1b;apoa2;apoa4b.1;apoc1;apom;bhmt;ces2a;f2;fgg;gapdh;gc;gpx4a;grhprb;kng1;rbp4;scp2a;serpina1;serpina1l;suclg1;tfa,,0,0.92,1
+endo.20,endo,endoderm,48.0,abstain,1,,,,,0.0,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,2
+endo.21,endo,endoderm,96.0,named,1,1,1,low,0.3784,0.0158,in_set,,22,25,0.08,7,ZFA:0001338,intestine,intestine,aldob;cldn15la;elovl1b;pax4;s100a1;stoml3b;tm4sf4;vil1,,0,0.421,3
+endo.22,endo,endoderm,84.0,named,1,1,1,medium,0.7222,0.1778,in_set,,23,25,0.08,7,ZFA:0000140,pancreas,pancreas,aqp12;cel.1;cpa5;ctrb.1;ctrl;gamt;nupr1b;pdia2;prss1;prss59.1;rtn1a;sec61g,,0,0.75,1
+endo.23,endo,endoderm,108.0,named,1,1,1,medium,0.7237,0.1816,in_set,,22,25,0.08,7,ZFA:0000140,pancreas,pancreas,amy2a;cel.1;cpa4;cpa5;ctrb.1;ctrl;ela2l;ela3l;nupr1b;pdia2;prss1;prss59.1,,0,0.75,1
+endo.24,endo,endoderm,8.0,abstain,1,,,,,0.0287,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,1
+endo.25,endo,endoderm,12.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+endo.26,endo,endoderm,12.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+endo.27,endo,endoderm,24.0,abstain,1,,,,,0.0,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,2
+endo.28,endo,endoderm,108.0,abstain,1,,,,,0.0509,in_set,weak_signal,23,25,0.12,0,,mixed/unresolved,,,,,,2
+endo.29,endo,endoderm,108.0,abstain,1,,,,,0.0463,in_set,weak_signal,22,25,0.12,0,,mixed/unresolved,,,,,,3
+endo.3,endo,endoderm,108.0,named,1,1,1,medium,0.7045,0.1628,in_set,,24,25,0.16,5,ZFA:0000123,liver,liver,aldob;ambp;apoa1b;apoa2;apoa4b.1;apom;bhmt;f2;fabp10a;fga;fgb;fgg;gamt;gapdh;gpx4a;grhprb;hpda;kng1;rbp2b;serpina1;serpina1l;suclg1;tfa,,0,0.958,1
+endo.30,endo,endoderm,108.0,abstain,1,,,,,0.0313,in_set,weak_signal,22,25,0.08,0,,mixed/unresolved,,,,,,2
+endo.31,endo,endoderm,14.0,abstain,1,,,,,0.0564,in_set,weak_signal,22,25,0.12,0,,mixed/unresolved,,,,,,2
+endo.32,endo,endoderm,108.0,abstain,1,,,,,0.0,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,2
+endo.33,endo,endoderm,108.0,abstain,1,,,,,0.0,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,3
+endo.34,endo,endoderm,24.0,abstain,1,,,,,0.0056,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,2
+endo.4,endo,endoderm,120.0,named,1,1,1,low,0.575,0.1088,in_set,,25,25,0.12,5,ZFA:0000123,liver,liver,afp4;ahcy;aldob;apoa1b;apoa2;apoa4b.1;apoc1;apoc2;apom;bhmt;fabp10a;gamt;gapdh;gpx4a;grhprb;pklr;rbp2b;rbp4;scp2a;serpina1;serpina1l;tfa;uox,,0,0.92,1
+endo.5,endo,endoderm,84.0,named,1,1,1,low,0.4451,0.0574,in_set,,25,25,0.08,5,ZFA:0000123,liver,liver,agxta;aldob;anxa4;apoa1b;apoa2;aqp12;bhmt;cox6b1;fgg;gamt;gpd1b;grhprb;hspd1;hspe1;nme2b.1;npm1a;pcbd1;pklr;rbp2b;serpina1;serpina1l;tfa,,0,0.917,1
+endo.6,endo,endoderm,96.0,named,1,1,1,low,0.5534,0.1019,in_set,,24,25,0.12,5,ZFA:0000123,liver,liver,ahcy;aldob;ambp;apoa1b;apoa2;bhmt;fabp10a;fgb;gamt;gapdh;grhprb;hpda;kng1;mdh1aa;prdx2;rbp2b;serpina1;serpina1l;sod1;suclg1;tfa;uox,,0,0.957,1
+endo.7,endo,endoderm,24.0,abstain,1,,,,,0.0013,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,2
+endo.8,endo,endoderm,108.0,abstain,1,,,,,0.0303,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+endo.9,endo,endoderm,48.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.0,0,,mixed/unresolved,,,,,,0
+epid.1,epid,epidermis,108.0,named,1,1,1,low,0.4555,0.0236,in_set,,25,25,0.16,6,ZFA:0000105,epidermis,epidermis,aqp3a;capns1a;cfl1l;cldni;col11a1a;col1a1a;col1a1b;col1a2;cotl1;cyt1;krt1-19e;krt4;krt5;krt91;pfn1;postnb;rbp4;s100a10b;sparc,epidermis,0,0.905,2
+epid.10,epid,epidermis,108.0,named,1,1,1,low,0.5286,0.0721,in_set,,24,25,0.12,6,ZFA:0000105,epidermis,epidermis,anxa1a;aqp3a;capns1a;cfl1l;cldni;col1a1b;col1a2;cotl1;cyt1;krt1-19e;krt4;krt5;krt91;lgals1l1;pfn1;rbp4;s100a10b;sparc,epidermis,0,0.857,2
+epid.11,epid,epidermis,84.0,named,1,1,1,low,0.4274,0.0124,in_set,,23,25,0.16,6,ZFA:0000105,epidermis,epidermis,aqp3a;cfl1l;cldni;col11a1a;col1a1a;col1a1b;col1a2;col2a1b;cotl1;cyt1;krt1-19e;krt4;krt5;pfn1;postnb;rbp4;s100a10b;sparc,epidermis,0,0.857,2
+epid.12,epid,epidermis,24.0,abstain,1,,,,,0.0613,in_set,weak_signal,23,25,0.12,0,,mixed/unresolved,,,,,,2
+epid.13,epid,epidermis,48.0,abstain,1,,,,,0.0026,structural,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,2
+epid.14,epid,epidermis,24.0,abstain,1,,,,,0.1036,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,1
+epid.15,epid,epidermis,14.0,abstain,1,,,,,0.0381,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,1
+epid.16,epid,epidermis,48.0,abstain,1,,,,,0.0308,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,1
+epid.17,epid,epidermis,104.0,named,1,1,1,low,0.4456,0.0236,in_set,,24,25,0.2,6,ZFA:0000105,epidermis,epidermis,aqp3a;cfl1l;cldni;col1a1a;col1a1b;col1a2;cotl1;cyt1;krt1-19e;krt4;krt5;krt91;pfn1;rbp4;s100a10b;sparc,epidermis,0,0.727,3
+epid.18,epid,epidermis,24.0,abstain,1,,,,,0.0634,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,1
+epid.19,epid,epidermis,120.0,named,1,1,1,low,0.4691,0.0317,in_set,,25,25,0.16,6,ZFA:0000105,epidermis,epidermis,anxa1a;cfl1l;cldni;col11a1a;col1a1a;col1a1b;col1a2;cyt1;krt1-19e;krt4;krt5;krt91;pfn1;postnb;rbp4;s100a10b;sparc,epidermis,0,0.85,2
+epid.2,epid,epidermis,108.0,named,1,1,1,low,0.4732,0.0539,in_set,,24,25,0.12,6,ZFA:0000105,epidermis,epidermis,apoeb;aqp3a;capns1a;cfl1l;cldni;col1a2;cotl1;cyt1;krt4;krt5;krt91;pfn1;s100a10b;sparc;tagln2,epidermis,0,0.75,2
+epid.20,epid,epidermis,96.0,abstain,1,,,,,0.0307,in_set,weak_signal,22,25,0.08,0,,mixed/unresolved,,,,,,1
+epid.21,epid,epidermis,108.0,abstain,1,,,,,0.0328,in_set,weak_signal,22,25,0.08,0,,mixed/unresolved,,,,,,2
+epid.22,epid,epidermis,14.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.0,0,,mixed/unresolved,,,,,,0
+epid.23,epid,epidermis,108.0,named,1,1,1,low,0.4735,0.0253,in_set,,25,25,0.16,6,ZFA:0000105,epidermis,epidermis,anxa1a;capns1a;cfl1l;cldni;col11a1a;col1a1a;col1a1b;col1a2;col2a1b;cotl1;cyt1;krt1-19e;krt4;krt5;krt91;lgals1l1;pfn1;rbp4;s100a10b;sparc,epidermis,0,0.952,2
+epid.24,epid,epidermis,108.0,rollup,1,,,medium,0.6844,0.1531,in_set,,22,25,0.16,1,,ectoderm,ectoderm,,,,,2
+epid.25,epid,epidermis,14.0,abstain,1,,,,,0.0282,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+epid.26,epid,epidermis,14.0,abstain,1,,,,,0.0433,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+epid.27,epid,epidermis,108.0,named,1,1,1,low,0.4891,0.0413,in_set,,23,25,0.2,6,ZFA:0000105,epidermis,epidermis,aqp3a;atp1b1b;capns1a;cfl1l;cldni;col11a1a;col1a1a;col1a1b;col1a2;cyt1;krt1-19e;krt4;krt5;krt91;pfn1;rbp4;s100a10b;sparc,epidermis,0,0.857,3
+epid.28,epid,epidermis,104.0,named,1,1,1,low,0.4961,0.0283,in_set,,23,25,0.16,6,ZFA:0000105,epidermis,epidermis,aqp3a;cfl1l;cldni;col11a1a;col1a1a;col1a1b;col1a2;col2a1b;cotl1;cyt1;krt1-19e;krt4;krt5;krt91;pfn1;postnb;rbp4;s100a10b;sparc,epidermis,0,0.905,2
+epid.29,epid,epidermis,48.0,abstain,1,,,,,0.0832,in_set,weak_signal,21,25,0.16,0,,mixed/unresolved,,,,,,1
+epid.3,epid,epidermis,84.0,named,1,1,1,low,0.4639,0.0243,in_set,,24,25,0.16,6,ZFA:0000105,epidermis,epidermis,aqp3a;capns1a;cfl1l;cldni;col11a1a;col1a1a;col1a1b;col1a2;cotl1;cyt1;krt1-19e;krt4;krt5;krt91;pfn1;postnb;rbp4;s100a10b;sparc,epidermis,0,0.864,2
+epid.30,epid,epidermis,104.0,abstain,1,,,,,0.0166,in_set,weak_signal,21,25,0.16,0,,mixed/unresolved,,,,,,2
+epid.31,epid,epidermis,104.0,named,1,1,1,low,0.4872,0.0409,in_set,,24,25,0.16,6,ZFA:0000105,epidermis,epidermis,aqp3a;capns1a;cfl1l;cldni;col1a1a;col1a1b;col1a2;cotl1;cyt1;krt1-19e;krt4;krt5;krt91;pfn1;rbp4;s100a10b;sparc,epidermis,0,0.81,2
+epid.32,epid,epidermis,48.0,named,1,1,1,low,0.4534,0.0244,in_set,,22,25,0.16,6,ZFA:0000105,epidermis,epidermis,aqp3a;cfl1l;cldni;col11a1a;col1a1a;col1a1b;col1a2;cotl1;cyt1;krt4;krt5;pfn1;postnb;s100a10b;sparc,epidermis,0,0.789,2
+epid.33,epid,epidermis,14.0,abstain,1,,,,,0.064,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,1
+epid.34,epid,epidermis,104.0,named,1,1,1,low,0.4769,0.0733,in_set,,23,25,0.08,6,ZFA:0000105,epidermis,epidermis,anxa1a;aqp3a;capns1a;cfl1l;cldni;cotl1;cyt1;krt4;krt5;pfn1;rbp4;s100a10b;sparc,epidermis,0,0.65,1
+epid.35,epid,epidermis,108.0,abstain,1,,,,,0.0678,in_set,weak_signal,22,25,0.08,0,,mixed/unresolved,,,,,,2
+epid.36,epid,epidermis,84.0,abstain,1,,,,,0.0074,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,2
+epid.37,epid,epidermis,84.0,abstain,1,,,,,0.0569,in_set,weak_signal,22,25,0.12,0,,mixed/unresolved,,,,,,2
+epid.38,epid,epidermis,24.0,abstain,1,,,,,0.0749,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,1
+epid.4,epid,epidermis,108.0,rollup,1,,,medium,0.6489,0.1321,in_set,,21,25,0.12,1,,ectoderm,ectoderm,,,,,2
+epid.5,epid,epidermis,24.0,abstain,1,,,,,0.0483,in_set,weak_signal,23,25,0.12,0,,mixed/unresolved,,,,,,2
+epid.6,epid,epidermis,48.0,abstain,1,,,,,0.0908,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,1
+epid.7,epid,epidermis,14.0,abstain,1,,,,,0.0735,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,1
+epid.8,epid,epidermis,42.0,named,1,1,1,low,0.4355,0.0135,in_set,,23,25,0.16,6,ZFA:0000105,epidermis,epidermis,cfl1l;cldni;col11a1a;col1a1a;col1a1b;col1a2;cotl1;cyt1;krt1-19e;krt4;krt5;krt91;pfn1;postnb;s100a10b;sparc,epidermis,0,0.8,2
+epid.9,epid,epidermis,48.0,abstain,1,,,,,0.0211,structural,weak_signal,23,25,0.2,0,,mixed/unresolved,,,,,,2
+eye.1,eye,eye,120.0,named,1,1,1,low,0.4554,0.0615,in_set,,25,25,0.04,15,ZFA:0000143,retinal photoreceptor layer,eye,arl3l1;cplx4a;gnat2;gnb3b;gngt2b;grk1b;guk1b;pde6c;ppdpfa;rbp4l;rcvrn2;slc25a3a;unc119b,neural,0,0.565,1
+eye.10,eye,eye,96.0,abstain,1,,,,,0.0352,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+eye.11,eye,eye,36.0,abstain,1,,,,,0.0,no_signal,no_panel,22,25,0.12,0,,mixed/unresolved,,,,,,0
+eye.12,eye,eye,60.0,named,1,1,1,low,0.3626,0.0033,in_set,,24,25,0.12,15,ZFA:0000119,retinal inner nuclear layer,eye,cadm3;crx;gpm6aa;gpm6ab;mdkb;ndrg4;neurod4;otx5;ptmab;vsx1,neural,0,0.5,3
+eye.13,eye,eye,48.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.08,0,,mixed/unresolved,,,,,,0
+eye.14,eye,eye,48.0,named,1,0,0,low,0.3991,0.0183,in_set,,22,25,0.16,14,ZFA:0000019,epiphysis,pineal,cadm3;ckbb;crx;gngt2a;neurod1;otx5;pde6gb,neural,0,0.368,4
+eye.15,eye,eye,120.0,named,1,0,0,low,0.5902,0.1439,in_set,,24,25,0.12,7,ZFA:0000109,forebrain,neural,atp6v0cb;celf2;ckbb;elavl3;gpm6aa;gpm6ab;hmgb1a;nova2;ptmaa;rtn1a;sncb;stmn1b;tuba1c;tubb5;zc4h2,neural,0,0.714,1
+eye.16,eye,eye,48.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.08,0,,mixed/unresolved,,,,,,0
+eye.17,eye,eye,10.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+eye.18,eye,eye,36.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.12,0,,mixed/unresolved,,,,,,0
+eye.19,eye,eye,104.0,named,1,1,1,low,0.3933,0.0038,in_set,,25,25,0.2,15,ZFA:0000143,retinal photoreceptor layer,eye,crx;elovl4b;gnat2;gnb3b;gngt2b;guk1b;neurod1;ppdpfa;rbp4l;rcvrn2;slc25a3a,neural,0,0.44,4
+eye.2,eye,eye,24.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.08,0,,mixed/unresolved,,,,,,0
+eye.20,eye,eye,48.0,named,1,0,0,low,0.4628,0.0443,in_set,,22,25,0.2,14,ZFA:0000019,epiphysis,pineal,cadm3;crx;neurod1;otx5;pde6gb,neural,0,0.278,4
+eye.21,eye,eye,60.0,named,1,1,1,low,0.3576,0.0033,in_set,,24,25,0.16,15,ZFA:0000119,retinal inner nuclear layer,eye,cadm3;calb2b;crx;gnao1b;gpm6aa;gpm6ab;isl1a;mdkb;neurod4;otx5;ptmaa;ptmab;rs1a;vsx1,neural,0,0.609,4
+eye.22,eye,eye,48.0,named,1,0,0,medium,0.7104,0.1624,in_set,,25,25,0.12,2,ZFA:0009090,pigment cell,pigment,bace2;dct;gpr143;gstp1.2;pmela;qdpra;slc45a2;syngr1a;tspan36;tyrp1a;tyrp1b,,0,0.611,1
+eye.23,eye,eye,48.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.04,0,,mixed/unresolved,,,,,,0
+eye.24,eye,eye,72.0,abstain,1,,,,,0.0415,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,1
+eye.25,eye,eye,36.0,abstain,1,,,,,0.0334,structural,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+eye.26,eye,eye,14.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+eye.27,eye,eye,60.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.0,0,,mixed/unresolved,,,,,,0
+eye.28,eye,eye,120.0,named,1,1,1,low,0.4348,0.0355,in_set,,25,25,0.16,15,ZFA:0000143,retinal photoreceptor layer,eye,crx;elovl4b;faimb;gnat1;gnb1b;gngt1;gpx4b;neurod1;otx5;pde6gb;ppdpfa;rbp4l;rcvrna;rho;rom1b,neural,0,0.652,4
+eye.29,eye,eye,48.0,named,1,1,1,low,0.4926,0.0933,in_set,,19,25,0.12,12,ZFA:0000152,retina,neural,cadm3;ckbb;fabp3;fabp7a;gpm6aa;her4.1;her4.2;hmgb1b;mdka;mdkb;nova2;ptmab,neural,0,0.706,1
+eye.3,eye,eye,48.0,abstain,1,,,,,0.0371,in_set,weak_signal,22,25,0.08,0,,mixed/unresolved,,,,,,1
+eye.30,eye,eye,48.0,named,1,1,1,medium,0.6971,0.16,in_set,,24,25,0.08,15,ZFA:0000024,retinal ganglion cell layer,neural,cxcr4b;elavl3;gpm6aa;gpm6ab;rbpms2b;rtn1a;sox11b;tubb5,neural,0,0.4,1
+eye.31,eye,eye,60.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.0,0,,mixed/unresolved,,,,,,0
+eye.32,eye,eye,72.0,abstain,1,,,,,0.0424,in_set,weak_signal,22,25,0.04,0,,mixed/unresolved,,,,,,1
+eye.33,eye,eye,32.0,abstain,1,,,,,0.0,no_signal,no_panel,22,25,0.12,0,,mixed/unresolved,,,,,,0
+eye.34,eye,eye,36.0,named,1,1,1,low,0.5331,0.0922,in_set,,25,25,0.08,12,ZFA:0000035,lens,eye,cryba1b;cryba1l1;cryba1l2;cryba2a;cryba2b;cryba4;crybb1;crybb1l1;crybb1l2;crygmx;crygn2;fabp4a;lim2.1;lim2.3;lim2.4;mipa;mipb;nap1l1;rbm24a,neural,0,0.864,1
+eye.35,eye,eye,108.0,named,1,1,1,low,0.3592,0.0777,in_set,,24,25,0.12,15,ZFA:0000144,retinal pigmented epithelium,eye,ctsd;dct;fabp4b;pmela;pmelb;rbp5;rdh5;rgrb;rlbp1b;rpe65a;stra6;tspan36;tyrp1b,neural,0,0.591,2
+eye.36,eye,eye,72.0,named,1,0,0,low,0.3525,0.0032,in_set,,24,25,0.16,1,ZFA:0000396,nervous system,neural,atp1a3a;atp1b2a;atp6v0cb;cadm3;calb2b;ckbb;crx;dscaml1;gnb3a;gng13b;gpm6aa;gpm6ab;mdkb;ndrg4;nova2;otx5;pals2b;pcbp3;ptmab;rs1a;snap25b;syt5b;vsx1,neural,0,1.0,4
+eye.37,eye,eye,24.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.12,0,,mixed/unresolved,,,,,,0
+eye.38,eye,eye,48.0,abstain,1,,,,,0.0,no_signal,no_panel,21,25,0.04,0,,mixed/unresolved,,,,,,0
+eye.39,eye,eye,72.0,abstain,1,,,,,0.0,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,2
+eye.4,eye,eye,60.0,abstain,1,,,,,0.0492,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+eye.40,eye,eye,36.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.12,0,,mixed/unresolved,,,,,,0
+eye.41,eye,eye,48.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.0,0,,mixed/unresolved,,,,,,0
+eye.5,eye,eye,60.0,named,1,1,1,low,0.3809,0.0,in_set,,24,25,0.16,15,ZFA:0000143,retinal photoreceptor layer,eye,crx;elovl4b;gngt2a;neurod1;otx5;ppdpfa;rcvrn2;tmx3a;unc119b,neural,0,0.409,4
+eye.6,eye,eye,48.0,abstain,1,,,,,0.0277,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,1
+eye.7,eye,eye,96.0,abstain,1,,,,,0.0476,in_set,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,1
+eye.8,eye,eye,72.0,named,1,1,1,low,0.3567,0.0024,in_set,,24,25,0.12,15,ZFA:0000119,retinal inner nuclear layer,eye,cadm3;calb2b;crx;gnao1b;gpm6aa;gpm6ab;isl1a;mdkb;ndrg4;neurod4;otx5;ptmaa;ptmab;rs1a;vsx1,neural,0,0.652,3
+eye.9,eye,eye,72.0,abstain,1,,,,,0.0489,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+fin.1,fin,fin,108.0,named,1,1,1,low,0.3442,0.0011,in_set,,21,25,0.12,5,ZFA:0001161,pectoral fin,fin,and1;and2;apoeb;capns1a;col1a1a;icn;pfn1;s100a10b;selenow1;sparc,,0,0.556,3
+fin.10,fin,fin,48.0,abstain,1,,,,,0.1429,in_set,weak_signal,23,25,0.12,0,,mixed/unresolved,,,,,,1
+fin.11,fin,fin,108.0,named,1,0,0,low,0.5671,0.0923,in_set,,23,25,0.12,6,ZFA:0000105,epidermis,epidermis,anxa1a;capns1a;cfl1l;cldni;col1a1b;col1a2;cyt1;krt1-19e;krt4;krt5;krt91;pfn1;pycard;rbp4;s100a10b;selenow1;sparc,epidermis,0,0.81,2
+fin.12,fin,fin,72.0,abstain,1,,,,,0.0453,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+fin.13,fin,fin,120.0,rollup,1,,,medium,0.6456,0.1422,in_set,,23,25,0.2,1,,mesoderm,mesoderm,,,,,2
+fin.14,fin,fin,104.0,named,1,1,1,low,0.3809,0.0767,in_set,,22,25,0.08,3,ZFA:0000108,fin,fin,actb2;and1;and2;col1a1a;mdka;ogna;rbp4;sparc;ucp2,,0,0.529,2
+fin.15,fin,fin,48.0,named,1,1,1,low,0.4438,0.0254,in_set,,24,25,0.12,5,ZFA:0001161,pectoral fin,fin,and1;and2;col18a1a;col1a1a;egfl6;krt97;myh9a;pfn1;s100a10b;sparc;tagln2,,0,0.5,3
+fin.16,fin,fin,48.0,rollup,1,,,low,0.598,0.0652,in_set,,23,25,0.16,1,,mesoderm,mesoderm,,,,,2
+fin.17,fin,fin,84.0,abstain,1,,,,,0.0562,in_set,weak_signal,22,25,0.12,0,,mixed/unresolved,,,,,,2
+fin.18,fin,fin,48.0,named,1,1,1,low,0.3442,0.0197,in_set,,25,25,0.12,5,ZFA:0001161,pectoral fin,fin,and1;bcam;col18a1a;col1a1a;egfl6;myh9a;pfn1;s100a10b;sparc;tagln2,,0,0.455,3
+fin.19,fin,fin,48.0,named,1,0,0,low,0.5483,0.0817,in_set,,24,25,0.12,6,ZFA:0000105,epidermis,epidermis,anxa1a;cfl1l;col1a1a;cotl1;cyt1;krt1-19e;krt4;krt5;pfn1;postnb;s100a10b;selenow1;sparc,epidermis,0,0.65,2
+fin.2,fin,fin,84.0,named,1,1,1,low,0.3565,0.002,in_set,,22,25,0.08,5,ZFA:0001161,pectoral fin,fin,and1;and2;apoeb;bcam;col18a1a;col1a1a;egfl6;pfn1;s100a10b;sparc,,0,0.5,2
+fin.20,fin,fin,108.0,abstain,1,,,,,0.0826,in_set,weak_signal,21,25,0.12,0,,mixed/unresolved,,,,,,1
+fin.21,fin,fin,84.0,named,1,1,1,low,0.3809,0.0763,in_set,,23,25,0.12,5,ZFA:0001161,pectoral fin,fin,and1;and2;apoeb;bcam;col18a1a;col1a1a;egfl6;icn;myh9a;pfn1;s100a10b;sparc,,0,0.6,3
+fin.22,fin,fin,36.0,abstain,1,,,,,0.0345,structural,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,1
+fin.3,fin,fin,108.0,named,1,0,0,low,0.4177,0.011,in_set,,24,25,0.16,6,ZFA:0000105,epidermis,epidermis,anxa1a;apoeb;aqp3a;cfl1l;cldni;col1a1a;col1a2;cotl1;cyt1;krt4;krt5;krt91;pfn1;rbp4;s100a10b;sparc,epidermis,0,0.762,2
+fin.4,fin,fin,72.0,named,1,1,1,low,0.3565,0.0431,in_set,,23,25,0.08,3,ZFA:0000108,fin,fin,and1;and2;col1a1a;ecrg4a;fah;fbln1;hgd;hpdb;pah;ptx3a;sparc;ucp2,,0,0.706,2
+fin.5,fin,fin,48.0,named,1,0,0,low,0.4666,0.0481,in_set,,23,25,0.12,6,ZFA:0000105,epidermis,epidermis,aqp3a;cfl1l;cldni;col1a1a;cotl1;cyt1;krt4;krt5;myh9a;pfn1;pleca;postnb;rbp4;s100a10b;sparc,epidermis,0,0.75,2
+fin.6,fin,fin,24.0,abstain,1,,,,,0.0015,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,2
+fin.7,fin,fin,48.0,rollup,1,,,low,0.5939,0.1061,in_set,,24,25,0.2,1,,mesoderm,mesoderm,,,,,2
+fin.8,fin,fin,72.0,named,1,1,1,low,0.4185,0.0484,in_set,,23,25,0.12,5,ZFA:0001161,pectoral fin,fin,and1;and2;col1a1a;egfl6;icn;pfn1;s100a10b;sparc,,0,0.4,3
+fin.9,fin,fin,108.0,named,1,0,0,low,0.3726,0.0609,in_set,,24,25,0.16,6,ZFA:0005316,fin fold pectoral fin bud,fin,and1;and2;sparc,,1,0.15,3
+glia.1,glia,glial,120.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.0,0,,mixed/unresolved,,,,,,0
+glia.10,glia,glial,24.0,abstain,1,,,,,0.039,in_set,weak_signal,21,25,0.2,0,,mixed/unresolved,,,,,,2
+glia.11,glia,glial,48.0,named,1,1,1,medium,0.7275,0.1955,in_set,,25,25,0.12,8,ZFA:0000101,diencephalon,neural,agrn;elavl3;gap43;gng2;isl1a;onecut1;phox2bb;ptmaa;rtn1a;slit3;stmn1b;tbx20;tubb5;vim,neural,0,0.583,1
+glia.12,glia,glial,48.0,named,1,1,1,low,0.4388,0.0538,in_set,,22,25,0.16,8,ZFA:0000101,diencephalon,neural,actb2;cd82a;ckbb;cldn5a;fabp3;fabp7a;gpm6aa;gpm6bb;her4.1;her4.2;mdka;plp1a;slc1a2b;sox3,neural,0,0.636,2
+glia.13,glia,glial,48.0,named,1,1,1,high,0.8617,0.2304,in_set,,23,25,0.12,8,ZFA:0000079,telencephalon,neural,ckbb;elavl3;elavl4;nova2;ptmaa;rtn1a;slit3;snap25a;sncb;stxbp1a;ywhah,neural,0,0.524,1
+glia.14,glia,glial,36.0,abstain,1,,,,,0.0396,in_set,weak_signal,21,25,0.08,0,,mixed/unresolved,,,,,,2
+glia.15,glia,glial,48.0,abstain,1,,,,,0.1152,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,1
+glia.16,glia,glial,48.0,named,1,1,1,medium,0.7215,0.1668,in_set,,25,25,0.08,7,ZFA:0000109,forebrain,neural,dlb;ebf2;elavl3;fabp3;hes6;hnrnpaba;khdrbs1a;myt1a;nova2;scrt2;sox11b,neural,0,0.611,1
+glia.17,glia,glial,72.0,abstain,1,,,,,0.0,in_set,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,2
+glia.18,glia,glial,48.0,abstain,1,,,,,0.0294,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,1
+glia.19,glia,glial,120.0,abstain,1,,,,,0.007,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,2
+glia.2,glia,glial,36.0,named,1,1,1,low,0.4126,0.0264,in_set,,20,25,0.12,5,ZFA:0000008,brain,neural,btg2;cirbpb;cldn5a;fabp3;h3f3d;hnrnpaba;id1;khdrbs1a;lfng;marcksl1a;notch3;nova2;ntn1a;ptmab;ran;sox3;tspan7,neural,0,0.895,2
+glia.20,glia,glial,24.0,abstain,1,,,,,0.0603,in_set,weak_signal,20,25,0.04,0,,mixed/unresolved,,,,,,1
+glia.21,glia,glial,72.0,named,1,1,1,high,0.8881,0.239,in_set,,24,25,0.12,8,ZFA:0000079,telencephalon,neural,elavl3;elavl4;gpm6ab;isl1a;isl2b;marcksl1a;meis1b;nova2;nr2f1a;onecut1;ptmaa;rtn1a;sox4a;stmn1b,neural,0,0.636,1
+glia.22,glia,glial,24.0,abstain,1,,,,,0.0,no_signal,no_panel,20,25,0.08,0,,mixed/unresolved,,,,,,0
+glia.23,glia,glial,60.0,named,1,1,1,low,0.4535,0.0438,in_set,,25,25,0.08,6,ZFA:0009076,oligodendrocyte,glia,cldnk;mbpb;olig2;sox10;zwi,neural,0,0.263,2
+glia.24,glia,glial,96.0,abstain,1,,,,,0.0265,in_set,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,1
+glia.25,glia,glial,36.0,abstain,1,,,,,0.0401,in_set,weak_signal,20,25,0.24,0,,mixed/unresolved,,,,,,4
+glia.26,glia,glial,24.0,abstain,1,,,,,0.0313,in_set,weak_signal,22,25,0.04,0,,mixed/unresolved,,,,,,1
+glia.27,glia,glial,48.0,abstain,1,,,,,0.0,no_signal,no_panel,21,25,0.08,0,,mixed/unresolved,,,,,,0
+glia.28,glia,glial,48.0,abstain,1,,,,,0.0,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,3
+glia.29,glia,glial,84.0,named,1,1,1,low,0.0826,0.0333,in_set,,24,25,0.04,8,ZFA:0000101,diencephalon,neural,aldocb;atp1a1b;atp6v0cb;atp6v1g1;ckbb;fabp7a;gapdhs;gpm6aa;mdkb;ppdpfb;ptmaa;rtn1a;slc1a2b;snap25b;tpi1b,neural,0,0.714,1
+glia.3,glia,glial,48.0,named,1,1,1,medium,0.7254,0.175,in_set,,23,25,0.08,8,ZFA:0000079,telencephalon,neural,atp6v0cb;ckbb;elavl3;lhx1a;nova2;ptmaa;rtn1a;slc6a5;sncb;stxbp1a,neural,0,0.526,1
+glia.30,glia,glial,36.0,abstain,1,,,,,0.0354,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+glia.31,glia,glial,120.0,rollup,1,,,medium,0.6292,0.123,in_set,,24,25,0.16,1,,ectoderm,ectoderm,,,,,3
+glia.4,glia,glial,48.0,named,1,1,1,high,0.8445,0.2234,in_set,,23,25,0.12,8,ZFA:0000079,telencephalon,neural,elavl3;elavl4;gpm6ab;nova2;nrn1a;ptmaa;rtn1a;snap25a;sncb;stmn1b;stxbp1a,neural,0,0.524,1
+glia.5,glia,glial,36.0,abstain,1,,,,,0.0423,in_set,weak_signal,21,25,0.16,0,,mixed/unresolved,,,,,,2
+glia.6,glia,glial,48.0,named,1,1,1,low,0.4386,0.1091,in_set,,21,25,0.08,8,ZFA:0000101,diencephalon,neural,cdkn1ca;dla;dlb;elavl3;fabp3;her4.2;hnrnpaba;khdrbs1a;neurod4;rtca;sox11b;vim,neural,0,0.632,1
+glia.7,glia,glial,60.0,abstain,1,,,,,0.0301,in_set,weak_signal,22,25,0.16,0,,mixed/unresolved,,,,,,3
+glia.8,glia,glial,14.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.04,0,,mixed/unresolved,,,,,,0
+glia.9,glia,glial,48.0,abstain,1,,,,,0.081,doublet,mixed,21,25,0.16,0,,mixed/unresolved,,,,,,3
+hema.1,hema,hematopoietic,96.0,rollup,1,,,medium,0.8559,0.2018,in_set,,22,25,0.28,1,,mesoderm,mesoderm,,,,,2
+hema.10,hema,hematopoietic,84.0,abstain,1,,,,,0.13,in_set,weak_signal,22,25,0.12,0,,mixed/unresolved,,,,,,1
+hema.11,hema,hematopoietic,48.0,named,1,1,1,high,0.8931,0.2791,in_set,,21,25,0.2,7,ZFA:0009256,nucleate erythrocyte,blood_erythroid,alas2;aqp1a.1;blvrb;epb41b;hbae1.1;hbae3;hbbe2;hbbe3;slc4a1a;tspo,,0,0.556,1
+hema.12,hema,hematopoietic,120.0,named,1,1,1,low,0.5419,0.0957,in_set,,25,25,0.12,1,ZFA:0005023,hematopoietic system,immune_myeloid,actb2;arpc1b;coro1a;cotl1;ctss2.2;fcer1gl;lgals2a;lygl1;mfap4.1;pfn1;psap;rac2;sat1a.2;spi1b,,0,1.0,1
+hema.13,hema,hematopoietic,104.0,rollup,1,,,medium,0.8575,0.2128,in_set,,22,25,0.24,1,,mesoderm,mesoderm,,,,,2
+hema.14,hema,hematopoietic,24.0,named,1,1,1,medium,0.7239,0.1727,in_set,,24,25,0.16,3,ZFA:0000007,blood,blood_erythroid,alad;alas2;anp32b;ap2m1a;blvrb;cahz;cpox;epb41b;fth1a;hbae1.1;hbae3;hbbe2;hbbe3;hmbsb;prdx2;slc11a2;tfr1a;urod,,0,0.9,1
+hema.15,hema,hematopoietic,120.0,abstain,1,,,,,0.063,in_set,weak_signal,20,25,0.04,0,,mixed/unresolved,,,,,,1
+hema.16,hema,hematopoietic,120.0,named,1,1,1,low,0.5737,0.1083,in_set,,25,25,0.12,1,ZFA:0005023,hematopoietic system,immune_myeloid,actb2;arpc1b;cfl1;coro1a;cotl1;ctss2.2;fcer1gl;lgals2a;lygl1;mfap4.1;pfn1;ptpn6;rac2;spi1b,,0,1.0,1
+hema.17,hema,hematopoietic,104.0,named,1,1,1,high,0.9056,0.2947,in_set,,19,25,0.2,7,ZFA:0009256,nucleate erythrocyte,blood_erythroid,alas2;aqp1a.1;blvrb;epb41b;hbae1.1;hbae3;hbbe2;slc4a1a;tspo,,0,0.643,1
+hema.18,hema,hematopoietic,24.0,abstain,1,,,,,0.0876,doublet,mixed,25,25,0.24,0,,mixed/unresolved,,,,,,2
+hema.19,hema,hematopoietic,14.0,abstain,1,,,,,0.0148,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,2
+hema.2,hema,hematopoietic,24.0,named,1,0,1,low,0.5618,0.0862,in_set,,25,25,0.2,7,ZFA:0005314,blood vessel,endothelium,ackr5;cdh5;cldn5b;clec14a;cpn1;dab2;dusp5;etsrp;krt18a.1;krt8;lmo2;lyve1b;mrc1a;plk2b;plvapb;stab2;tie1;tpm4a,endothelium,0,0.818,2
+hema.20,hema,hematopoietic,10.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+hema.21,hema,hematopoietic,120.0,abstain,1,,,,,0.046,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+hema.22,hema,hematopoietic,60.0,named,1,1,1,high,0.8936,0.2847,in_set,,20,25,0.2,7,ZFA:0009256,nucleate erythrocyte,blood_erythroid,alas2;aqp1a.1;blvrb;epb41b;hbae1.1;hbae3;hbbe2;slc4a1a;tspo,,0,0.562,1
+hema.23,hema,hematopoietic,16.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.0,0,,mixed/unresolved,,,,,,0
+hema.24,hema,hematopoietic,120.0,named,1,0,1,low,0.3268,0.0333,in_set,,24,25,0.12,14,ZFA:0000014,dorsal aorta,endothelium,acvrl1;cdh5;cldn5b;col4a1;igfbp7;krt18a.1;mcamb;sox7;tie1,endothelium,0,0.409,2
+hema.25,hema,hematopoietic,48.0,abstain,1,,,,,0.0422,in_set,weak_signal,22,25,0.16,0,,mixed/unresolved,,,,,,3
+hema.26,hema,hematopoietic,84.0,abstain,1,,,,,0.0315,in_set,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,1
+hema.27,hema,hematopoietic,48.0,named,1,1,1,high,0.9128,0.2814,in_set,,22,25,0.2,7,ZFA:0009256,nucleate erythrocyte,blood_erythroid,alas2;blvrb;epb41b;hbae1.1;hbae3;hbbe2;hbbe3;slc4a1a;tspo,,0,0.474,1
+hema.28,hema,hematopoietic,48.0,named,1,0,1,low,0.4271,0.0488,in_set,,24,25,0.16,14,ZFA:0000014,dorsal aorta,endothelium,cdh5;cldn5a;cldn5b;col4a1;cpn1;igfbp7;kdrl;krt18a.1;she;sox7,endothelium,0,0.455,2
+hema.29,hema,hematopoietic,104.0,abstain,1,,,,,0.0341,doublet,mixed,22,25,0.2,0,,mixed/unresolved,,,,,,2
+hema.3,hema,hematopoietic,72.0,named,1,1,1,high,0.8855,0.2805,in_set,,20,25,0.2,7,ZFA:0009256,nucleate erythrocyte,blood_erythroid,alas2;blvrb;epb41b;hbae1.1;hbae3;hbbe2;slc4a1a;tspo,,0,0.571,1
+hema.30,hema,hematopoietic,120.0,named,1,0,1,low,0.2406,0.0372,in_set,,23,25,0.12,15,ZFA:0000477,posterior cardinal vein,endothelium,cpn1;dab2;dusp5;etsrp;lyve1b;mrc1a;plk2b,endothelium,0,0.368,2
+hema.31,hema,hematopoietic,120.0,abstain,1,,,,,0.0217,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,2
+hema.32,hema,hematopoietic,36.0,named,1,1,1,high,0.8677,0.2538,in_set,,22,25,0.2,3,ZFA:0000007,blood,blood_erythroid,alas2;ap2m1a;blvrb;cahz;fth1a;hbae1.1;hbae3;hbbe2;hbbe3;hmbsb;nt5c2l1;prdx2;slc11a2;slc4a1a;tspo;urod;znfl2a,,0,0.944,1
+hema.33,hema,hematopoietic,96.0,rollup,1,,,medium,0.863,0.2462,in_set,,21,25,0.24,1,,mesoderm,mesoderm,,,,,2
+hema.34,hema,hematopoietic,104.0,named,1,1,1,medium,0.7432,0.1873,in_set,,23,25,0.12,3,ZFA:0000007,blood,blood_erythroid,cahz;creg1;fth1a;hbae1.1;hbae3;hbbe2;prdx2,,0,1.0,1
+hema.35,hema,hematopoietic,84.0,abstain,1,,,,,0.2428,doublet,mixed,22,25,0.2,0,,mixed/unresolved,,,,,,2
+hema.36,hema,hematopoietic,120.0,abstain,1,,,,,0.1033,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,1
+hema.37,hema,hematopoietic,120.0,named,1,0,1,low,0.4183,0.0716,in_set,,24,25,0.16,6,ZFA:0001079,blood vasculature,endothelium,atp1b1a;cpn1;dab2;etsrp;flt4;glula;lgmn;lyve1b;mrc1a;stab2,endothelium,0,0.455,2
+hema.38,hema,hematopoietic,120.0,abstain,1,,,,,0.0445,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,1
+hema.39,hema,hematopoietic,108.0,abstain,1,,,,,0.0,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,2
+hema.4,hema,hematopoietic,72.0,named,1,1,1,high,0.9043,0.289,in_set,,20,25,0.2,7,ZFA:0009256,nucleate erythrocyte,blood_erythroid,alas2;blvrb;epb41b;hbae1.1;hbae3;hbbe2;slc4a1a;tspo,,0,0.533,1
+hema.40,hema,hematopoietic,84.0,abstain,1,,,,,0.0834,doublet,mixed,21,25,0.24,0,,mixed/unresolved,,,,,,2
+hema.5,hema,hematopoietic,48.0,named,1,1,1,high,1.0,0.3102,in_set,,22,25,0.2,3,ZFA:0000007,blood,blood_erythroid,alas2;ap2m1a;aqp1a.1;blvrb;cahz;epb41b;fth1a;hbae1.1;hbae3;hbbe2;hbbe3;hmbsb;nmt1b;nt5c2l1;prdx2;slc4a1a;tspo;urod;znfl2a,,0,0.95,1
+hema.6,hema,hematopoietic,120.0,abstain,1,,,,,0.0713,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,1
+hema.7,hema,hematopoietic,120.0,abstain,1,,,,,0.0877,doublet,mixed,23,25,0.2,0,,mixed/unresolved,,,,,,2
+hema.8,hema,hematopoietic,96.0,abstain,1,,,,,0.2337,doublet,mixed,22,25,0.24,0,,mixed/unresolved,,,,,,2
+hema.9,hema,hematopoietic,48.0,named,1,1,1,high,0.9074,0.2847,in_set,,21,25,0.2,7,ZFA:0009256,nucleate erythrocyte,blood_erythroid,alas2;aqp1a.1;blvrb;epb41b;hbae1.1;hbae3;hbbe2;hbbe3;slc4a1a;tspo,,0,0.556,1
+iono.1,iono,ionocytes,104.0,named,1,0,0,low,0.543,0.082,in_set,,22,25,0.12,6,ZFA:0000105,epidermis,epidermis,agr2;cldnb;jun;krt4;krt5;krt91;selenow1,epidermis,0,0.412,2
+iono.10,iono,ionocytes,24.0,abstain,1,,,,,0.0688,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,1
+iono.11,iono,ionocytes,48.0,abstain,1,,,,,0.0467,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,2
+iono.12,iono,ionocytes,84.0,fallback,1,1,1,low,0.4282,0.0192,in_set,,24,25,0.12,3,ZFA:0005323,ionocyte,ionocyte,,,,,3
+iono.13,iono,ionocytes,24.0,named,1,1,1,medium,0.7146,0.1672,in_set,,24,25,0.12,10,ZFA:0005326,NaK ionocyte,ionocyte,atp1a1a.1;atp1b1b;igfbp5a;trpv6,epidermis,0,0.222,1
+iono.14,iono,ionocytes,24.0,abstain,1,,,,,0.1184,doublet,mixed,23,25,0.16,0,,mixed/unresolved,,,,,,3
+iono.15,iono,ionocytes,24.0,abstain,1,,,,,0.0,in_set,weak_signal,22,25,0.16,0,,mixed/unresolved,,,,,,2
+iono.16,iono,ionocytes,84.0,abstain,1,,,,,0.0121,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,2
+iono.17,iono,ionocytes,84.0,named,1,1,1,low,0.4768,0.07,in_set,,25,25,0.08,10,ZFA:0005326,NaK ionocyte,ionocyte,atp1b1b;atp6v1aa;foxi3a,epidermis,1,0.167,1
+iono.18,iono,ionocytes,84.0,named,1,0,0,low,0.5079,0.0683,in_set,,22,25,0.12,6,ZFA:0000105,epidermis,epidermis,aqp3a;capns1a;cfl1l;cldni;col1a2;cotl1;cyt1;krt1-19e;krt4;krt5;krt91;pfn1;rbp4;s100a10b;sparc,epidermis,0,0.833,2
+iono.19,iono,ionocytes,48.0,abstain,1,,,,,0.0591,in_set,weak_signal,23,25,0.12,0,,mixed/unresolved,,,,,,3
+iono.2,iono,ionocytes,108.0,rollup,1,,,medium,0.7815,0.1307,in_set,,22,25,0.24,1,,ectoderm,ectoderm,,,,,2
+iono.20,iono,ionocytes,108.0,abstain,1,,,,,0.0044,structural,weak_signal,22,25,0.08,0,,mixed/unresolved,,,,,,3
+iono.21,iono,ionocytes,14.0,rollup,1,,,medium,0.6817,0.14,in_set,,23,25,0.16,1,,ectoderm,ectoderm,,,,,2
+iono.22,iono,ionocytes,120.0,abstain,1,,,,,0.0719,in_set,weak_signal,21,25,0.08,0,,mixed/unresolved,,,,,,2
+iono.3,iono,ionocytes,108.0,rollup,1,,,medium,0.647,0.1017,in_set,,24,25,0.2,1,,ectoderm,ectoderm,,,,,3
+iono.4,iono,ionocytes,18.0,abstain,1,,,,,0.0443,in_set,weak_signal,23,25,0.2,0,,mixed/unresolved,,,,,,2
+iono.5,iono,ionocytes,24.0,rollup,1,,,low,0.5949,0.0643,in_set,,24,25,0.16,1,,ectoderm,ectoderm,,,,,3
+iono.6,iono,ionocytes,84.0,rollup,1,,,low,0.581,0.0656,in_set,,23,25,0.2,1,,ectoderm,ectoderm,,,,,3
+iono.7,iono,ionocytes,48.0,rollup,1,,,medium,0.6483,0.1224,in_set,,22,25,0.16,1,,ectoderm,ectoderm,,,,,2
+iono.8,iono,ionocytes,108.0,rollup,1,,,medium,0.6689,0.1359,in_set,,22,25,0.16,1,,ectoderm,ectoderm,,,,,2
+iono.9,iono,ionocytes,108.0,rollup,1,,,medium,0.6028,0.098,in_set,,23,25,0.2,1,,ectoderm,ectoderm,,,,,3
+mese.1,mese,mesenchyme,48.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.12,0,,mixed/unresolved,,,,,,0
+mese.10,mese,mesenchyme,48.0,abstain,1,,,,,0.0006,in_set,weak_signal,24,25,0.16,0,,mixed/unresolved,,,,,,4
+mese.11,mese,mesenchyme,24.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.0,0,,mixed/unresolved,,,,,,0
+mese.12,mese,mesenchyme,48.0,abstain,1,,,,,0.0,no_signal,no_panel,22,25,0.12,0,,mixed/unresolved,,,,,,0
+mese.13,mese,mesenchyme,48.0,abstain,1,,,,,0.0,no_signal,no_panel,20,25,0.04,0,,mixed/unresolved,,,,,,0
+mese.14,mese,mesenchyme,58.0,abstain,1,,,,,0.0552,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,3
+mese.15,mese,mesenchyme,72.0,abstain,1,,,,,0.073,doublet,mixed,23,25,0.12,0,,mixed/unresolved,,,,,,2
+mese.16,mese,mesenchyme,120.0,abstain,1,,,,,0.0449,in_set,weak_signal,22,25,0.16,0,,mixed/unresolved,,,,,,3
+mese.17,mese,mesenchyme,104.0,abstain,1,,,,,0.0265,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,2
+mese.18,mese,mesenchyme,24.0,abstain,1,,,,,0.0728,in_set,weak_signal,24,25,0.2,0,,mixed/unresolved,,,,,,1
+mese.19,mese,mesenchyme,96.0,abstain,1,,,,,0.1004,in_set,weak_signal,24,25,0.16,0,,mixed/unresolved,,,,,,2
+mese.2,mese,mesenchyme,120.0,abstain,1,,,,,0.1208,doublet,mixed,24,25,0.16,0,,mixed/unresolved,,,,,,2
+mese.20,mese,mesenchyme,48.0,abstain,1,,,,,0.1972,doublet,mixed,25,25,0.2,0,,mixed/unresolved,,,,,,2
+mese.21,mese,mesenchyme,48.0,abstain,1,,,,,0.1186,in_set,weak_signal,25,25,0.12,0,,mixed/unresolved,,,,,,1
+mese.22,mese,mesenchyme,48.0,abstain,1,,,,,0.027,in_set,weak_signal,25,25,0.12,0,,mixed/unresolved,,,,,,3
+mese.23,mese,mesenchyme,72.0,abstain,1,,,,,0.0883,doublet,mixed,24,25,0.16,0,,mixed/unresolved,,,,,,2
+mese.24,mese,mesenchyme,48.0,rollup,1,,,medium,0.6959,0.1398,in_set,,25,25,0.2,1,,mesoderm,mesoderm,,,,,2
+mese.25,mese,mesenchyme,108.0,abstain,1,,,,,0.041,in_set,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,1
+mese.26,mese,mesenchyme,120.0,abstain,1,,,,,0.0568,in_set,weak_signal,24,25,0.16,0,,mixed/unresolved,,,,,,2
+mese.27,mese,mesenchyme,48.0,abstain,1,,,,,0.0227,in_set,weak_signal,25,25,0.12,0,,mixed/unresolved,,,,,,3
+mese.28,mese,mesenchyme,120.0,abstain,1,,,,,0.0739,doublet,mixed,23,25,0.2,0,,mixed/unresolved,,,,,,2
+mese.29,mese,mesenchyme,120.0,abstain,1,,,,,0.0615,structural,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,1
+mese.3,mese,mesenchyme,84.0,abstain,1,,,,,0.0963,in_set,weak_signal,24,25,0.16,0,,mixed/unresolved,,,,,,2
+mese.30,mese,mesenchyme,104.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+mese.31,mese,mesenchyme,120.0,abstain,1,,,,,0.0861,in_set,weak_signal,25,25,0.16,0,,mixed/unresolved,,,,,,3
+mese.32,mese,mesenchyme,120.0,abstain,1,,,,,0.0425,structural,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+mese.33,mese,mesenchyme,48.0,abstain,1,,,,,0.0038,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,2
+mese.4,mese,mesenchyme,48.0,abstain,1,,,,,0.0654,in_set,weak_signal,24,25,0.16,0,,mixed/unresolved,,,,,,2
+mese.5,mese,mesenchyme,48.0,named,1,1,1,medium,0.6817,0.2038,in_set,,25,25,0.12,3,ZFA:0000113,head mesenchyme,mesenchyme,col2a1b;dcn;fstl1b;marcksl1a;matn4;pmp22a;tgfbi;tpm4a,mesenchyme,0,0.348,1
+mese.6,mese,mesenchyme,120.0,named,1,0,0,low,0.5006,0.064,in_set,,24,25,0.12,1,ZFA:0000396,nervous system,neural,atp6v0cb;ckbb;col1a2;col5a1;elavl3;elavl4;gng3;gpm6aa;gpm6ab;hmgb3a;marcksl1a;marcksl1b;pmp22a;ppdpfb;ptmaa;rtn1a;rtn1b;sncb;sparc;stmn1b;tuba1c;zc4h2,neural,0,1.0,2
+mese.7,mese,mesenchyme,60.0,abstain,1,,,,,0.0,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,2
+mese.8,mese,mesenchyme,120.0,abstain,1,,,,,0.0079,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,2
+mese.9,mese,mesenchyme,48.0,abstain,1,,,,,0.0324,in_set,weak_signal,25,25,0.12,0,,mixed/unresolved,,,,,,2
+mura.1,mura,mural,48.0,abstain,1,,,,,0.0314,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,1
+mura.10,mura,mural,120.0,abstain,1,,,,,0.1816,doublet,mixed,23,25,0.12,0,,mixed/unresolved,,,,,,2
+mura.11,mura,mural,72.0,abstain,1,,,,,0.058,structural,weak_signal,25,25,0.16,0,,mixed/unresolved,,,,,,2
+mura.12,mura,mural,120.0,abstain,1,,,,,0.0379,in_set,weak_signal,24,25,0.16,0,,mixed/unresolved,,,,,,3
+mura.13,mura,mural,72.0,abstain,1,,,,,0.055,in_set,weak_signal,22,25,0.04,0,,mixed/unresolved,,,,,,1
+mura.14,mura,mural,48.0,abstain,1,,,,,0.0956,in_set,weak_signal,25,25,0.12,0,,mixed/unresolved,,,,,,2
+mura.15,mura,mural,120.0,abstain,1,,,,,0.03,in_set,weak_signal,25,25,0.16,0,,mixed/unresolved,,,,,,2
+mura.16,mura,mural,120.0,abstain,1,,,,,0.0992,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,1
+mura.17,mura,mural,104.0,abstain,1,,,,,0.08,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,1
+mura.18,mura,mural,120.0,abstain,1,,,,,0.0833,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,1
+mura.19,mura,mural,120.0,abstain,1,,,,,0.0326,in_set,weak_signal,22,25,0.04,0,,mixed/unresolved,,,,,,1
+mura.2,mura,mural,72.0,abstain,1,,,,,0.0457,structural,weak_signal,24,25,0.16,0,,mixed/unresolved,,,,,,3
+mura.20,mura,mural,96.0,abstain,1,,,,,0.0332,structural,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,1
+mura.21,mura,mural,108.0,abstain,1,,,,,0.0938,structural,weak_signal,25,25,0.12,0,,mixed/unresolved,,,,,,2
+mura.22,mura,mural,84.0,abstain,1,,,,,0.0041,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,2
+mura.23,mura,mural,72.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.0,0,,mixed/unresolved,,,,,,0
+mura.24,mura,mural,84.0,abstain,1,,,,,0.0036,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,3
+mura.3,mura,mural,92.0,named,1,0,1,low,0.5901,0.1676,in_set,,25,25,0.12,2,ZFA:0000393,mesenchyme,mesenchyme,barx1;bmp16;col5a2a;col6a4a;dcn;pmp22a;tpm1;tpm4a,mesenchyme,0,0.381,1
+mura.4,mura,mural,118.0,abstain,1,,,,,0.0602,structural,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,1
+mura.5,mura,mural,120.0,abstain,1,,,,,0.0934,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,2
+mura.6,mura,mural,84.0,abstain,1,,,,,0.0323,structural,weak_signal,22,25,0.12,0,,mixed/unresolved,,,,,,2
+mura.7,mura,mural,120.0,abstain,1,,,,,0.0516,structural,weak_signal,21,25,0.12,0,,mixed/unresolved,,,,,,2
+mura.8,mura,mural,84.0,fallback,1,1,1,medium,0.7567,0.188,in_set,,23,25,0.08,3,ZFA:0005944,mural,mural,,,,,1
+mura.9,mura,mural,120.0,abstain,1,,,,,0.115,in_set,weak_signal,22,25,0.16,0,,mixed/unresolved,,,,,,1
+musc.1,musc,muscle,10.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+musc.10,musc,muscle,18.0,abstain,1,,,,,0.0785,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,1
+musc.11,musc,muscle,48.0,rollup,1,,,medium,0.7557,0.1622,in_set,,25,25,0.24,1,,mesoderm,mesoderm,,,,,2
+musc.12,musc,muscle,104.0,abstain,1,,,,,0.0318,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,1
+musc.13,musc,muscle,36.0,abstain,1,,,,,0.1164,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,1
+musc.14,musc,muscle,8.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+musc.15,musc,muscle,48.0,abstain,1,,,,,0.0202,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,3
+musc.16,musc,muscle,48.0,abstain,1,,,,,0.1422,in_set,weak_signal,25,25,0.12,0,,mixed/unresolved,,,,,,1
+musc.17,musc,muscle,21.0,rollup,1,,,medium,0.7173,0.1417,in_set,,25,25,0.28,1,,mesoderm,mesoderm,,,,,3
+musc.18,musc,muscle,7.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+musc.19,musc,muscle,24.0,named,1,0,0,low,0.5512,0.1785,in_set,,25,25,0.12,7,ZFA:0000279,segmental plate,mesenchyme,col5a2a;tcf15;tpm4a,mesenchyme,1,0.136,1
+musc.2,musc,muscle,10.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+musc.20,musc,muscle,14.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.0,0,,mixed/unresolved,,,,,,0
+musc.21,musc,muscle,16.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.0,0,,mixed/unresolved,,,,,,0
+musc.22,musc,muscle,48.0,named,1,1,1,high,0.975,0.309,in_set,,24,25,0.4,5,ZFA:0001056,myotome,muscle,acta1a;acta1b;actc1b;ak1;aldoab;atp2a1;ckma;ckmb;desma;gapdh;hsp90aa1.1;myl1;mylpfa;neb;pabpc4;srlb;tmem38a;tnnt3a;tnnt3b;tpma;ttn.1;ttn.2,,0,0.917,1
+musc.23,musc,muscle,84.0,rollup,1,,,medium,0.9516,0.2766,in_set,,25,25,0.36,1,,mesoderm,mesoderm,,,,,2
+musc.24,musc,muscle,14.0,abstain,1,,,,,0.0805,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,1
+musc.25,musc,muscle,16.0,abstain,1,,,,,0.031,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,1
+musc.26,musc,muscle,48.0,abstain,1,,,,,0.0366,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+musc.27,musc,muscle,24.0,named,1,1,1,high,0.9667,0.3008,in_set,,24,25,0.28,5,ZFA:0001056,myotome,muscle,acta1a;acta1b;actc1b;ak1;aldoab;atp2a1;cav3;ckma;ckmb;desma;gapdh;hsp90aa1.1;hspb1;klhl41b;myl1;mylpfa;srlb;tmem38a;tnnt2c;tpma;ttn.1,,0,0.913,1
+musc.28,musc,muscle,14.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.04,0,,mixed/unresolved,,,,,,0
+musc.29,musc,muscle,24.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.0,0,,mixed/unresolved,,,,,,0
+musc.3,musc,muscle,14.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.0,0,,mixed/unresolved,,,,,,0
+musc.30,musc,muscle,48.0,named,1,1,1,high,0.975,0.3582,in_set,,25,25,0.36,5,ZFA:0001056,myotome,muscle,acta1b;actc1b;actn3a;ak1;aldoab;atp2a1;ckma;ckmb;gapdh;mybphb;myl1;mylpfa;mylpfb;neb;pvalb1;pvalb2;tnni2a.4;tnnt3a;tnnt3b;tpma;ttn.1;ttn.2,,0,0.88,1
+musc.31,musc,muscle,14.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.04,0,,mixed/unresolved,,,,,,0
+musc.32,musc,muscle,36.0,abstain,1,,,,,0.1268,in_set,weak_signal,24,25,0.12,0,,mixed/unresolved,,,,,,1
+musc.33,musc,muscle,14.0,named,1,1,1,low,0.5906,0.1133,in_set,,25,25,0.2,5,ZFA:0001056,myotome,muscle,acta1a;acta1b;actc1b;ak1;aldoaa;aldoab;apobec2a;desma;hsp90aa1.1;hspb1;klhl41b;mybphb;myl13;smyhc1;tnnt2c;tpm2;tpm3;tpma,,0,0.783,2
+musc.34,musc,muscle,48.0,abstain,1,,,,,0.0048,structural,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,2
+musc.35,musc,muscle,16.0,rollup,1,,,medium,0.8643,0.1823,in_set,,25,25,0.24,1,,mesoderm,mesoderm,,,,,2
+musc.36,musc,muscle,14.0,abstain,1,,,,,0.0426,in_set,weak_signal,24,25,0.24,0,,mixed/unresolved,,,,,,4
+musc.4,musc,muscle,14.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.0,0,,mixed/unresolved,,,,,,0
+musc.5,musc,muscle,48.0,named,1,1,1,high,0.975,0.371,in_set,,25,25,0.36,5,ZFA:0001056,myotome,muscle,acta1b;actc1b;actn3a;ak1;aldoab;atp2a1;casq2;ckma;ckmb;gapdh;ldb3b;mybphb;myl1;mylpfa;mylpfb;neb;tmem38a;tnni2a.4;tnnt3a;tnnt3b;tpma;ttn.1;ttn.2,,0,0.92,1
+musc.6,musc,muscle,96.0,rollup,1,,,medium,0.9413,0.2788,in_set,,25,25,0.32,1,,mesoderm,mesoderm,,,,,2
+musc.7,musc,muscle,120.0,abstain,1,,,,,0.0366,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+musc.8,musc,muscle,16.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.0,0,,mixed/unresolved,,,,,,0
+musc.9,musc,muscle,48.0,abstain,1,,,,,0.0847,in_set,weak_signal,25,25,0.12,0,,mixed/unresolved,,,,,,2
+neur.1,neur,neural,48.0,named,1,1,1,medium,0.6924,0.1677,in_set,,24,25,0.16,7,ZFA:0000109,forebrain,neural,aplp1;atp1a3a;atp6ap2;atp6v0cb;cd99l2;elavl3;elavl4;gpm6aa;gpm6ab;mdkb;nova2;nsg2;rtn1a;sncb;tmem59l;tuba1c;tubb5,neural,0,0.85,1
+neur.10,neur,neural,48.0,named,1,1,1,low,0.4737,0.0773,in_set,,25,25,0.16,8,ZFA:0000079,telencephalon,neural,atp6v0cb;ckbb;dlx1a;dlx2a;dlx5a;elavl3;gpm6aa;hmgb1a;marcksl1a;nova2;ptmaa;rtn1a;sncb;stmn1b;ywhah,neural,0,0.652,2
+neur.11,neur,neural,48.0,abstain,1,,,,,0.0407,in_set,weak_signal,20,25,0.08,0,,mixed/unresolved,,,,,,1
+neur.12,neur,neural,48.0,named,1,1,1,medium,0.7575,0.2074,in_set,,25,25,0.12,8,ZFA:0000101,diencephalon,neural,ckbb;elavl3;gng2;hnrnpaba;lhx1a;ptmaa;rtn1a;stmn1b;tubb5;ywhah,neural,0,0.5,1
+neur.13,neur,neural,7.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+neur.14,neur,neural,120.0,named,1,1,1,low,0.3716,0.0288,in_set,,24,25,0.04,8,ZFA:0000079,telencephalon,neural,atp6v0cb;ckbb;elavl4;gap43;gapdhs;gpm6aa;gpm6ab;ptmaa;rtn1a;snap25a;sncb;stmn1b;stmn2a;stxbp1a,neural,0,0.636,1
+neur.15,neur,neural,10.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+neur.16,neur,neural,24.0,abstain,1,,,,,0.0379,in_set,weak_signal,21,25,0.12,0,,mixed/unresolved,,,,,,1
+neur.17,neur,neural,32.0,abstain,1,,,,,0.0052,in_set,weak_signal,19,25,0.24,0,,mixed/unresolved,,,,,,4
+neur.18,neur,neural,48.0,named,1,1,1,medium,0.7357,0.1752,in_set,,24,25,0.08,8,ZFA:0000079,telencephalon,neural,ebf3a;elavl3;gpm6aa;gpm6ab;lhx9;meis1b;meis2b;nova2;nrn1a;pbx3b;ptmaa;roraa;rtn1a;stmn1b,neural,0,0.636,1
+neur.19,neur,neural,120.0,named,1,1,1,low,0.503,0.0817,in_set,,24,25,0.08,7,ZFA:0000109,forebrain,neural,atp6v0cb;atp6v1g1;ckbb;elavl3;elavl4;gapdhs;gpm6aa;gpm6ab;ptmaa;rtn1a;snap25a;sncb;sncgb;stmn1b;stmn2a;stxbp1a;tuba1c;vamp2,neural,0,0.818,1
+neur.2,neur,neural,24.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.12,0,,mixed/unresolved,,,,,,0
+neur.20,neur,neural,24.0,abstain,1,,,,,0.0,no_signal,no_panel,21,25,0.04,0,,mixed/unresolved,,,,,,0
+neur.21,neur,neural,48.0,abstain,1,,,,,0.0,no_signal,no_panel,18,25,0.0,0,,mixed/unresolved,,,,,,0
+neur.22,neur,neural,48.0,named,1,1,1,high,0.8012,0.2018,in_set,,24,25,0.12,7,ZFA:0000109,forebrain,neural,celf2;elavl3;gpm6aa;hmgb1a;hmgb1b;hnrnpaba;nova2;ptmaa;rtn1a;stmn1b;tuba1c;tubb5;zc4h2,neural,0,0.684,1
+neur.23,neur,neural,96.0,abstain,1,,,,,0.0032,in_set,weak_signal,25,25,0.12,0,,mixed/unresolved,,,,,,3
+neur.24,neur,neural,24.0,abstain,1,,,,,0.0,no_signal,no_panel,22,25,0.12,0,,mixed/unresolved,,,,,,0
+neur.25,neur,neural,36.0,abstain,1,,,,,0.0,no_signal,no_panel,19,25,0.0,0,,mixed/unresolved,,,,,,0
+neur.26,neur,neural,10.0,abstain,1,,,,,0.0314,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,1
+neur.27,neur,neural,48.0,abstain,1,,,,,0.0129,in_set,weak_signal,23,25,0.24,0,,mixed/unresolved,,,,,,4
+neur.28,neur,neural,48.0,named,1,1,1,medium,0.7863,0.1924,in_set,,25,25,0.12,5,ZFA:0000008,brain,neural,elavl3;elavl4;gpm6aa;gpm6ab;h3f3d;hmgb1a;hmgb3a;hoxb3a;hoxb5a;hoxb5b;hoxc4a;marcksl1b;nova2;ptmaa;rtn1a;rtn1b;sncb;stmn1b;tmsb;tuba1c;zc4h2,neural,0,0.913,1
+neur.29,neur,neural,120.0,named,1,1,1,low,0.4077,0.0624,in_set,,25,25,0.08,8,ZFA:0000079,telencephalon,neural,atp6v0cb;ckbb;elavl3;gpm6aa;gpm6ab;hmgb1a;hmgb1b;mdkb;nfixb;nova2;ptmaa;rbfox1;rtn1a;slc6a1b;sncb;stmn1b;tal1,neural,0,0.773,1
+neur.3,neur,neural,36.0,named,1,1,1,low,0.5462,0.1096,in_set,,21,25,0.08,7,ZFA:0000109,forebrain,neural,cdkn1ca;dla;dlb;elavl3;fabp3;gadd45gb.1;her4.2;hnrnpaba;khdrbs1a;lfng;notch1a;nova2;rtca;sox11b,neural,0,0.737,1
+neur.30,neur,neural,48.0,rollup,1,,,medium,0.7553,0.1258,in_set,,25,25,0.24,1,,ectoderm,ectoderm,,,,,4
+neur.31,neur,neural,104.0,abstain,1,,,,,0.0023,in_set,weak_signal,24,25,0.16,0,,mixed/unresolved,,,,,,4
+neur.32,neur,neural,12.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+neur.33,neur,neural,48.0,named,1,1,1,medium,0.7275,0.1955,in_set,,25,25,0.12,8,ZFA:0000101,diencephalon,neural,elavl3;gng2;gpm6ab;lmx1bb;ptmaa;rtn1a;sncb;stmn1b;tubb5;ywhah,neural,0,0.5,1
+neur.34,neur,neural,48.0,named,1,1,1,low,0.3732,0.0289,in_set,,25,25,0.04,7,ZFA:0000109,forebrain,neural,atp6v0cb;celf2;fez1;gapdhs;gpm6aa;marcksl1a;ptmaa;rtn1a;sncb;stmn1b;tuba1c;tubb5;ywhah;zc4h2,neural,0,0.636,1
+neur.35,neur,neural,48.0,named,1,1,1,medium,0.7034,0.1662,in_set,,23,25,0.08,8,ZFA:0000079,telencephalon,neural,dlb;elavl3;hes6;hmgb1b;hmgb2b;khdrbs1a;nova2;ptmaa;rtn1a;sox11b,neural,0,0.526,1
+neur.36,neur,neural,14.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.08,0,,mixed/unresolved,,,,,,0
+neur.37,neur,neural,48.0,abstain,1,,,,,0.051,in_set,weak_signal,25,25,0.12,0,,mixed/unresolved,,,,,,3
+neur.38,neur,neural,48.0,abstain,1,,,,,0.0,no_signal,no_panel,21,25,0.08,0,,mixed/unresolved,,,,,,0
+neur.39,neur,neural,36.0,abstain,1,,,,,0.0524,in_set,weak_signal,22,25,0.04,0,,mixed/unresolved,,,,,,1
+neur.4,neur,neural,24.0,abstain,1,,,,,0.0493,in_set,weak_signal,21,25,0.12,0,,mixed/unresolved,,,,,,2
+neur.40,neur,neural,36.0,named,1,1,1,low,0.3404,0.0649,in_set,,20,25,0.08,8,ZFA:0000079,telencephalon,neural,dla;dlx1a;dlx2a;her4.2;hmgb1b;hmgb2b;khdrbs1a;nova2;sox11b,neural,0,0.5,2
+neur.41,neur,neural,48.0,named,1,1,1,low,0.5935,0.1161,in_set,,25,25,0.12,8,ZFA:0000079,telencephalon,neural,celf2;ckbb;ebf3a;elavl3;elavl4;gpm6aa;lhx1a;nova2;ptmaa;rtn1a;sncb;stmn1b;ywhah,neural,0,0.542,1
+neur.42,neur,neural,48.0,named,1,1,1,medium,0.7256,0.1752,in_set,,23,25,0.08,7,ZFA:0000109,forebrain,neural,dlb;elavl3;fabp3;gata2a;hmgb1b;hnrnpaba;khdrbs1a;nova2;rtn1a;sox11a;sox11b;tp53inp1;tuba1c,neural,0,0.619,1
+neur.43,neur,neural,48.0,abstain,1,,,,,0.0769,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,1
+neur.44,neur,neural,16.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.0,0,,mixed/unresolved,,,,,,0
+neur.45,neur,neural,72.0,named,1,1,1,low,0.3415,0.006,in_set,,25,25,0.08,6,ZFA:0000047,peripheral olfactory organ,olfactory,elavl3;gapdhs;gnao1a;gng3;gng8;msi2b;olfm1b;rtn1a;sncb;ywhaz,neural,0,0.435,2
+neur.46,neur,neural,36.0,abstain,1,,,,,0.0362,in_set,weak_signal,21,25,0.08,0,,mixed/unresolved,,,,,,2
+neur.47,neur,neural,96.0,abstain,1,,,,,0.0549,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+neur.48,neur,neural,48.0,named,1,1,1,low,0.5355,0.1196,in_set,,25,25,0.12,8,ZFA:0000101,diencephalon,neural,ckbb;elavl3;gap43;gata2a;lmx1bb;ptmaa;rtn1a;sncb;stmn1b;tubb5;vamp2;ywhah,neural,0,0.522,1
+neur.5,neur,neural,48.0,named,1,1,1,medium,0.6346,0.1522,in_set,,25,25,0.16,8,ZFA:0000079,telencephalon,neural,ckbb;elavl3;elavl4;gata3;gpm6aa;gpm6ab;hmgb1a;lhx1a;nova2;ptmaa;rtn1a;slc6a1b;sncb;stmn1b;tal1;ywhah,neural,0,0.696,1
+neur.6,neur,neural,16.0,abstain,1,,,,,0.0,no_signal,no_panel,23,25,0.08,0,,mixed/unresolved,,,,,,0
+neur.7,neur,neural,60.0,named,1,1,1,low,0.5982,0.118,in_set,,25,25,0.12,7,ZFA:0000109,forebrain,neural,celf2;ckbb;elavl3;gpm6aa;gpm6ab;hmgb1a;lhx9;nova2;ptmaa;rtn1a;stmn1b;tuba1c;tubb5;zc4h2,neural,0,0.667,1
+neur.8,neur,neural,48.0,named,1,1,1,high,0.8603,0.2217,in_set,,25,25,0.16,7,ZFA:0000109,forebrain,neural,ckbb;elavl3;elavl4;gng2;gpm6ab;nova2;ptmaa;rtn1a;sncb;stmn1b;tuba1c;tubb5;ywhah;zc4h2,neural,0,0.7,1
+neur.9,neur,neural,60.0,named,1,1,1,low,0.5948,0.1169,in_set,,25,25,0.16,8,ZFA:0000079,telencephalon,neural,celf2;ckbb;elavl3;gpm6aa;gpm6ab;hmgb1b;neurod1;nfixb;nova2;ptmaa;rtn1a;sncb;stmn1b,neural,0,0.591,2
+otic.1,otic,otic,48.0,rollup,1,,,medium,0.6378,0.0981,in_set,,23,25,0.24,1,,ectoderm,ectoderm,,,,,4
+otic.10,otic,otic,14.0,named,1,1,1,low,0.4137,0.0293,in_set,,24,25,0.08,2,ZFA:0000051,otic vesicle,otic,atp1b1a;cldn7b;cldna;dnase1l4.1;eya1;f11r.1;fthl27;hmga1a;khdrbs1a;oc90;ran;srsf5a;stm;tbx2b,,0,0.875,2
+otic.11,otic,otic,78.0,named,1,0,0,low,0.4838,0.0343,in_set,,24,25,0.2,3,ZFA:0000368,integument,epidermis,cldnb;cyt1;gapdhs;icn;icn2;krt1-19e;krt17;krt4;krt5;pvalb8;rbp4;s100t,epidermis,0,0.706,3
+otic.12,otic,otic,48.0,named,1,1,1,low,0.3428,0.0,in_set,,23,25,0.16,2,ZFA:0000051,otic vesicle,otic,agr2;atp1b1a;cd9b;cldna;cldnb;col11a1a;col11a2;col2a1a;col2a1b;col5a1;col9a1b;col9a2;fosab;lmx1bb;matn4;otomp;serpine2;sparc;stm,,0,1.0,5
+otic.13,otic,otic,102.0,abstain,1,,,,,0.0,in_set,weak_signal,23,25,0.12,0,,mixed/unresolved,,,,,,3
+otic.14,otic,otic,96.0,abstain,1,,,,,0.0314,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,1
+otic.15,otic,otic,108.0,abstain,1,,,,,0.0617,in_set,weak_signal,24,25,0.16,0,,mixed/unresolved,,,,,,4
+otic.16,otic,otic,108.0,named,1,1,1,low,0.4365,0.0097,in_set,,23,25,0.2,2,ZFA:0000051,otic vesicle,otic,agr2;atp1b1a;bricd5;col2a1a;col9a2;eya1;gata3;gstm.1;otomp;otop1;pax2a;serpine2;six1b;sparc;stm,,0,0.938,5
+otic.17,otic,otic,84.0,abstain,1,,,,,0.0,no_signal,no_panel,21,25,0.0,0,,mixed/unresolved,,,,,,0
+otic.18,otic,otic,84.0,named,1,0,0,low,0.5681,0.1007,in_set,,22,25,0.16,6,ZFA:0000105,epidermis,epidermis,capns1a;cfl1l;cldnb;cyt1;dnase1l4.1;f11r.1;fosab;fosb;krt1-19e;krt4;krt5;pfn1;s100a10b,epidermis,0,0.765,2
+otic.19,otic,otic,24.0,abstain,1,,,,,0.0179,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,2
+otic.2,otic,otic,48.0,named,1,1,1,low,0.4207,0.0671,in_set,,24,25,0.28,2,ZFA:0000051,otic vesicle,otic,agr2;aif1l;atp1a1a.4;atp1b1a;bricd5;cd9b;cldnb;col2a1a;eya1;fthl27;mb;otomp;pdia3;rnd3a;six1a;six1b;slc1a3a;sox10;sparc;stm,,0,0.87,8
+otic.20,otic,otic,120.0,abstain,1,,,,,0.0,no_signal,no_panel,21,25,0.0,0,,mixed/unresolved,,,,,,0
+otic.21,otic,otic,120.0,abstain,1,,,,,0.0341,in_set,weak_signal,22,25,0.12,0,,mixed/unresolved,,,,,,2
+otic.22,otic,otic,85.0,named,1,1,1,low,0.4729,0.0093,in_set,,22,25,0.28,2,ZFA:0000051,otic vesicle,otic,agr2;atp1b1a;cldnb;col11a1a;col2a1a;col2a1b;col5a1;col9a2;dag1;eya1;matn4;otomp;pax2a;sfrp1a;six1b;slc4a4b;sparc;stm,,0,0.947,7
+otic.3,otic,otic,48.0,named,1,1,1,low,0.4352,0.033,in_set,,24,25,0.24,2,ZFA:0000051,otic vesicle,otic,agr2;atp1b1a;bricd5;cd9b;cldna;cldnb;col11a1a;col2a1a;col9a1b;col9a2;eya1;f11r.1;hmx4;matn4;otomp;pabpc1a;six1b;sox10;sparc;stm;tbx1;tbx2a;tbx2b,,0,1.0,7
+otic.4,otic,otic,84.0,abstain,1,,,,,0.0757,in_set,weak_signal,23,25,0.12,0,,mixed/unresolved,,,,,,3
+otic.5,otic,otic,24.0,named,1,1,1,low,0.341,0.0455,in_set,,22,25,0.24,2,ZFA:0000051,otic vesicle,otic,agr2;cldna;cldnb;hmga1a;otomp;ptmab;ran;six1b;sparc;stm,,0,0.667,3
+otic.6,otic,otic,108.0,abstain,1,,,,,0.0,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,4
+otic.7,otic,otic,84.0,named,1,0,0,medium,0.7236,0.1834,in_set,,21,25,0.08,6,ZFA:0000243,neuromast,lateral_line,atp1b2b;atp2b1a;cd164l2;dnajc5b;gpx1b;myo6b;otofb;prdx2;six1b;slc25a3b;stard15,neural,0,0.647,1
+otic.8,otic,otic,84.0,abstain,1,,,,,0.0697,in_set,weak_signal,23,25,0.12,0,,mixed/unresolved,,,,,,3
+otic.9,otic,otic,84.0,abstain,1,,,,,0.0637,doublet,mixed,23,25,0.24,0,,mixed/unresolved,,,,,,6
+peri.1,peri,periderm,84.0,rollup,1,,,medium,0.6609,0.1328,in_set,,23,25,0.16,1,,ectoderm,ectoderm,,,,,2
+peri.10,peri,periderm,84.0,rollup,1,,,medium,0.6539,0.1283,in_set,,22,25,0.12,1,,ectoderm,ectoderm,,,,,2
+peri.11,peri,periderm,48.0,named,1,0,1,low,0.5178,0.1167,in_set,,23,25,0.12,6,ZFA:0000105,epidermis,epidermis,anxa1a;capns1a;cd9b;cfl1l;ckap4;cyt1;gsnb;hdlbpa;krt1-19e;krt4;krt5;selenow1;ywhaz,epidermis,0,0.65,1
+peri.12,peri,periderm,36.0,rollup,1,,,medium,0.7048,0.1535,in_set,,22,25,0.16,1,,ectoderm,ectoderm,,,,,2
+peri.13,peri,periderm,108.0,named,1,0,1,low,0.5768,0.1406,in_set,,23,25,0.12,6,ZFA:0000105,epidermis,epidermis,anxa1a;cfl1l;ckap4;cyt1;krt1-19e;krt4;krt5;pycard;s100a10b;selenow1,epidermis,0,0.526,1
+peri.14,peri,periderm,108.0,rollup,1,,,medium,0.6628,0.1287,in_set,,24,25,0.16,1,,ectoderm,ectoderm,,,,,2
+peri.15,peri,periderm,104.0,rollup,1,,,medium,0.7197,0.1538,in_set,,23,25,0.16,1,,ectoderm,ectoderm,,,,,2
+peri.16,peri,periderm,18.0,rollup,1,,,medium,0.9519,0.2535,in_set,,23,25,0.2,1,,ectoderm,ectoderm,,,,,2
+peri.17,peri,periderm,24.0,rollup,1,,,medium,0.6435,0.1257,in_set,,23,25,0.16,1,,ectoderm,ectoderm,,,,,2
+peri.18,peri,periderm,104.0,rollup,1,,,medium,0.6801,0.1391,in_set,,22,25,0.16,1,,ectoderm,ectoderm,,,,,2
+peri.19,peri,periderm,36.0,abstain,1,,,,,0.0804,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+peri.2,peri,periderm,108.0,named,1,0,1,medium,0.6068,0.1214,in_set,,25,25,0.08,6,ZFA:0000105,epidermis,epidermis,anxa1a;cfl1l;ckap4;cyt1;eef1a1l1;krt1-19e;krt4;krt5;pycard;s100a10b;selenow1,epidermis,0,0.55,1
+peri.20,peri,periderm,24.0,named,1,0,1,medium,0.7178,0.2003,in_set,,23,25,0.12,6,ZFA:0000105,epidermis,epidermis,anxa1a;capn9;capns1a;cd9b;cfl1l;ckap4;cyt1;gsnb;krt4;krt5;ppl;s100a10b;selenow1;ywhaz,epidermis,0,0.7,1
+peri.21,peri,periderm,96.0,rollup,1,,,medium,0.7272,0.157,in_set,,23,25,0.16,1,,ectoderm,ectoderm,,,,,2
+peri.22,peri,periderm,84.0,named,1,0,1,low,0.5547,0.1067,in_set,,23,25,0.16,6,ZFA:0000105,epidermis,epidermis,anxa1a;capns1a;cfl1l;ckap4;cldnb;cyt1;fut9d;hdlbpa;krt4;krt5;selenow1,epidermis,0,0.611,2
+peri.23,peri,periderm,108.0,named,1,0,1,low,0.5484,0.1247,in_set,,25,25,0.12,6,ZFA:0000105,epidermis,epidermis,anxa1a;capns1a;cast;cfl1l;ckap4;cyt1;evplb;krt4;krt5;krt97;ppl;s100a10b;selenow1,epidermis,0,0.65,1
+peri.24,peri,periderm,48.0,rollup,1,,,medium,0.7173,0.155,in_set,,23,25,0.16,1,,ectoderm,ectoderm,,,,,2
+peri.25,peri,periderm,48.0,rollup,1,,,medium,0.6655,0.1366,in_set,,22,25,0.16,1,,ectoderm,ectoderm,,,,,2
+peri.26,peri,periderm,48.0,named,1,0,1,medium,0.6913,0.1607,in_set,,23,25,0.08,6,ZFA:0000105,epidermis,epidermis,anxa1a;cfl1l;ckap4;cyt1;fut9d;hdlbpa;krt4;krt5;ppl;selenow1;tent5ba,epidermis,0,0.647,1
+peri.27,peri,periderm,5.0,abstain,1,,,,,0.101,in_set,weak_signal,23,25,0.12,0,,mixed/unresolved,,,,,,1
+peri.28,peri,periderm,108.0,rollup,1,,,medium,0.6801,0.1388,in_set,,22,25,0.16,1,,ectoderm,ectoderm,,,,,2
+peri.29,peri,periderm,72.0,named,1,0,1,medium,0.6679,0.1509,in_set,,23,25,0.12,3,ZFA:0000368,integument,epidermis,aep1;capns1a;cfl1l;ckap4;cldne;cyt1;cyt1l;hdlbpa;icn;icn2;krt1-19e;krt17;krt4;krt5;pycard;selenow1;tcnbb,epidermis,0,0.895,1
+peri.3,peri,periderm,84.0,named,1,0,1,medium,0.7178,0.1986,in_set,,23,25,0.12,6,ZFA:0000105,epidermis,epidermis,anxa1a;capns1a;cfl1l;ckap4;cyt1;krt1-19e;krt4;krt5;pycard;s100a10b;selenow1,epidermis,0,0.579,1
+peri.30,peri,periderm,104.0,rollup,1,,,medium,0.6938,0.1401,in_set,,22,25,0.12,1,,ectoderm,ectoderm,,,,,2
+peri.31,peri,periderm,108.0,rollup,1,,,medium,0.7128,0.1539,in_set,,22,25,0.16,1,,ectoderm,ectoderm,,,,,2
+peri.32,peri,periderm,5.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+peri.4,peri,periderm,96.0,named,1,0,1,medium,0.6424,0.1676,in_set,,23,25,0.12,6,ZFA:0000105,epidermis,epidermis,cd9b;cfl1l;ckap4;cyt1;krt1-19e;krt4;krt5;pycard;selenow1,epidermis,0,0.5,1
+peri.5,peri,periderm,36.0,named,1,0,1,medium,0.6927,0.1864,in_set,,24,25,0.12,6,ZFA:0000105,epidermis,epidermis,anxa1a;anxa2a;capn9;capns1a;cd9b;cfl1l;ckap4;cyt1;gsnb;krt4;krt5;ppl;s100a10b;selenow1;ywhaz,epidermis,0,0.714,1
+peri.6,peri,periderm,48.0,named,1,0,1,medium,0.7087,0.1953,in_set,,23,25,0.12,6,ZFA:0000105,epidermis,epidermis,anxa1a;capns1a;cd9b;cfl1l;ckap4;cyt1;krt1-19e;krt4;krt5;ppl;s100a10b;selenow1,epidermis,0,0.632,1
+peri.7,peri,periderm,44.0,named,1,0,1,medium,0.7091,0.1956,in_set,,23,25,0.12,6,ZFA:0000105,epidermis,epidermis,anxa1a;capns1a;cfl1l;ckap4;cyt1;krt1-19e;krt4;krt5;ppl;s100a10b;selenow1;tcima,epidermis,0,0.632,1
+peri.8,peri,periderm,120.0,rollup,1,,,medium,0.6761,0.1371,in_set,,23,25,0.16,1,,ectoderm,ectoderm,,,,,2
+peri.9,peri,periderm,84.0,abstain,1,,,,,0.1085,in_set,weak_signal,22,25,0.12,0,,mixed/unresolved,,,,,,2
+pgc.1,pgc,pgc,14.0,fallback,1,0,1,low,0.4185,0.0516,in_set,,23,25,0.04,3,ZFA:0009016,germline,germline,,,,,1
+pgc.2,pgc,pgc,10.0,named,1,1,1,low,0.4837,0.0776,in_set,,25,25,0.2,5,ZFA:0009288,primordial germ cell,germline,ccna2;ddx4;h1m;nanos3,,0,0.667,1
+pigm.1,pigm,pigment,48.0,named,1,1,1,medium,0.6839,0.1519,in_set,,25,25,0.08,6,ZFA:0009198,xanthophore,pigment,actb2;aox5;gch2;slc22a7a;slc2a11b;slc2a15a;tspan36,epidermis,0,0.389,1
+pigm.10,pigm,pigment,24.0,named,1,1,1,low,0.5445,0.0968,in_set,,25,25,0.08,2,ZFA:0009090,pigment cell,pigment,actb2;aox5;atic;gart;gch2;gjb8;gmps;gpr143;impdh1b;pax7a;qdpra;rab32a;slc2a11b;syngr1a;tspan36,,0,0.833,1
+pigm.11,pigm,pigment,48.0,fallback,1,1,1,low,0.409,0.0525,in_set,,19,25,0.08,3,ZFA:0009090,pigment,pigment,,,,,1
+pigm.12,pigm,pigment,48.0,named,1,1,1,low,0.5801,0.1108,in_set,,25,25,0.08,6,ZFA:0009198,xanthophore,pigment,aox5;bscl2l;gch2;pax7b;slc22a7a;slc2a11b;slc2a15a;tspan36,epidermis,0,0.471,1
+pigm.13,pigm,pigment,108.0,abstain,1,,,,,0.0528,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,1
+pigm.14,pigm,pigment,48.0,named,1,1,1,high,0.8522,0.2591,in_set,,23,25,0.2,19,ZFA:0009091,melanocyte,pigment,atp6v0ca;dct;mitfa;pmela;qdpra;tfap2e;tspan36;tyr;tyrp1a;tyrp1b,epidermis;neural,0,0.5,1
+pigm.15,pigm,pigment,108.0,abstain,1,,,,,0.0808,in_set,weak_signal,22,25,0.08,0,,mixed/unresolved,,,,,,1
+pigm.16,pigm,pigment,24.0,abstain,1,,,,,0.0096,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,2
+pigm.17,pigm,pigment,72.0,abstain,1,,,,,0.0389,structural,weak_signal,22,25,0.04,0,,mixed/unresolved,,,,,,1
+pigm.18,pigm,pigment,88.0,named,1,1,1,low,0.3543,0.023,in_set,,25,25,0.16,2,ZFA:0009090,pigment cell,pigment,gch2;gstp1.2;slc22a7a,,1,0.2,3
+pigm.19,pigm,pigment,48.0,named,1,1,1,medium,0.6885,0.1537,in_set,,25,25,0.08,2,ZFA:0009090,pigment cell,pigment,actb2;aox5;atic;gch2;gmps;gstp1.2;impdh1b;slc22a7a;slc2a11b;slc2a15a;syngr1a;tspan36,,0,0.923,1
+pigm.2,pigm,pigment,48.0,abstain,1,,,,,0.125,doublet,mixed,24,25,0.12,0,,mixed/unresolved,,,,,,2
+pigm.20,pigm,pigment,72.0,abstain,1,,,,,0.0922,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,1
+pigm.21,pigm,pigment,36.0,named,1,1,1,low,0.4185,0.0467,in_set,,24,25,0.16,2,ZFA:0009090,pigment cell,pigment,atic;gch2;gstp1.2;icn;impdh1b;slc22a7a,,0,0.462,4
+pigm.22,pigm,pigment,48.0,named,1,1,1,medium,0.7055,0.1683,in_set,,24,25,0.08,6,ZFA:0009198,xanthophore,pigment,aox5;bscl2l;gch2;slc22a7a;slc2a11b;slc2a15a;tspan36,epidermis,0,0.5,1
+pigm.23,pigm,pigment,84.0,named,1,1,1,low,0.3592,0.005,in_set,,25,25,0.12,2,ZFA:0009090,pigment cell,pigment,gch2;gstp1.2;slc22a7a,,1,0.231,3
+pigm.3,pigm,pigment,96.0,named,1,1,1,medium,0.6454,0.1177,in_set,,25,25,0.12,6,ZFA:0009198,xanthophore,pigment,actb2;aox5;gch2;slc22a7a,epidermis,0,0.308,2
+pigm.4,pigm,pigment,48.0,named,1,1,1,high,0.9653,0.2653,in_set,,25,25,0.16,2,ZFA:0009090,pigment cell,pigment,actb2;atp6v0ca;dct;gch2;gpr143;gstp1.2;gstt1a;icn;pmela;qdpra;slc45a2;syngr1a;tspan36;tyrp1a;tyrp1b,,0,0.938,1
+pigm.5,pigm,pigment,84.0,abstain,1,,,,,0.0996,in_set,weak_signal,22,25,0.08,0,,mixed/unresolved,,,,,,1
+pigm.6,pigm,pigment,48.0,named,1,0,0,low,0.5546,0.0826,in_set,,25,25,0.16,7,ZFA:0000109,forebrain,neural,atp6v0cb;celf2;ckbb;elavl3;gpm6aa;gpm6ab;nova2;ptmaa;rtn1a;sncb;stmn1b;tuba1c;tubb5;zc4h2,neural,0,0.667,2
+pigm.7,pigm,pigment,48.0,abstain,1,,,,,0.0647,in_set,weak_signal,22,25,0.08,0,,mixed/unresolved,,,,,,1
+pigm.8,pigm,pigment,108.0,named,1,1,1,low,0.5658,0.1052,in_set,,25,25,0.08,6,ZFA:0009198,xanthophore,pigment,aox5;bscl2l;gch2;pax7b;slc22a7a;slc2a11b;slc2a15a;tspan36,epidermis,0,0.5,1
+pigm.9,pigm,pigment,108.0,named,1,1,1,medium,0.7648,0.2235,in_set,,25,25,0.12,19,ZFA:0009091,melanocyte,pigment,actb2;dct;kcnj13;kita;mlpha;pmela;tfap2e;tspan36;tyr;tyrp1a;tyrp1b,epidermis;neural,0,0.5,1
+pron.1,pron,pronephros,84.0,abstain,1,,,,,0.062,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,1
+pron.10,pron,pronephros,96.0,named,1,1,1,low,0.5305,0.115,in_set,,23,25,0.08,9,ZFA:0000150,pronephric duct,pronephros,acy3.2;aldob;anxa4;atp1a1a.4;atp1b1a;btg1;cd9b;cdh17;clic5b;eno3;etnk1;grhprb;kcnj13;slc26a1;slc60a1b,,0,0.75,1
+pron.11,pron,pronephros,24.0,abstain,1,,,,,0.0565,in_set,weak_signal,25,25,0.16,0,,mixed/unresolved,,,,,,2
+pron.12,pron,pronephros,96.0,abstain,1,,,,,0.0615,in_set,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,1
+pron.13,pron,pronephros,12.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.04,0,,mixed/unresolved,,,,,,0
+pron.14,pron,pronephros,72.0,named,1,1,1,medium,0.6372,0.1365,in_set,,24,25,0.12,9,ZFA:0000150,pronephric duct,pronephros,acy3.2;aldob;aqp8b;atp1a1a.4;atp1b1a;atp5mc3b;cdh17;cubn;dab2;grhprb;lrp2a;lrpap1;ndrg1a;slc26a1;slc4a2a;slc4a4a,,0,0.8,1
+pron.15,pron,pronephros,60.0,named,1,0,0,low,0.2947,0.0771,in_set,,25,25,0.08,14,ZFA:0000019,epiphysis,neural,ckbb;gap43;gpm6ab;ppdpfb;stmn2a;vamp2,neural,0,0.273,1
+pron.16,pron,pronephros,18.0,abstain,1,,,,,0.0186,in_set,weak_signal,24,25,0.08,0,,mixed/unresolved,,,,,,2
+pron.17,pron,pronephros,60.0,abstain,1,,,,,0.0,no_signal,no_panel,24,25,0.0,0,,mixed/unresolved,,,,,,0
+pron.2,pron,pronephros,10.0,abstain,1,,,,,0.0,no_signal,no_panel,25,25,0.04,0,,mixed/unresolved,,,,,,0
+pron.3,pron,pronephros,24.0,named,1,1,1,medium,0.6552,0.1429,in_set,,25,25,0.12,9,ZFA:0000150,pronephric duct,pronephros,acy3.2;ahcyl1;aqp8b;atp1a1a.4;atp1b1a;atp5mc1;atp5mc3b;atp5pd;cdh17;cox5aa;fosab;lrpap1;ndrg1a;sgk1;slc4a4a,,0,0.682,1
+pron.4,pron,pronephros,14.0,abstain,1,,,,,0.0,in_set,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,2
+pron.5,pron,pronephros,108.0,abstain,1,,,,,0.0619,in_set,weak_signal,25,25,0.08,0,,mixed/unresolved,,,,,,1
+pron.6,pron,pronephros,36.0,named,1,1,1,low,0.3936,0.037,in_set,,25,25,0.04,9,ZFA:0000150,pronephric duct,pronephros,acy3.2;aldob;aqp8b;atp1b1a;atp5mc1;atp5mc3b;cox5aa;dab2;eno3;ftcd;grhprb;ndrg1a;nit2;pdzk1,,0,0.636,1
+pron.7,pron,pronephros,84.0,abstain,1,,,,,0.0301,in_set,weak_signal,25,25,0.04,0,,mixed/unresolved,,,,,,1
+pron.8,pron,pronephros,84.0,abstain,1,,,,,0.0574,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,1
+pron.9,pron,pronephros,60.0,abstain,1,,,,,0.0321,in_set,weak_signal,23,25,0.12,0,,mixed/unresolved,,,,,,3
+tast.1,tast,taste,120.0,named,1,0,0,low,0.3777,0.0307,in_set,,25,25,0.04,6,ZFA:0000047,peripheral olfactory organ,olfactory,anxa5b;atf5a;capsla;cldn3c;gnal;gnb1a;gstp1.2;icn;nrsn1;nxnl2;ompb;pvalb5;selenot1a;selenow1;selenow2b;tspan2a;txnb,neural,0,0.708,1
+tast.10,tast,taste,48.0,abstain,1,,,,,0.0517,in_set,weak_signal,21,25,0.08,0,,mixed/unresolved,,,,,,2
+tast.11,tast,taste,120.0,abstain,1,,,,,0.0284,in_set,weak_signal,24,25,0.16,0,,mixed/unresolved,,,,,,3
+tast.12,tast,taste,96.0,abstain,1,,,,,0.0011,in_set,weak_signal,23,25,0.2,0,,mixed/unresolved,,,,,,2
+tast.13,tast,taste,48.0,rollup,1,,,medium,0.6355,0.0947,in_set,,24,25,0.2,1,,ectoderm,ectoderm,,,,,2
+tast.14,tast,taste,84.0,abstain,1,,,,,0.0,in_set,weak_signal,23,25,0.04,0,,mixed/unresolved,,,,,,2
+tast.15,tast,taste,120.0,abstain,1,,,,,0.0455,in_set,weak_signal,22,25,0.04,0,,mixed/unresolved,,,,,,1
+tast.16,tast,taste,24.0,abstain,1,,,,,0.1286,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+tast.17,tast,taste,36.0,abstain,1,,,,,0.0008,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,2
+tast.18,tast,taste,84.0,abstain,1,,,,,0.0365,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,2
+tast.19,tast,taste,120.0,named,1,0,0,low,0.31,0.0089,in_set,,25,25,0.2,12,ZFA:0000152,retina,neural,adcyap1b;aldocb;atp1a1a.1;atp5mc3b;cox4i2;cox6a1;elavl3;gnb1a;gng13b;insm1a;ptmaa;rtn1a;txnb,neural,0,0.542,3
+tast.2,tast,taste,108.0,abstain,1,,,,,0.039,in_set,weak_signal,21,25,0.08,0,,mixed/unresolved,,,,,,2
+tast.20,tast,taste,84.0,abstain,1,,,,,0.036,in_set,weak_signal,20,25,0.04,0,,mixed/unresolved,,,,,,1
+tast.3,tast,taste,96.0,abstain,1,,,,,0.0346,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,2
+tast.4,tast,taste,24.0,abstain,1,,,,,0.0,no_signal,no_panel,22,25,0.08,0,,mixed/unresolved,,,,,,0
+tast.5,tast,taste,48.0,abstain,1,,,,,0.0496,in_set,weak_signal,24,25,0.04,0,,mixed/unresolved,,,,,,1
+tast.6,tast,taste,14.0,abstain,1,,,,,0.0222,in_set,weak_signal,23,25,0.16,0,,mixed/unresolved,,,,,,4
+tast.7,tast,taste,84.0,abstain,1,,,,,0.0467,in_set,weak_signal,23,25,0.08,0,,mixed/unresolved,,,,,,2
+tast.8,tast,taste,108.0,abstain,1,,,,,0.0493,in_set,weak_signal,20,25,0.08,0,,mixed/unresolved,,,,,,2
+tast.9,tast,taste,48.0,named,1,0,0,low,0.5265,0.0949,in_set,,22,25,0.08,6,ZFA:0000047,peripheral olfactory organ,olfactory,anxa5b;calb2a;cldn3c;fthl27;gapdhs;gnao1b;gnb1a;gng8;gstp1.2;icn;pvalb5;rtn1a;s100z;tspan2a;txnb,neural,0,0.789,1
