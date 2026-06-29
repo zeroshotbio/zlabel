@@ -21,7 +21,7 @@ import re
 import sys
 from pathlib import Path
 
-from zlabel.evaluate import evaluate, load_benchmark, load_crosswalk, load_resources, render_report
+from zlabel.evaluate import evaluate, load_benchmark, load_crosswalk, load_resources, overlay_for, render_report
 
 REPO = Path(__file__).resolve().parent.parent
 DATA = REPO / "data" / "ontologies"
@@ -66,7 +66,7 @@ def main() -> int:
         gaf_path=DATA / "zfin.gaf",
         panels_path=PANELS,
     )
-    report = evaluate(load_benchmark(BENCHMARK), load_crosswalk(CROSSWALK), resources)
+    report = evaluate(load_benchmark(BENCHMARK), load_crosswalk(CROSSWALK), resources, overlay_for(CROSSWALK))
     fresh = render_report(report)
     committed = COMMITTED.read_text(encoding="utf-8")
 

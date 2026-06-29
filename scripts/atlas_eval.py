@@ -30,7 +30,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from zlabel.evaluate import evaluate, load_benchmark, load_crosswalk, load_resources, render_report
+from zlabel.evaluate import evaluate, load_benchmark, load_crosswalk, load_resources, overlay_for, render_report
 
 REPO = Path(__file__).resolve().parent.parent
 DATA = REPO / "data" / "ontologies"
@@ -100,7 +100,8 @@ def _render(cfg: AtlasConfig) -> str:
         gaf_path=DATA / "zfin.gaf",
         panels_path=PANELS,
     )
-    report = evaluate(load_benchmark(cfg.benchmark), load_crosswalk(cfg.crosswalk), resources)
+    crosswalk = load_crosswalk(cfg.crosswalk)
+    report = evaluate(load_benchmark(cfg.benchmark), crosswalk, resources, overlay_for(cfg.crosswalk))
     return render_report(report, title=cfg.title)
 
 

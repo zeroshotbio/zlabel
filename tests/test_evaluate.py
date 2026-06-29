@@ -216,6 +216,49 @@ def test_render_report_includes_visibility_and_attractor_sections():
     assert f"- {evaluate.ATTRACTOR_BUCKETS[0]}: 5" in rendered
 
 
+def test_extend_crosswalk_is_additive_and_fail_closed():
+    # The overlay only unions anchors (monotonic) and fails closed on a tissue the base does not score.
+    base = evaluate.Crosswalk(anchors={"musc": frozenset({"ZFA:0000548"})}, not_scored=frozenset({"blas"}))
+    extended = evaluate.extend_crosswalk(base, {"musc": frozenset({"ZFA:0000368"})})
+    assert extended.anchors["musc"] == frozenset({"ZFA:0000548", "ZFA:0000368"})
+    assert extended.not_scored == base.not_scored
+    with pytest.raises(KeyError):
+        evaluate.extend_crosswalk(base, {"nope": frozenset({"ZFA:0000368"})})
+
+
+def test_load_overlay_and_overlay_for(tmp_path):
+    # load_overlay reads add_anchors; overlay_for finds the sibling beside a crosswalk, else None.
+    overlay_file = tmp_path / "x_crosswalk_overlay.yaml"
+    overlay_file.write_text(
+        "tissues:\n  peri:\n    add_anchors: [ZFA:0000105]\n    justification: periderm is epidermis\n",
+        encoding="utf-8",
+    )
+    assert evaluate.load_overlay(overlay_file) == {"peri": frozenset({"ZFA:0000105"})}
+    assert evaluate.overlay_for(tmp_path / "x_tissue_crosswalk.yaml") == {"peri": frozenset({"ZFA:0000105"})}
+    assert evaluate.overlay_for(tmp_path / "y_tissue_crosswalk.yaml") is None
+
+
+def test_evaluate_overlay_corrects_coarser_call_strict_unchanged(resources):
+    # A muscle cluster whose gold anchor is unrelated (strict miss) is credited once the overlay adds
+    # the muscle anchor -- and the strict agreement is untouched (the overlay never relaxes it).
+    bench = [evaluate.BenchmarkRow("myo.1", MUSCLE_MARKERS, "myo", "muscle", 48.0)]
+    base = evaluate.Crosswalk(anchors={"myo": frozenset({"ZFA:0000107"})}, not_scored=frozenset())  # eye anchor
+    overlay = {"myo": frozenset({"ZFA:0000548"})}  # add musculature system
+
+    strict = evaluate.evaluate(bench, base, resources)
+    assert strict.correct[evaluate.NAMED] == 0  # muscle does not ground under eye
+    assert strict.overlay_applied is False
+    assert "Overlay-corrected agreement" not in evaluate.render_report(strict)
+
+    corrected = evaluate.evaluate(bench, base, resources, overlay)
+    assert corrected.correct[evaluate.NAMED] == 0  # strict number unchanged
+    assert corrected.overlay_correct[evaluate.NAMED] == 1  # credited via the overlay
+    assert [cid for cid, _, _ in corrected.overlay_recovered] == ["myo.1"]
+    rendered = evaluate.render_report(corrected)
+    assert "Overlay-corrected agreement" in rendered
+    assert "credited via overlay" in rendered
+
+
 def test_label_row_forwards_specificity_blend(resources):
     # The evaluator must forward Resources.alpha + marker_specificity into the scorer.
     # mylpfa+acta1b (ranks 1-2) hit muscle; kdrl (rank 3) hits endothelium. At alpha=0
