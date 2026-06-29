@@ -15,6 +15,14 @@ lever is. Companion: `RELATIONSHIPS.md` (the relationship-axis primer).
 
 ## Bottom line (what the evidence says to do)
 
+> **Phase-3 update (`grounding_pilot.md`).** The "curation backlog" lever (point 3) was tested
+> end-to-end and does **not** grow coverage on the benchmarks: the near-bar terms' markers never
+> co-occur in any of the 629 eval clusters (`genes_to_min` is corpus *capacity*, not eval
+> realizability), and adding panels for unanchored useful terms regresses the hard gate (the best
+> candidate, periderm, two ways). **All three coverage levers are now NO-GO; coverage is bound by the
+> selection/attractor wall, not reachability or grounding.** Points 1–2 stand; point 3 is corrected
+> in place below.
+
 1. **The engine already cannot emit a useless label.** Of 176 named Daniocell calls, **0 are T4/T5**
    (T1 137, T2 19, T3 20). Two structural reasons: (a) the descent only names a term with
    `support >= CONVERGENCE_MIN` (3) genes, which *is* the T4 boundary, so no T4 is nameable; (b) it
@@ -28,8 +36,12 @@ lever is. Companion: `RELATIONSHIPS.md` (the relationship-axis primer).
    +102 is an unconverted ceiling) and *degraded* quality (`otic vesicle → otolith`, an acellular
    biomineral). The binding constraint is the selection/marker layer, not reachability — exactly
    design.md's documented boundary. See `develops_from_experiment.md`.
-3. **A real curation backlog exists:** 350 ungroundable cell types, **255 reachable under a current
-   anchor, 50 within 1–2 ZFIN genes of nameable.**
+3. **A real curation backlog exists — but it is corpus *capacity*, not realizable coverage.** 350
+   ungroundable cell types; 255 reachable under a current anchor; 50 within 1–2 ZFIN genes of the
+   ≥3-credited-gene bar. Phase 3 tested this: **none fires on the benchmarks** (the markers never
+   co-occur in an eval cluster), and panel addition for unanchored useful terms regresses the gate. So
+   the backlog is a curation *capacity* map; growing coverage is blocked by the selection wall, not the
+   backlog (`grounding_pilot.md`, `coverage_headroom.md`).
 
 ## The principle
 
@@ -104,11 +116,12 @@ is all-useful.
 
 1. **Drop-list is tiny and safe (19 terms)** — the 5-term STOPLIST could extend to them with zero
    output change (pure hygiene; see Recommendation).
-2. **The real story is the backlog:** 350 ungroundable cell types; **255 reachable under a current
-   anchor; 50 within 1–2 ZFIN genes of nameable** (pancreatic acinar cell, photoreceptor subtypes,
-   Golgi cell, corneal endothelial cell). These are the cell types zlabel can't name today.
-3. **Two "deferred" panels are groundable as terms:** `thyroid follicle` (29 genes) and `hatching
-   gland` (274) score T1 — worth revisiting.
+2. **The backlog is corpus *capacity*, not realizable coverage:** 350 ungroundable cell types; 255
+   reachable; 50 within 1–2 ZFIN genes of the ≥3 bar. Phase 3 found **none fires on the benchmarks** —
+   the markers never co-occur in any of the 629 eval clusters (`grounding_pilot.md`).
+3. **Adding panels for well-grounded unanchored terms was tested (Phase 3) and regresses.** The
+   headroom scan (`coverage_headroom.py`) flagged periderm, thyroid follicle, hatching gland, etc.;
+   realizing the best (periderm, hard gate) poaches epidermis/fin clusters and drops agreement.
 4. **Abstract grouping cell-types** (`electrically signaling/active cell`) are now correctly capped at
    T2 by the pure-grouper guard (they have 0 direct genes — renamings of `neuron`).
 5. **A pure data rubric can't see "undifferentiated":** `blastomere` scores T1 but curators correctly
@@ -140,12 +153,18 @@ phase:
    introduced `otolith`-type regressions (`develops_from_experiment.md`). The descent edge set stays
    `is_a`+`part_of`.
 
+3. **Coverage growth — all three levers are NO-GO (Phase 3, `grounding_pilot.md`).** `develops_from`
+   (0 new labels), targeted backlog grounding (the near-bar markers never co-occur in an eval cluster —
+   capacity ≠ realizability), and panel addition for unanchored useful terms (the best candidate,
+   periderm, regresses the hard gate two ways) all fail at the same selection/attractor wall.
+
 What is actually worth doing:
 
-- **Work the curation backlog (Phase 4) — the only lever that grows coverage.** Ship the ranked list of
-  255 reachable ungroundable cell types (50 within 1–2 ZFIN genes of nameable) as the concrete curation
-  queue, and assess whether fuller ZFIN (`xpat_stage_anatomy`) or atlas markers convert them. Coverage
-  grows by adding *grounding*, not by changing the walk.
+- **Keep the backlog as a curation capacity map and the headroom scan as a standing instrument.**
+  `backlog.csv` ranks where grounding *could* help in principle; `coverage_headroom.py` enumerates and
+  attributes the (currently unrealizable) per-cluster headroom so any future curation effort can target
+  the few fine-matched candidates and confirm with `make gate-all`. Coverage is not grown by changing
+  the walk or by the curation levers tested.
 - **Optional hygiene:** extend `STOPLIST` to the 19 T5 terms + a CI guard failing if any future
   panel/crosswalk anchor is ever T4/T5/admin. Cheap, defensive, not a capability gain.
 - **Keep the rubric as a standing audit:** it is trustworthy (stable thresholds, 51/62 independent
