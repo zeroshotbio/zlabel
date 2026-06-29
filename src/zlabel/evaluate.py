@@ -525,6 +525,9 @@ def cluster_outcomes(
     attractor_anchors = {
         bucket: resources.anchors[bucket] for bucket in ATTRACTOR_BUCKETS if bucket in resources.anchors
     }
+    # Build the overlay-extended crosswalk once (fail-closed: extend_crosswalk raises on an overlay
+    # tissue the base does not score, so an invalid overlay surfaces here rather than being ignored).
+    extended_crosswalk = extend_crosswalk(crosswalk, overlay) if overlay is not None else None
     for row in benchmark:
         gold = crosswalk.gold(row.broad_tissue)
         label, symbols = _label_row(row, resources)
@@ -549,8 +552,8 @@ def cluster_outcomes(
             # unscoreable against gold, not a disagreement.
             if pred_ids:
                 agrees = any(grounds_under(resources.zfa_ontology, pid, gold) for pid in pred_ids)
-                if overlay is not None:
-                    extended = gold | overlay.get(row.broad_tissue, frozenset())
+                extended = extended_crosswalk.gold(row.broad_tissue) if extended_crosswalk is not None else None
+                if extended is not None:  # overlay-extended gold (superset of gold); set only with an overlay
                     agrees_overlay = any(grounds_under(resources.zfa_ontology, pid, extended) for pid in pred_ids)
         audit: AuditRecord | None = None
         if kind == NAMED and label.zfa_id is not None:

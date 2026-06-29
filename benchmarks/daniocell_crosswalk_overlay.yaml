@@ -44,7 +44,9 @@ tissues:
   hema:
     add_anchors: [ZFA:0005249]  # vasculature
     justification: >-
-      the Daniocell "hema" tissue bundles blood with endothelium (blood and endothelium are sister
-      lineages -- HSCs bud from the hemogenic endothelium of the dorsal aorta). The hema clusters
-      credited here carry pure endothelial markers (cdh5, kdrl, etv2, pecam1) and zero blood markers,
-      so a vascular call is correct for this blood+vessel bundle.
+      the Daniocell "hema" tissue bundles blood with endothelium (sister lineages -- HSCs bud from the
+      hemogenic endothelium of the dorsal aorta), so a vascular call on a "hema" cluster is correct for
+      the bundle. NOTE this credits ANY vascular call under "hema" structurally -- it does not validate
+      markers per cluster. Empirically, the hema clusters this credits on the current benchmark carry
+      endothelial markers (cdh5, kdrl, etv2, pecam1) and no blood markers; re-check this entry if
+      Daniocell's hema composition changes.
