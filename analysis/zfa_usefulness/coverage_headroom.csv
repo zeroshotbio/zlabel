@@ -1,0 +1,617 @@
+atlas,cluster_id,broad_gold,fine_gold,current_kind,current_bucket,current_correct,category,candidate_zfa,candidate_name,candidate_tier,candidate_support,candidate_depth,best_parent_support,clears_06_floor,fine_match
+daniocell,axia.1,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000060,prechordal plate,T1,5,6,23,0,0
+daniocell,axia.10,axia,axial,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,axia.11,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000058,polster,T1,3,9,10,0,0
+daniocell,axia.12,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000058,polster,T1,7,9,20,0,0
+daniocell,axia.13,axia,axial,named,notochord,1,panel_addable_deeper_correct,ZFA:0000058,polster,T1,6,9,16,0,0
+daniocell,axia.14,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000058,polster,T1,17,9,21,1,0
+daniocell,axia.15,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000058,polster,T1,15,9,18,1,0
+daniocell,axia.16,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000060,prechordal plate,T1,3,6,22,0,0
+daniocell,axia.17,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000058,polster,T1,4,9,22,0,0
+daniocell,axia.18,axia,axial,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0000058,polster,T1,6,9,17,0,0
+daniocell,axia.19,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000060,prechordal plate,T1,5,6,19,0,0
+daniocell,axia.2,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000060,prechordal plate,T1,3,6,21,0,0
+daniocell,axia.20,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000058,polster,T1,13,9,20,1,0
+daniocell,axia.21,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000058,polster,T1,6,9,18,0,0
+daniocell,axia.22,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000058,polster,T1,3,9,10,0,0
+daniocell,axia.23,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000058,polster,T1,4,9,24,0,0
+daniocell,axia.24,axia,axial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,axia.25,axia,axial,named,notochord,1,covered,,,,0,-1,0,0,0
+daniocell,axia.3,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000058,polster,T1,6,9,14,0,0
+daniocell,axia.4,axia,axial,named,notochord,1,panel_addable_deeper_correct,ZFA:0001204,axial mesoderm,T1,3,5,15,0,1
+daniocell,axia.5,axia,axial,named,notochord,1,panel_addable_deeper_correct,ZFA:0000058,polster,T1,6,9,18,0,0
+daniocell,axia.6,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000060,prechordal plate,T1,3,6,23,0,0
+daniocell,axia.7,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000060,prechordal plate,T1,4,6,23,0,0
+daniocell,axia.8,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000058,polster,T1,3,9,13,0,0
+daniocell,axia.9,axia,axial,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000060,prechordal plate,T1,4,6,23,0,0
+daniocell,ceph,ceph,cephalic,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,endo.1,endo,endoderm,named,liver,1,covered,,,,0,-1,0,0,0
+daniocell,endo.10,endo,endoderm,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,endo.11,endo,endoderm,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,endo.12,endo,endoderm,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,endo.13,endo,endoderm,named,intestine,1,covered,ZFA:0000017,endoderm,T1,3,4,19,0,1
+daniocell,endo.14,endo,endoderm,named,intestine,1,covered,,,,0,-1,0,0,0
+daniocell,endo.15,endo,endoderm,named,intestine,1,covered,ZFA:0000031,hypochord,T1,3,5,14,0,0
+daniocell,endo.16,endo,endoderm,named,intestine,1,covered,,,,0,-1,0,0,0
+daniocell,endo.17,endo,endoderm,named,intestine,1,covered,,,,0,-1,0,0,0
+daniocell,endo.18,endo,endoderm,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000017,endoderm,T1,4,4,17,0,1
+daniocell,endo.19,endo,endoderm,named,intestine,1,covered,,,,0,-1,0,0,0
+daniocell,endo.2,endo,endoderm,named,liver,1,covered,,,,0,-1,0,0,0
+daniocell,endo.20,endo,endoderm,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000017,endoderm,T1,3,4,20,0,1
+daniocell,endo.21,endo,endoderm,named,intestine,1,covered,ZFA:0000017,endoderm,T1,4,4,13,0,1
+daniocell,endo.22,endo,endoderm,named,pancreas,1,covered,,,,0,-1,0,0,0
+daniocell,endo.23,endo,endoderm,named,pancreas,1,covered,,,,0,-1,0,0,0
+daniocell,endo.24,endo,endoderm,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,endo.25,endo,endoderm,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,endo.26,endo,endoderm,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,endo.27,endo,endoderm,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,endo.28,endo,endoderm,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000017,endoderm,T1,5,4,17,0,1
+daniocell,endo.29,endo,endoderm,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000017,endoderm,T1,3,4,19,0,1
+daniocell,endo.3,endo,endoderm,named,liver,1,covered,,,,0,-1,0,0,0
+daniocell,endo.30,endo,endoderm,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000017,endoderm,T1,3,4,16,0,1
+daniocell,endo.31,endo,endoderm,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,endo.32,endo,endoderm,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000017,endoderm,T1,5,4,18,0,1
+daniocell,endo.33,endo,endoderm,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000017,endoderm,T1,4,4,20,0,1
+daniocell,endo.34,endo,endoderm,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,endo.4,endo,endoderm,named,liver,1,covered,,,,0,-1,0,0,0
+daniocell,endo.5,endo,endoderm,named,liver,1,covered,,,,0,-1,0,0,0
+daniocell,endo.6,endo,endoderm,named,liver,1,covered,,,,0,-1,0,0,0
+daniocell,endo.7,endo,endoderm,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,endo.8,endo,endoderm,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000031,hypochord,T1,3,5,18,0,0
+daniocell,endo.9,endo,endoderm,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.1,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.10,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.11,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.12,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.13,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.14,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.15,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.16,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.17,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.18,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.19,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.2,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.20,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.21,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.22,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.23,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.24,epid,epidermis,rollup,ectoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.25,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.26,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.27,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.28,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.29,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.3,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.30,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.31,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.32,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.33,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.34,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.35,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.36,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.37,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.38,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.4,epid,epidermis,rollup,ectoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.5,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.6,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.7,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,epid.8,epid,epidermis,named,epidermis,1,covered,,,,0,-1,0,0,0
+daniocell,epid.9,epid,epidermis,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.1,eye,eye,named,retinal photoreceptor layer,1,covered,,,,0,-1,0,0,0
+daniocell,eye.10,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.11,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.12,eye,eye,named,retinal inner nuclear layer,1,covered,,,,0,-1,0,0,0
+daniocell,eye.13,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.14,eye,eye,named,epiphysis,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.15,eye,eye,named,forebrain,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.16,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.17,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.18,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.19,eye,eye,named,retinal photoreceptor layer,1,covered,,,,0,-1,0,0,0
+daniocell,eye.2,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.20,eye,eye,named,epiphysis,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.21,eye,eye,named,retinal inner nuclear layer,1,covered,,,,0,-1,0,0,0
+daniocell,eye.22,eye,eye,named,pigment cell,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.23,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.24,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.25,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.26,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.27,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.28,eye,eye,named,retinal photoreceptor layer,1,covered,,,,0,-1,0,0,0
+daniocell,eye.29,eye,eye,named,retina,1,covered,,,,0,-1,0,0,0
+daniocell,eye.3,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.30,eye,eye,named,retinal ganglion cell layer,1,covered,,,,0,-1,0,0,0
+daniocell,eye.31,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.32,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.33,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.34,eye,eye,named,lens,1,covered,,,,0,-1,0,0,0
+daniocell,eye.35,eye,eye,named,retinal pigmented epithelium,1,covered,,,,0,-1,0,0,0
+daniocell,eye.36,eye,eye,named,nervous system,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.37,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.38,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.39,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.4,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.40,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.41,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.5,eye,eye,named,retinal photoreceptor layer,1,covered,,,,0,-1,0,0,0
+daniocell,eye.6,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.7,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,eye.8,eye,eye,named,retinal inner nuclear layer,1,covered,,,,0,-1,0,0,0
+daniocell,eye.9,eye,eye,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.1,fin,fin,named,pectoral fin,1,covered,,,,0,-1,0,0,0
+daniocell,fin.10,fin,fin,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.11,fin,fin,named,epidermis,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.12,fin,fin,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.13,fin,fin,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.14,fin,fin,named,fin,1,covered,,,,0,-1,0,0,0
+daniocell,fin.15,fin,fin,named,pectoral fin,1,covered,,,,0,-1,0,0,0
+daniocell,fin.16,fin,fin,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.17,fin,fin,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.18,fin,fin,named,pectoral fin,1,covered,,,,0,-1,0,0,0
+daniocell,fin.19,fin,fin,named,epidermis,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.2,fin,fin,named,pectoral fin,1,covered,,,,0,-1,0,0,0
+daniocell,fin.20,fin,fin,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.21,fin,fin,named,pectoral fin,1,covered,,,,0,-1,0,0,0
+daniocell,fin.22,fin,fin,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.3,fin,fin,named,epidermis,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.4,fin,fin,named,fin,1,covered,,,,0,-1,0,0,0
+daniocell,fin.5,fin,fin,named,epidermis,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.6,fin,fin,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.7,fin,fin,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,fin.8,fin,fin,named,pectoral fin,1,covered,,,,0,-1,0,0,0
+daniocell,fin.9,fin,fin,named,fin fold pectoral fin bud,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.1,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.10,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.11,glia,glial,named,diencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,glia.12,glia,glial,named,diencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,glia.13,glia,glial,named,telencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,glia.14,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.15,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.16,glia,glial,named,forebrain,1,covered,,,,0,-1,0,0,0
+daniocell,glia.17,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.18,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.19,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.2,glia,glial,named,brain,1,covered,,,,0,-1,0,0,0
+daniocell,glia.20,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.21,glia,glial,named,telencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,glia.22,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.23,glia,glial,named,oligodendrocyte,1,covered,,,,0,-1,0,0,0
+daniocell,glia.24,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.25,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.26,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.27,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.28,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.29,glia,glial,named,diencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,glia.3,glia,glial,named,telencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,glia.30,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.31,glia,glial,rollup,ectoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.4,glia,glial,named,telencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,glia.5,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.6,glia,glial,named,diencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,glia.7,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.8,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,glia.9,glia,glial,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.1,hema,hematopoietic,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.10,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.11,hema,hematopoietic,named,nucleate erythrocyte,1,covered,,,,0,-1,0,0,0
+daniocell,hema.12,hema,hematopoietic,named,hematopoietic system,1,covered,,,,0,-1,0,0,0
+daniocell,hema.13,hema,hematopoietic,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.14,hema,hematopoietic,named,blood,1,covered,,,,0,-1,0,0,0
+daniocell,hema.15,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.16,hema,hematopoietic,named,hematopoietic system,1,covered,,,,0,-1,0,0,0
+daniocell,hema.17,hema,hematopoietic,named,nucleate erythrocyte,1,covered,,,,0,-1,0,0,0
+daniocell,hema.18,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.19,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.2,hema,hematopoietic,named,blood vessel,1,covered,,,,0,-1,0,0,0
+daniocell,hema.20,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.21,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.22,hema,hematopoietic,named,nucleate erythrocyte,1,covered,,,,0,-1,0,0,0
+daniocell,hema.23,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.24,hema,hematopoietic,named,dorsal aorta,1,covered,,,,0,-1,0,0,0
+daniocell,hema.25,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.26,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.27,hema,hematopoietic,named,nucleate erythrocyte,1,covered,,,,0,-1,0,0,0
+daniocell,hema.28,hema,hematopoietic,named,dorsal aorta,1,covered,,,,0,-1,0,0,0
+daniocell,hema.29,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.3,hema,hematopoietic,named,nucleate erythrocyte,1,covered,,,,0,-1,0,0,0
+daniocell,hema.30,hema,hematopoietic,named,posterior cardinal vein,1,covered,,,,0,-1,0,0,0
+daniocell,hema.31,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.32,hema,hematopoietic,named,blood,1,covered,,,,0,-1,0,0,0
+daniocell,hema.33,hema,hematopoietic,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.34,hema,hematopoietic,named,blood,1,covered,,,,0,-1,0,0,0
+daniocell,hema.35,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.36,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.37,hema,hematopoietic,named,blood vasculature,1,covered,,,,0,-1,0,0,0
+daniocell,hema.38,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.39,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.4,hema,hematopoietic,named,nucleate erythrocyte,1,covered,,,,0,-1,0,0,0
+daniocell,hema.40,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.5,hema,hematopoietic,named,blood,1,covered,,,,0,-1,0,0,0
+daniocell,hema.6,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.7,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.8,hema,hematopoietic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,hema.9,hema,hematopoietic,named,nucleate erythrocyte,1,covered,,,,0,-1,0,0,0
+daniocell,iono.1,iono,ionocytes,named,epidermis,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.10,iono,ionocytes,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.11,iono,ionocytes,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.12,iono,ionocytes,fallback,ionocyte,1,covered,,,,0,-1,0,0,0
+daniocell,iono.13,iono,ionocytes,named,NaK ionocyte,1,covered,,,,0,-1,0,0,0
+daniocell,iono.14,iono,ionocytes,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.15,iono,ionocytes,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.16,iono,ionocytes,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.17,iono,ionocytes,named,NaK ionocyte,1,covered,,,,0,-1,0,0,0
+daniocell,iono.18,iono,ionocytes,named,epidermis,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.19,iono,ionocytes,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.2,iono,ionocytes,rollup,ectoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,iono.20,iono,ionocytes,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.21,iono,ionocytes,rollup,ectoderm,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.22,iono,ionocytes,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.3,iono,ionocytes,rollup,ectoderm,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.4,iono,ionocytes,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.5,iono,ionocytes,rollup,ectoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,iono.6,iono,ionocytes,rollup,ectoderm,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.7,iono,ionocytes,rollup,ectoderm,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.8,iono,ionocytes,rollup,ectoderm,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,iono.9,iono,ionocytes,rollup,ectoderm,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,mese.1,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.10,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.11,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.12,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.13,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.14,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.15,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.16,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.17,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.18,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.19,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.2,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.20,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.21,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.22,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.23,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.24,mese,mesenchyme,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.25,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.26,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.27,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.28,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.29,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.3,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.30,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.31,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.32,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.33,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.4,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.5,mese,mesenchyme,named,head mesenchyme,1,covered,,,,0,-1,0,0,0
+daniocell,mese.6,mese,mesenchyme,named,nervous system,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.7,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.8,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mese.9,mese,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.1,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.10,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.11,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.12,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.13,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.14,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.15,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.16,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.17,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.18,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.19,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.2,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.20,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.21,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.22,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.23,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.24,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.3,mura,mural,named,mesenchyme,1,covered,,,,0,-1,0,0,0
+daniocell,mura.4,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.5,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.6,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.7,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,mura.8,mura,mural,fallback,mural,1,covered,,,,0,-1,0,0,0
+daniocell,mura.9,mura,mural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.1,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.10,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.11,musc,muscle,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.12,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.13,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.14,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.15,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.16,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.17,musc,muscle,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.18,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.19,musc,muscle,named,segmental plate,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.2,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.20,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.21,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.22,musc,muscle,named,myotome,1,covered,,,,0,-1,0,0,0
+daniocell,musc.23,musc,muscle,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.24,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.25,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.26,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.27,musc,muscle,named,myotome,1,covered,,,,0,-1,0,0,0
+daniocell,musc.28,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.29,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.3,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.30,musc,muscle,named,myotome,1,covered,,,,0,-1,0,0,0
+daniocell,musc.31,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.32,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.33,musc,muscle,named,myotome,1,covered,,,,0,-1,0,0,0
+daniocell,musc.34,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.35,musc,muscle,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.36,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.4,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.5,musc,muscle,named,myotome,1,covered,,,,0,-1,0,0,0
+daniocell,musc.6,musc,muscle,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.7,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.8,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,musc.9,musc,muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.1,neur,neural,named,forebrain,1,covered,,,,0,-1,0,0,0
+daniocell,neur.10,neur,neural,named,telencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,neur.11,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.12,neur,neural,named,diencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,neur.13,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.14,neur,neural,named,telencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,neur.15,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.16,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.17,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.18,neur,neural,named,telencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,neur.19,neur,neural,named,forebrain,1,covered,,,,0,-1,0,0,0
+daniocell,neur.2,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.20,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.21,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.22,neur,neural,named,forebrain,1,covered,,,,0,-1,0,0,0
+daniocell,neur.23,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.24,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.25,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.26,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.27,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.28,neur,neural,named,brain,1,covered,,,,0,-1,0,0,0
+daniocell,neur.29,neur,neural,named,telencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,neur.3,neur,neural,named,forebrain,1,covered,,,,0,-1,0,0,0
+daniocell,neur.30,neur,neural,rollup,ectoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.31,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.32,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.33,neur,neural,named,diencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,neur.34,neur,neural,named,forebrain,1,covered,,,,0,-1,0,0,0
+daniocell,neur.35,neur,neural,named,telencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,neur.36,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.37,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.38,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.39,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.4,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.40,neur,neural,named,telencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,neur.41,neur,neural,named,telencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,neur.42,neur,neural,named,forebrain,1,covered,,,,0,-1,0,0,0
+daniocell,neur.43,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.44,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.45,neur,neural,named,peripheral olfactory organ,1,covered,,,,0,-1,0,0,0
+daniocell,neur.46,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.47,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.48,neur,neural,named,diencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,neur.5,neur,neural,named,telencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,neur.6,neur,neural,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,neur.7,neur,neural,named,forebrain,1,covered,,,,0,-1,0,0,0
+daniocell,neur.8,neur,neural,named,forebrain,1,covered,,,,0,-1,0,0,0
+daniocell,neur.9,neur,neural,named,telencephalon,1,covered,,,,0,-1,0,0,0
+daniocell,otic.1,otic,otic,rollup,ectoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.10,otic,otic,named,otic vesicle,1,covered,,,,0,-1,0,0,0
+daniocell,otic.11,otic,otic,named,integument,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.12,otic,otic,named,otic vesicle,1,covered,,,,0,-1,0,0,0
+daniocell,otic.13,otic,otic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.14,otic,otic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.15,otic,otic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.16,otic,otic,named,otic vesicle,1,covered,,,,0,-1,0,0,0
+daniocell,otic.17,otic,otic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.18,otic,otic,named,epidermis,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.19,otic,otic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.2,otic,otic,named,otic vesicle,1,covered,,,,0,-1,0,0,0
+daniocell,otic.20,otic,otic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.21,otic,otic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.22,otic,otic,named,otic vesicle,1,covered,,,,0,-1,0,0,0
+daniocell,otic.3,otic,otic,named,otic vesicle,1,covered,,,,0,-1,0,0,0
+daniocell,otic.4,otic,otic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.5,otic,otic,named,otic vesicle,1,covered,,,,0,-1,0,0,0
+daniocell,otic.6,otic,otic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.7,otic,otic,named,neuromast,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.8,otic,otic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,otic.9,otic,otic,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,peri.1,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,14,6,19,1,1
+daniocell,peri.10,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,12,6,18,1,1
+daniocell,peri.11,peri,periderm,named,epidermis,1,covered,ZFA:0001185,periderm,T1,15,6,18,1,1
+daniocell,peri.12,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,16,6,19,1,1
+daniocell,peri.13,peri,periderm,named,epidermis,1,covered,ZFA:0001185,periderm,T1,12,6,19,1,1
+daniocell,peri.14,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,15,6,18,1,1
+daniocell,peri.15,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,11,6,16,1,1
+daniocell,peri.16,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,16,6,18,1,1
+daniocell,peri.17,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,14,6,17,1,1
+daniocell,peri.18,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,10,6,17,0,1
+daniocell,peri.19,peri,periderm,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,16,6,19,1,1
+daniocell,peri.2,peri,periderm,named,epidermis,1,covered,ZFA:0001185,periderm,T1,13,6,20,1,1
+daniocell,peri.20,peri,periderm,named,epidermis,1,covered,ZFA:0001185,periderm,T1,17,6,19,1,1
+daniocell,peri.21,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,15,6,19,1,1
+daniocell,peri.22,peri,periderm,named,epidermis,1,covered,ZFA:0001185,periderm,T1,14,6,17,1,1
+daniocell,peri.23,peri,periderm,named,epidermis,1,covered,ZFA:0001185,periderm,T1,17,6,20,1,1
+daniocell,peri.24,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,16,6,20,1,1
+daniocell,peri.25,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,16,6,19,1,1
+daniocell,peri.26,peri,periderm,named,epidermis,1,covered,ZFA:0001185,periderm,T1,13,6,16,1,1
+daniocell,peri.27,peri,periderm,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,11,6,16,1,1
+daniocell,peri.28,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,13,6,17,1,1
+daniocell,peri.29,peri,periderm,named,integument,1,panel_addable_deeper_correct,ZFA:0001185,periderm,T1,12,6,18,1,1
+daniocell,peri.3,peri,periderm,named,epidermis,1,covered,ZFA:0001185,periderm,T1,14,6,19,1,1
+daniocell,peri.30,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,13,6,18,1,1
+daniocell,peri.31,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,18,6,20,1,1
+daniocell,peri.32,peri,periderm,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,peri.4,peri,periderm,named,epidermis,1,covered,ZFA:0001185,periderm,T1,12,6,18,1,1
+daniocell,peri.5,peri,periderm,named,epidermis,1,covered,ZFA:0001185,periderm,T1,18,6,20,1,1
+daniocell,peri.6,peri,periderm,named,epidermis,1,covered,ZFA:0001185,periderm,T1,14,6,18,1,1
+daniocell,peri.7,peri,periderm,named,epidermis,1,covered,ZFA:0001185,periderm,T1,13,6,18,1,1
+daniocell,peri.8,peri,periderm,rollup,ectoderm,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,14,6,19,1,1
+daniocell,peri.9,peri,periderm,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001185,periderm,T1,11,6,14,1,1
+daniocell,pgc.1,pgc,pgc,fallback,germline,1,covered,,,,0,-1,0,0,0
+daniocell,pgc.2,pgc,pgc,named,primordial germ cell,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.1,pigm,pigment,named,xanthophore,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.10,pigm,pigment,named,pigment cell,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.11,pigm,pigment,fallback,pigment,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.12,pigm,pigment,named,xanthophore,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.13,pigm,pigment,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pigm.14,pigm,pigment,named,melanocyte,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.15,pigm,pigment,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pigm.16,pigm,pigment,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pigm.17,pigm,pigment,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,pigm.18,pigm,pigment,named,pigment cell,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.19,pigm,pigment,named,pigment cell,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.2,pigm,pigment,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pigm.20,pigm,pigment,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pigm.21,pigm,pigment,named,pigment cell,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.22,pigm,pigment,named,xanthophore,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.23,pigm,pigment,named,pigment cell,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.3,pigm,pigment,named,xanthophore,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.4,pigm,pigment,named,pigment cell,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.5,pigm,pigment,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pigm.6,pigm,pigment,named,forebrain,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,pigm.7,pigm,pigment,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pigm.8,pigm,pigment,named,xanthophore,1,covered,,,,0,-1,0,0,0
+daniocell,pigm.9,pigm,pigment,named,melanocyte,1,covered,,,,0,-1,0,0,0
+daniocell,pron.1,pron,pronephros,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pron.10,pron,pronephros,named,pronephric duct,1,covered,,,,0,-1,0,0,0
+daniocell,pron.11,pron,pronephros,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pron.12,pron,pronephros,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pron.13,pron,pronephros,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,pron.14,pron,pronephros,named,pronephric duct,1,covered,,,,0,-1,0,0,0
+daniocell,pron.15,pron,pronephros,named,epiphysis,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pron.16,pron,pronephros,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pron.17,pron,pronephros,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pron.2,pron,pronephros,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+daniocell,pron.3,pron,pronephros,named,pronephric duct,1,covered,,,,0,-1,0,0,0
+daniocell,pron.4,pron,pronephros,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pron.5,pron,pronephros,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pron.6,pron,pronephros,named,pronephric duct,1,covered,,,,0,-1,0,0,0
+daniocell,pron.7,pron,pronephros,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pron.8,pron,pronephros,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,pron.9,pron,pronephros,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.1,tast,taste,named,peripheral olfactory organ,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.10,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.11,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.12,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.13,tast,taste,rollup,ectoderm,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.14,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.15,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.16,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.17,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.18,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.19,tast,taste,named,retina,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.2,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.20,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.3,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.4,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.5,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.6,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.7,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.8,tast,taste,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+daniocell,tast.9,tast,taste,named,peripheral olfactory organ,0,selection_bound,,,,0,-1,0,0,0
+zscape,adrenal_gland,Endocrine,adrenal gland,fallback,interrenal,1,panel_addable_deeper_correct,ZFA:0001110,ovarian follicle,T1,3,15,13,0,0
+zscape,anterior_migratory_muscle,Cranial Muscle (Late),anterior migratory muscle,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,basal_cell,Epidermis,basal cell,named,epidermis,1,covered,,,,0,-1,0,0,0
+zscape,cardiomyocyte,Heart,cardiomyocyte,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+zscape,chondrocranium,Pharyngeal Arch,chondrocranium,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001306,pharyngeal arch,T1,3,6,19,0,0
+zscape,connective_tissue_meninges_dermal_fb,Connective Tissue,connective tissue-meninges-dermal FB,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0005619,skeletal tissue,T1,4,8,20,0,0
+zscape,contains_head_vasculature,Connective Tissue,contains head vasculature?,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,cranial_muscle_early,Pharyngeal Arch,cranial muscle (early),abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001611,pharyngeal arch 2,T1,3,7,19,0,0
+zscape,cranial_muscle_late,Cranial Muscle (Late),cranial muscle (late),rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+zscape,cranial_muscle_mid,Pharyngeal Arch,cranial muscle (mid),abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001612,pharyngeal arch 1,T1,6,7,19,0,0
+zscape,cranial_muscle_non_somitic_fast_twitch,Cranial Muscle (Late),"cranial muscle (non-somitic, fast-twitch)",abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,cranial_muscle_progenitor,Pharyngeal Arch,cranial muscle (progenitor),abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001306,pharyngeal arch,T1,8,6,19,0,0
+zscape,cranial_neural_crest,Cranial NC,cranial neural crest,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+zscape,differentiating_neuron_1,Central Nervous System,differentiating neuron 1,named,brain,1,covered,,,,0,-1,0,0,0
+zscape,differentiating_neuron_2,Central Nervous System,differentiating neuron 2,named,telencephalon,1,covered,,,,0,-1,0,0,0
+zscape,differentiating_neuron_hindbrain,Central Nervous System,differentiating neuron (hindbrain),named,brain,1,covered,,,,0,-1,0,0,0
+zscape,dorsal_spinal_cord_neuron,Central Nervous System,dorsal spinal cord neuron,named,telencephalon,1,covered,,,,0,-1,0,0,0
+zscape,endothelium_dorsal_aorta,Endothelial,endothelium (dorsal aorta),named,blood vasculature,1,covered,,,,0,-1,0,0,0
+zscape,endothelium_f8_clic2,Endothelial,"endothelium (f8+, clic2+)",named,posterior cardinal vein,1,covered,,,,0,-1,0,0,0
+zscape,endothelium_vein_early_artery,Endothelial,endothelium (vein + early artery),named,posterior cardinal vein,1,covered,,,,0,-1,0,0,0
+zscape,eye_optic_cup,Eye,"eye, optic cup",named,retina,1,covered,,,,0,-1,0,0,0
+zscape,fast_committed_myocyte,Cranial Muscle (Late),fast-committed myocyte,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,fin_bud_mesoderm_pectoral,Fin,fin bud mesoderm (pectoral),named,pectoral fin,1,covered,,,,0,-1,0,0,0
+zscape,fin_fold,Fin,fin fold,named,pectoral fin,1,covered,,,,0,-1,0,0,0
+zscape,fin_mesenchyme,Fin,fin mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,floor_plate,Central Nervous System,floor plate,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,glia,Central Nervous System,glia,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,hair_cell,Lateral Line,hair cell,named,neuromast,1,covered,,,,0,-1,0,0,0
+zscape,hatching_gland,Hatching Gland,hatching gland,named,epidermis,0,resolution_bound,,,,0,-1,0,0,0
+zscape,head_eye_connective_tissue,Connective Tissue,head/eye connective tissue,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001632,portion of connective tissue,T2,4,3,22,0,1
+zscape,head_mesenchyme,Pharyngeal Arch,head mesenchyme,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001272,palatoquadrate arch,T1,4,17,21,0,0
+zscape,head_mesenchyme_maybe_ventral_hand2,Pharyngeal Arch,"head mesenchyme (maybe ventral, hand2+)",abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001227,mandibular arch skeleton,T1,3,14,19,0,0
+zscape,head_mesenchyme_pa_cartilage,Pharyngeal Arch,head mesenchyme/PA cartilage,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001306,pharyngeal arch,T1,6,6,18,0,0
+zscape,hypochord,Hypochord,hypochord,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000031,hypochord,T1,14,5,20,1,1
+zscape,hypophysis_locus_coeruleus,Central Nervous System,hypophysis/locus coeruleus,fallback,pituitary,1,covered,,,,0,-1,0,0,0
+zscape,intestine,Intestine,intestine,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,ionocyte_goblet_cell,Epidermis,ionocyte/goblet cell,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,iridophore,Pigment,iridophore,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,jaw_chondrocyte,Pharyngeal Arch,jaw chondrocyte,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001272,palatoquadrate arch,T1,8,17,21,0,0
+zscape,ka_neuron,Central Nervous System,KA neuron,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,lens,Eye,lens,named,lens,1,covered,,,,0,-1,0,0,0
+zscape,liver,Liver,liver,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,mature_fast_muscle,Cranial Muscle (Late),mature fast muscle,named,myotome,1,covered,,,,0,-1,0,0,0
+zscape,mature_slow_muscle,Cranial Muscle (Late),mature slow muscle,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+zscape,melanophore,Epidermis,melanophore,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,mesodermal_progenitor_cells_contains_psm,Paraxial Mesoderm,mesodermal progenitor cells (contains PSM),abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,motor_neuron,Central Nervous System,motor neuron,named,telencephalon,1,covered,,,,0,-1,0,0,0
+zscape,myeloid_cell,Blood,myeloid cell,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,myoblast,Cranial Muscle (Late),myoblast,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,neural_crest_pigment_cell_progenitor,Pigment,neural crest + pigment cell progenitor,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,neural_progenitor_hindbrain,Central Nervous System,neural progenitor (hindbrain),named,brain,1,covered,,,,0,-1,0,0,0
+zscape,neural_progenitor_hindbrain_r7_8,Central Nervous System,neural progenitor (hindbrain R7/8),named,hindbrain,1,covered,,,,0,-1,0,0,0
+zscape,neural_progenitor_mhb,Central Nervous System,neural progenitor (MHB),named,brain,1,covered,,,,0,-1,0,0,0
+zscape,neural_progenitor_telencephalon_diencephalon,Central Nervous System,neural progenitor (telencephalon/diencephalon),named,diencephalon,1,covered,,,,0,-1,0,0,0
+zscape,neural_tube_like_connective_tissue_taste_bud,Connective Tissue,neural tube-like connective tissue (+ taste bud),abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,neuromast_support_cell,Lateral Line,neuromast support cell,rollup,ectoderm,0,selection_bound,,,,0,-1,0,0,0
+zscape,neuron_cranial_ganglia_sensory_rohon_beard,Peripheral Nervous System,"neuron (cranial ganglia sensory, Rohon-Beard)",named,forebrain,0,selection_bound,,,,0,-1,0,0,0
+zscape,neuron_cranial_ganglion,Peripheral Nervous System,neuron (cranial ganglion),named,diencephalon,0,selection_bound,,,,0,-1,0,0,0
+zscape,neuron_dopaminergic,Central Nervous System,neuron (dopaminergic),named,telencephalon,1,covered,,,,0,-1,0,0,0
+zscape,neuron_spinal_cord,Central Nervous System,neuron (+ spinal cord),named,telencephalon,1,covered,,,,0,-1,0,0,0
+zscape,neuron_telencephalon_glutamatergic,Central Nervous System,"neuron (telencephalon, glutamatergic)",named,telencephalon,1,covered,,,,0,-1,0,0,0
+zscape,neurons_differentiating_contains_peripheral,Central Nervous System,"neurons (differentiating, contains peripheral)",named,telencephalon,1,covered,,,,0,-1,0,0,0
+zscape,neurons_gabaergic_glutamatergic,Central Nervous System,"neurons (gabaergic, glutamatergic)",named,telencephalon,1,covered,,,,0,-1,0,0,0
+zscape,neurons_gabaergic_glutamatergic_contains_purkinje,Central Nervous System,"neurons (gabaergic, glutamatergic; contains Purkinje)",named,telencephalon,1,covered,,,,0,-1,0,0,0
+zscape,notochord,Notochord,notochord,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,olfactory_vesicle_bulb,Olfactory,olfactory vesicle/bulb,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,osteoblast,Bone,osteoblast,rollup,mesoderm,0,panel_addable_new_correct,ZFA:0000250,opercle,T1,3,25,19,0,0
+zscape,pancreas,Pancreas,pancreas,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,pectoral_fin_bud_osteoblast,Fin,pectoral fin bud (osteoblast+),abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,periderm,Epidermis,periderm,named,epidermis,1,covered,,,,0,-1,0,0,0
+zscape,periocular_mesenchyme,Head Mesoderm,periocular mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,pharyngeal_arch_contains_muscle_early_cartilage,Pharyngeal Arch,"pharyngeal arch (contains muscle, early cartilage)",abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001272,palatoquadrate arch,T1,4,17,19,0,1
+zscape,pharyngeal_arch_early,Pharyngeal Arch,pharyngeal arch (early),abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001227,mandibular arch skeleton,T1,4,14,18,0,1
+zscape,pharyngeal_arch_nc_derived,Pharyngeal Arch,pharyngeal arch (NC-derived),abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001227,mandibular arch skeleton,T1,4,14,20,0,1
+zscape,pharynx,Pharynx,pharynx,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,posterior_lateral_line_primordium,Lateral Line,posterior lateral line primordium,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,posterior_spinal_cord_progenitors,Central Nervous System,posterior spinal cord progenitors,named,diencephalon,1,covered,,,,0,-1,0,0,0
+zscape,primordial_germ_cell,Germ Line,primordial germ cell,named,primordial germ cell,1,covered,,,,0,-1,0,0,0
+zscape,pronephric_duct,Kidney,pronephric duct,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,pronephric_podocyte,Kidney,pronephric podocyte,named,pronephros,1,covered,,,,0,-1,0,0,0
+zscape,pronephros_distal_tubule,Kidney,pronephros distal tubule,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,pronephros_proximal_tubule,Kidney,pronephros proximal tubule,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,red_blood_cell,Blood,red blood cell,named,intermediate cell mass of mesoderm,1,covered,,,,0,-1,0,0,0
+zscape,retinal_neuron,Eye,retinal neuron,named,telencephalon,0,selection_bound,,,,0,-1,0,0,0
+zscape,retinal_pigmented_epithelium_early,Eye,retinal pigmented epithelium (early),abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,retinal_pigmented_epithelium_late,Retina,retinal pigmented epithelium (late),named,retinal pigmented epithelium,1,covered,,,,0,-1,0,0,0
+zscape,roof_plate_flexural_subcommissural_organ,Central Nervous System,"roof plate, flexural + subcommissural organ",abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,satellite_cells,Cranial Muscle (Late),satellite cells,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,slow_committed_myocyte,Cranial Muscle (Late),slow-committed myocyte,rollup,mesoderm,0,selection_bound,,,,0,-1,0,0,0
+zscape,support_cells_otic_vesicle,Ear,support cells/otic vesicle,named,otic vesicle,1,covered,,,,0,-1,0,0,0
+zscape,swim_bladder_primordium,Swim Bladder,swim bladder primordium,abstain,mixed/unresolved,0,resolution_bound,,,,0,-1,0,0,0
+zscape,thyroid_follicle_cell,Endocrine,thyroid follicle cell,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0000403,ovary,T1,3,13,16,0,0
+zscape,unknown_dcn_col6,Cranial Muscle (Late),"unknown (dcn+, col6+)",named,mesenchyme,0,selection_bound,,,,0,-1,0,0,0
+zscape,unknown_k_channel_ciliated,Central Nervous System,"unknown (K+ channel, ciliated)",abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zscape,vascular_smooth_muscle,Pharyngeal Arch,vascular smooth muscle,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001227,mandibular arch skeleton,T1,3,14,19,0,0
+zscape,xanthophore,Epidermis,xanthophore,named,xanthophore,1,covered,,,,0,-1,0,0,0
+zebrahub,central_nervous_system,central_nervous_system,central_nervous_system,named,telencephalon,1,covered,,,,0,-1,0,0,0
+zebrahub,endoderm,endoderm,endoderm,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zebrahub,hematopoietic_system,hematopoietic_system,hematopoietic_system,named,nucleate erythrocyte,1,covered,,,,0,-1,0,0,0
+zebrahub,intermediate_mesoderm,intermediate_mesoderm,intermediate_mesoderm,abstain,mixed/unresolved,0,panel_addable_new_correct,ZFA:0001206,intermediate mesoderm,T1,5,5,19,0,1
+zebrahub,mesenchyme,mesenchyme,mesenchyme,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zebrahub,neural_crest,neural_crest,neural_crest,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zebrahub,notochord,notochord,notochord,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zebrahub,paraxial_mesoderm,paraxial_mesoderm,paraxial_mesoderm,abstain,mixed/unresolved,0,selection_bound,,,,0,-1,0,0,0
+zebrahub,periderm,periderm,periderm,named,epidermis,1,covered,ZFA:0001185,periderm,T1,17,6,19,1,1
