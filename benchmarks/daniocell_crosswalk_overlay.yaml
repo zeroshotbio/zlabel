@@ -1,0 +1,52 @@
+# Daniocell gold-coarseness overlay -- additive corrections to the gold crosswalk anchors.
+#
+# Purpose: the strict crosswalk (daniocell_tissue_crosswalk.yaml) anchors each gold tissue at one ZFA
+# term. Some Daniocell gold labels are coarser, bundled, or structurally disconnected from biology, so a
+# zlabel call that is correct at a coarser altitude scores as a miss. This overlay ADDS the missing
+# anchor(s) for those documented cases, applied as a UNION (monotonic: it can only turn a wrong call
+# right, never the reverse). The evaluator reports the overlay-corrected agreement ALONGSIDE the strict
+# one -- it never relaxes the strict metric or the gate; it surfaces gold coarseness transparently.
+#
+# Inclusion rule (audited by scripts/audit_crosswalk.py): every entry is an independent biology fact,
+# justified gold-blind by the cluster's own markers + the ZFA structure -- never "credit it because
+# zlabel said so." Each add_anchor must be a real ZFA term.
+#
+# DELIBERATELY EXCLUDED (crediting these would MASK real wrong-region / cross-axis errors -- the
+# glia.11 anti-pattern, where a forebrain call on a hindbrain cluster would be wrongly credited):
+#   eye -> epiphysis / forebrain      (retina vs pineal/forebrain: wrong region, not a superclass)
+#   pigm -> forebrain                  (a pan-neuronal cluster Daniocell mislabeled; not pigment->brain)
+#   pron -> epiphysis                  (a pan-neuronal cluster; not kidney->pineal)
+#   tast -> peripheral olfactory / retina   (sensory cross-talk: wrong organ)
+#   mese -> nervous system             (promiscuous neural attractor)
+#   musc -> segmental plate            (thin, defensible-but-not-containment)
+#   otic -> neuromast                  (shared hair-cell program: wrong organ, right cell type)
+#   eye  -> pigment cell (RPE)         (pigment-cell is a cross-axis sibling of eye, not a superclass)
+# These stay counted as strict disagreements.
+
+tissues:
+  peri:
+    add_anchors: [ZFA:0000105, ZFA:0000368]  # epidermis; integument
+    justification: >-
+      periderm (the gold anchor ZFA:0001185) is the enveloping layer (EVL) = the superficial stratum of
+      the epidermis; ZFA's is_a/part_of graph has no link from periderm up to epidermis, so a correct
+      "epidermis" call scores as a miss. Markers are periderm keratins (krt4, cyt1, krt5).
+  mura:
+    add_anchors: [ZFA:0000393]  # mesenchyme
+    justification: >-
+      mural cells (pericytes / vascular smooth muscle, gold anchor ZFA:0005944) are a mesenchymal
+      cell type; "mesenchyme" is the correct coarser lineage. Markers are perivascular mesenchyme
+      (foxf2a, col4a/col6a, dcn).
+  pgc:
+    add_anchors: [ZFA:0009016]  # germ line cell
+    justification: >-
+      germ line cell (ZFA:0009016) is the direct ZFA superclass of primordial germ cell (the gold
+      anchor); the call names the parent. Marker is ddx4 (vasa), the canonical germ-cell marker.
+  hema:
+    add_anchors: [ZFA:0005249]  # vasculature
+    justification: >-
+      the Daniocell "hema" tissue bundles blood with endothelium (sister lineages -- HSCs bud from the
+      hemogenic endothelium of the dorsal aorta), so a vascular call on a "hema" cluster is correct for
+      the bundle. NOTE this credits ANY vascular call under "hema" structurally -- it does not validate
+      markers per cluster. Empirically, the hema clusters this credits on the current benchmark carry
+      endothelial markers (cdh5, kdrl, etv2, pecam1) and no blood markers; re-check this entry if
+      Daniocell's hema composition changes.

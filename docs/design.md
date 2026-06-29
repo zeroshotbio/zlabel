@@ -181,9 +181,23 @@ wins at any of the tested thresholds (0.01–0.50) while only dropping correct c
 same root: the bound is the
 over-broad panel itself, not a missing specificity weight, a weak signal, or a chance artifact.
 
+**A third lever — germ-layer coherence on the forcing suggestion, tested directly (2026-06-29).** On an
+abstention zlabel surfaces a top candidate; a soft-set caller may force it. To make that safe, a
+gold-free germ-layer signal (the dominant germ layer by panel-score aggregation) was tested as a
+trust flag — refuse to force when the candidate's germ layer differs from the cluster's. It recovers
+the true germ layer on only 3 of 38 cross-germ-layer forced errors: the shared keratins dominate the
+germ-layer aggregation just as they dominate the panel score (every gut-endoderm cluster scores
+ectoderm), so the flag hits the exact wall the selection levers hit. Native abstention already declines
+these clusters; forcing them is the caller's risk, and the flag cannot make it safe.
+
 **The fallible-key caveat.** A gold-blind audit found ~14% of apparent errors (16 of 112) are
 Daniocell's own labels, not zlabel's — so the residual is partly benchmark error, and true performance
-is bounded below by the key.
+is bounded below by the key. A **gold-coarseness overlay** (benchmarks/*_crosswalk_overlay.yaml) now
+makes part of this measurable: it credits the documented coarse / bundled / structurally-disconnected
+gold cases (periderm is the superficial epidermis but ZFA has no is_a link; hema bundles blood +
+vasculature; mural is mesenchyme; pgc is germline) as a transparent second number reported beside the
+strict one — strict 76.1% to overlay-corrected 87.5% on Daniocell (~20 correct coarser calls the base
+gold split) — without relaxing the strict metric or the overcall gate.
 
 **The generalization claim.** Every shipped mechanism is dataset-composition-independent and gold-free
 (scored against the fixed ZFIN/panel reference, never the query), so it carries to other datasets

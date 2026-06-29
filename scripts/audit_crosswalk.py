@@ -37,14 +37,16 @@ import sys
 from pathlib import Path
 
 import networkx as nx
+import yaml
 
 import zlabel
 from zlabel.data import term_name
-from zlabel.evaluate import load_crosswalk
+from zlabel.evaluate import Crosswalk, load_crosswalk
 from zlabel.ground import grounds_under
 
 ROOT = Path(__file__).parent.parent
 CROSSWALK = ROOT / "benchmarks" / "daniocell_tissue_crosswalk.yaml"
+OVERLAY = CROSSWALK.with_name(CROSSWALK.name.replace("_tissue_crosswalk", "_crosswalk_overlay"))
 ZFA = ROOT / "data" / "ontologies" / "zfa.obo"
 
 # Reviewed gaps intentionally NOT closed by adding an anchor -- a curation decision recorded
@@ -174,12 +176,50 @@ def classify(zfa: nx.MultiDiGraph, member_ids: list[str], anchors: frozenset[str
     return "GAP"
 
 
-def main() -> int:
-    """Audit the crosswalk comment members and print a per-tissue report.
+def audit_overlay(zfa: nx.MultiDiGraph, crosswalk: Crosswalk, path: Path) -> list[str]:
+    """Validate a gold-coarseness overlay: scored tissue, real ZFA anchors, a justification each.
+
+    The overlay only adds anchors (the format cannot remove). This enforces the three things an
+    additive overlay must satisfy so it stays honest: every corrected tissue is a real scored tissue,
+    every added anchor is a real ZFA term, and every entry carries a gold-blind justification (the
+    semantic check -- is the relationship a true superclass/bundle -- is human review of that string).
+
+    Args:
+        zfa (nx.MultiDiGraph): The ZFA ontology.
+        crosswalk (Crosswalk): The base crosswalk the overlay extends.
+        path (Path): The overlay yaml (absent is fine -- returns no failures).
 
     Returns:
-        int: 0 when every resolved member grounds, is a gloss, or is an accepted gap; 1 when
-            any member is an unaccepted grounding gap.
+        list[str]: Failure keys; empty when the overlay is valid or absent.
+    """
+    if not path.exists():
+        return []
+    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    tissues = raw.get("tissues") or {}
+    fails: list[str] = []
+    print(f"\nAuditing overlay {path.name} ({len(tissues)} corrected tissues):\n")
+    for tissue, spec in tissues.items():
+        if tissue not in crosswalk.anchors:
+            print(f"  [FAIL] {tissue:5s} not a scored base tissue (overlay must correct existing tissues)")
+            fails.append(f"overlay:{tissue}:unscored")
+        if not str(spec.get("justification", "")).strip():
+            print(f"  [FAIL] {tissue:5s} missing justification (every overlay entry must justify the credit)")
+            fails.append(f"overlay:{tissue}:no-justification")
+        for anchor in spec.get("add_anchors", []):
+            if anchor not in zfa:
+                print(f"  [FAIL] {tissue:5s} {anchor} is not a ZFA term")
+                fails.append(f"overlay:{tissue}:{anchor}")
+            else:
+                print(f"  [ADD ] {tissue:5s} +{anchor} ({term_name(zfa, anchor) or anchor})")
+    return fails
+
+
+def main() -> int:
+    """Audit the crosswalk comment members and the overlay, and print a per-tissue report.
+
+    Returns:
+        int: 0 when every resolved member grounds, is a gloss, or is an accepted gap, and the overlay
+            is valid; 1 when any member is an unaccepted grounding gap or the overlay is invalid.
     """
     if not ZFA.exists():
         print(f"ERROR: {ZFA} not found. Run scripts/setup_data.sh first.", file=sys.stderr)
@@ -207,6 +247,8 @@ def main() -> int:
             if verdict == "GAP":
                 gaps.append(f"{tissue}:{member}")
 
+    overlay_fails = audit_overlay(zfa, crosswalk, OVERLAY)
+
     if gaps:
         print(
             f"\nFAIL: {len(gaps)} member(s) do not ground under their tissue anchor: {', '.join(gaps)}",
@@ -218,8 +260,11 @@ def main() -> int:
             "ACCEPTED_GAPS with a rationale.",
             file=sys.stderr,
         )
+    if overlay_fails:
+        print(f"\nFAIL: {len(overlay_fails)} overlay problem(s): {', '.join(overlay_fails)}", file=sys.stderr)
+    if gaps or overlay_fails:
         return 1
-    print("\nAll crosswalk members ground under their tissue anchors (or are accepted gaps/glosses).")
+    print("\nAll crosswalk members ground under their tissue anchors (or are accepted gaps/glosses); overlay valid.")
     return 0
 
 

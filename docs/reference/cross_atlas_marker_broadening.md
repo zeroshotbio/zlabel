@@ -172,6 +172,14 @@ the attractor tendency while also closing the recall gap. Adding promiscuous mar
 — which is why the curation-time specificity guard is the constraint the whole effort turns on, and
 why connective (all-promiscuous candidates) stays walled.
 
+A complementary, eval-side correction lives in the gold crosswalk overlay
+([`benchmarks/daniocell_crosswalk_overlay.yaml`](../../benchmarks/daniocell_crosswalk_overlay.yaml)):
+where the benchmark gold is coarser or structurally disconnected from biology (periderm is the
+superficial epidermis but ZFA lacks the is_a link; hema bundles blood + vasculature), the evaluator
+reports an overlay-corrected agreement beside the strict one (Daniocell 76.1% to 87.5%) so the engine
+is not blamed for gold coarseness — without relaxing the strict metric. See `docs/design.md` (the
+fallible-key caveat) and the germ-layer-coherence forcing-flag NO-GO recorded there.
+
 ## Appendix — reproduce
 
 ```bash

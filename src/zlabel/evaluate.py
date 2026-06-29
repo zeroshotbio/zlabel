@@ -152,6 +152,10 @@ class ClusterOutcome:
     # cluster's markers). Empty tuple of attractor buckets the named prediction grounds under.
     vocab_hit_rate: float = 0.0
     attractor_groundings: tuple[str, ...] = ()
+    # Whether the prediction agrees once the gold anchors are extended by the gold-coarseness overlay
+    # (extend_crosswalk). None when no overlay was applied or the call is not scoreable. Because the
+    # overlay only adds anchors, agrees True always implies agrees_overlay True (monotonic).
+    agrees_overlay: bool | None = None
 
 
 @dataclass
@@ -170,6 +174,12 @@ class Report:
     )  # (cluster_id, gold_tissue, predicted_bucket, kind)
     vocab_hit_rates: list[float] = field(default_factory=list)  # per scored cluster, for the median
     attractor_disagreements: Counter[str] = field(default_factory=Counter)  # named scored disagreements per attractor
+    # Gold-coarseness overlay (off unless an overlay was supplied). overlay_correct counts named/fallback
+    # calls that agree once the gold is extended (a superset of the strict correct); overlay_recovered
+    # lists the strict-miss calls the overlay credits (correct coarser/bundled calls the base gold split).
+    overlay_applied: bool = False
+    overlay_correct: Counter[str] = field(default_factory=Counter)
+    overlay_recovered: list[tuple[str, str, str]] = field(default_factory=list)  # (cluster_id, gold, bucket)
 
 
 def load_benchmark(path: str | Path) -> list[BenchmarkRow]:
@@ -217,6 +227,67 @@ def load_crosswalk(path: str | Path) -> Crosswalk:
         else:
             anchors[code] = frozenset(spec["anchors"])
     return Crosswalk(anchors, frozenset(not_scored))
+
+
+def load_overlay(path: str | Path) -> dict[str, frozenset[str]]:
+    """Load a gold-coarseness overlay: tissue code to ZFA ids to ADD to its gold anchors.
+
+    The overlay corrects cases where the benchmark gold is coarser, bundled, or structurally
+    disconnected from biology (e.g. periderm is the superficial epidermis but ZFA has no is_a link),
+    so a correct coarser call scores as a miss. Each entry carries a justification string consumed by
+    scripts/audit_crosswalk.py; only add_anchors is read here.
+
+    Args:
+        path (str | Path): The overlay YAML (a tissues mapping of code to add_anchors plus a
+            justification string).
+
+    Returns:
+        dict[str, frozenset[str]]: Per-tissue anchor additions.
+    """
+    raw = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+    return {code: frozenset(spec["add_anchors"]) for code, spec in (raw.get("tissues") or {}).items()}
+
+
+def extend_crosswalk(base: Crosswalk, overlay: dict[str, frozenset[str]]) -> Crosswalk:
+    """Union each tissue's base gold anchors with its overlay additions (additive, fail-closed).
+
+    The extension is a union, so it is monotonic: it can only turn a previously-wrong call right,
+    never the reverse. It cannot perturb the parent-child overcall audit (which never reads the gold).
+
+    Args:
+        base (Crosswalk): The fail-closed gold crosswalk.
+        overlay (dict[str, frozenset[str]]): Per-tissue anchor additions (load_overlay).
+
+    Returns:
+        Crosswalk: A new crosswalk with the additions merged in; not_scored is unchanged.
+
+    Raises:
+        KeyError: When an overlay tissue is not a scored tissue in the base (fail closed -- the overlay
+            corrects existing tissues, it must not introduce or rescore tissues).
+    """
+    anchors = dict(base.anchors)
+    for code, additions in overlay.items():
+        if code not in anchors:
+            raise KeyError(f"overlay tissue {code!r} is not a scored tissue in the base crosswalk")
+        anchors[code] = anchors[code] | additions
+    return Crosswalk(anchors, base.not_scored)
+
+
+def overlay_for(crosswalk_path: str | Path) -> dict[str, frozenset[str]] | None:
+    """Return the gold-coarseness overlay sitting beside a crosswalk, or None when there is none.
+
+    Convention: benchmarks/<atlas>_tissue_crosswalk.yaml pairs with benchmarks/<atlas>_crosswalk_overlay.yaml.
+    Atlases without an overlay file are scored strict-only (their reports stay byte-identical).
+
+    Args:
+        crosswalk_path (str | Path): The base crosswalk path.
+
+    Returns:
+        dict[str, frozenset[str]] | None: The loaded overlay, or None when no sibling overlay exists.
+    """
+    path = Path(crosswalk_path)
+    overlay_path = path.with_name(path.name.replace("_tissue_crosswalk", "_crosswalk_overlay"))
+    return load_overlay(overlay_path) if overlay_path.exists() else None
 
 
 def load_resources(
@@ -426,7 +497,12 @@ def _abstain_reason(label: Label, resources: Resources) -> str | None:
     return "no_panel" if top == 0.0 else "weak_signal"
 
 
-def cluster_outcomes(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resources: Resources) -> list[ClusterOutcome]:
+def cluster_outcomes(
+    benchmark: list[BenchmarkRow],
+    crosswalk: Crosswalk,
+    resources: Resources,
+    overlay: dict[str, frozenset[str]] | None = None,
+) -> list[ClusterOutcome]:
     """Label and score every benchmark cluster, returning one ClusterOutcome each.
 
     This is the per-cluster data the aggregate Report projects from, and the table the diagnostic
@@ -437,6 +513,9 @@ def cluster_outcomes(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resour
         benchmark (list[BenchmarkRow]): The benchmark clusters.
         crosswalk (Crosswalk): The fail-closed gold mapping.
         resources (Resources): Loaded engine resources.
+        overlay (dict[str, frozenset[str]] | None): Optional gold-coarseness overlay (overlay_for); when
+            given, each scoreable call is also scored against the overlay-extended gold, recorded as
+            agrees_overlay. None leaves agrees_overlay None and the strict scoring untouched.
 
     Returns:
         list[ClusterOutcome]: One outcome per cluster, in benchmark order.
@@ -446,6 +525,9 @@ def cluster_outcomes(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resour
     attractor_anchors = {
         bucket: resources.anchors[bucket] for bucket in ATTRACTOR_BUCKETS if bucket in resources.anchors
     }
+    # Build the overlay-extended crosswalk once (fail-closed: extend_crosswalk raises on an overlay
+    # tissue the base does not score, so an invalid overlay surfaces here rather than being ignored).
+    extended_crosswalk = extend_crosswalk(crosswalk, overlay) if overlay is not None else None
     for row in benchmark:
         gold = crosswalk.gold(row.broad_tissue)
         label, symbols = _label_row(row, resources)
@@ -463,12 +545,16 @@ def cluster_outcomes(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resour
                 if grounds_under(resources.zfa_ontology, label.zfa_id, anchor)
             )
         agrees: bool | None = None
+        agrees_overlay: bool | None = None
         if gold is not None and kind in (NAMED, FALLBACK):
             pred_ids = _prediction_anchor_ids(label, kind, resources)
             # Empty pred_ids (a named/fallback call that carried no anchor) stays agrees=None:
             # unscoreable against gold, not a disagreement.
             if pred_ids:
                 agrees = any(grounds_under(resources.zfa_ontology, pid, gold) for pid in pred_ids)
+                extended = extended_crosswalk.gold(row.broad_tissue) if extended_crosswalk is not None else None
+                if extended is not None:  # overlay-extended gold (superset of gold); set only with an overlay
+                    agrees_overlay = any(grounds_under(resources.zfa_ontology, pid, extended) for pid in pred_ids)
         audit: AuditRecord | None = None
         if kind == NAMED and label.zfa_id is not None:
             audit = _audit_named(row, label, label.zfa_id, symbols, resources)
@@ -493,25 +579,35 @@ def cluster_outcomes(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resour
                 audit=audit,
                 vocab_hit_rate=vocab_hit_rate,
                 attractor_groundings=attractor_groundings,
+                agrees_overlay=agrees_overlay,
             )
         )
     return outcomes
 
 
-def evaluate(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resources: Resources) -> Report:
+def evaluate(
+    benchmark: list[BenchmarkRow],
+    crosswalk: Crosswalk,
+    resources: Resources,
+    overlay: dict[str, frozenset[str]] | None = None,
+) -> Report:
     """Run the engine over the benchmark and aggregate per-cluster outcomes into the Report.
 
     Args:
         benchmark (list[BenchmarkRow]): The benchmark clusters.
         crosswalk (Crosswalk): The fail-closed gold mapping.
         resources (Resources): Loaded engine resources.
+        overlay (dict[str, frozenset[str]] | None): Optional gold-coarseness overlay (overlay_for). When
+            given, the report also carries the overlay-corrected agreement and the recovered calls; the
+            strict metrics are unchanged. None leaves the report strict-only (byte-identical).
 
     Returns:
         Report: The accumulated metrics, audit records, and failures (a projection of
         cluster_outcomes).
     """
     report = Report()
-    for outcome in cluster_outcomes(benchmark, crosswalk, resources):
+    report.overlay_applied = overlay is not None
+    for outcome in cluster_outcomes(benchmark, crosswalk, resources, overlay):
         report.total += 1
         if not outcome.scored:
             report.not_scored += 1
@@ -534,6 +630,12 @@ def evaluate(benchmark: list[BenchmarkRow], crosswalk: Crosswalk, resources: Res
             report.failures.append((outcome.cluster_id, outcome.gold_tissue, outcome.bucket, outcome.kind))
             for bucket in outcome.attractor_groundings:  # only named calls carry these
                 report.attractor_disagreements[bucket] += 1
+        # Overlay-corrected agreement: monotonic over strict, so it credits the strict-correct plus the
+        # coarser/bundled calls the base gold split (recorded as recovered for the report).
+        if outcome.agrees_overlay:
+            report.overlay_correct[outcome.kind] += 1
+            if not outcome.agrees:
+                report.overlay_recovered.append((outcome.cluster_id, outcome.gold_tissue, outcome.bucket))
     return report
 
 
@@ -567,6 +669,19 @@ def render_report(
     lines += [f"- clusters: {report.total}  ·  scored: {scored}  ·  not_scored: {report.not_scored}", ""]
     lines += ["## Broad agreement (named + fallback, scored against the gold tissue)"]
     lines += [f"- agreement: {_pct(agree, assigned)}", ""]
+    if report.overlay_applied:
+        overlay_agree = report.overlay_correct[NAMED] + report.overlay_correct[FALLBACK]
+        lines += ["## Overlay-corrected agreement (gold-coarseness; see the crosswalk overlay)"]
+        lines += [f"- strict: {_pct(agree, assigned)}  ->  overlay-corrected: {_pct(overlay_agree, assigned)}"]
+        lines += [
+            f"- recovered (correct coarser/bundled calls the base gold scored as misses): "
+            f"{len(report.overlay_recovered)}"
+        ]
+        for cluster_id, tissue, bucket in sorted(report.overlay_recovered)[:top_n]:
+            lines.append(f"- {cluster_id}: gold {tissue}, predicted {bucket!r} -- credited via overlay")
+        if len(report.overlay_recovered) > top_n:
+            lines.append(f"- ... and {len(report.overlay_recovered) - top_n} more")
+        lines += [""]
     lines += ["## Coverage / split (over scored clusters)"]
     lines += [f"- coverage (non-abstain): {_pct(covered, scored)}"]
     for kind in (NAMED, FALLBACK, ROLLUP, ABSTAIN):
@@ -645,7 +760,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     benchmark = load_benchmark(args.benchmark)
     crosswalk = load_crosswalk(args.crosswalk)
-    report = render_report(evaluate(benchmark, crosswalk, resources), top_n=args.top_n)
+    overlay = overlay_for(args.crosswalk)  # the sibling gold-coarseness overlay, or None
+    report = render_report(evaluate(benchmark, crosswalk, resources, overlay), top_n=args.top_n)
     Path(args.out).write_text(report, encoding="utf-8")
     sys.stdout.write(report)
     return 0

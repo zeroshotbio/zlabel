@@ -5,6 +5,26 @@
 ## Broad agreement (named + fallback, scored against the gold tissue)
 - agreement: 76.1% (134/176)
 
+## Overlay-corrected agreement (gold-coarseness; see the crosswalk overlay)
+- strict: 76.1% (134/176)  ->  overlay-corrected: 87.5% (154/176)
+- recovered (correct coarser/bundled calls the base gold scored as misses): 20
+- hema.2: gold hema, predicted 'blood vessel' -- credited via overlay
+- hema.24: gold hema, predicted 'dorsal aorta' -- credited via overlay
+- hema.28: gold hema, predicted 'dorsal aorta' -- credited via overlay
+- hema.30: gold hema, predicted 'posterior cardinal vein' -- credited via overlay
+- hema.37: gold hema, predicted 'blood vasculature' -- credited via overlay
+- mura.3: gold mura, predicted 'mesenchyme' -- credited via overlay
+- peri.11: gold peri, predicted 'epidermis' -- credited via overlay
+- peri.13: gold peri, predicted 'epidermis' -- credited via overlay
+- peri.2: gold peri, predicted 'epidermis' -- credited via overlay
+- peri.20: gold peri, predicted 'epidermis' -- credited via overlay
+- peri.22: gold peri, predicted 'epidermis' -- credited via overlay
+- peri.23: gold peri, predicted 'epidermis' -- credited via overlay
+- peri.26: gold peri, predicted 'epidermis' -- credited via overlay
+- peri.29: gold peri, predicted 'integument' -- credited via overlay
+- peri.3: gold peri, predicted 'epidermis' -- credited via overlay
+- ... and 5 more
+
 ## Coverage / split (over scored clusters)
 - coverage (non-abstain): 42.7% (218/511)
 - named: 33.7% (172/511)
