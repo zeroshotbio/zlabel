@@ -12,7 +12,7 @@ wall, not by reachability, grounding capacity, or missing anchors.
 `backlog.csv`'s `genes_to_min` is a **corpus-wide capacity** number: "one more curated ZFIN gene would
 make the term's theoretical maximum support 3." It is **not** an eval-firing number. The engine names a
 term only when a real cluster has ≥ `CONVERGENCE_MIN` (3) of that term's credited genes **co-resident
-in its top-25 markers** (and clears the 0.6 support-fraction floor).
+in its marker list** (here, the benchmark's per-cluster markers) and clears the 0.6 support-fraction floor.
 
 Across all **629 committed eval clusters** (Daniocell 522 + ZSCAPE 97 + Zebrahub 10), **0 of the 11
 "reachable, 1-gene-short" candidates have a single cluster carrying even both of their current two
@@ -32,7 +32,7 @@ NEW panel could turn it into a correct (or deeper-correct) named call, attributi
 
 | category | count | meaning |
 |---|---|---|
-| covered | 187 | clean correct call (= the eval's overlay-corrected numerator — a consistency check) |
+| covered | 187 | clean correct call (covered + panel_addable_deeper_correct = the eval's overlay-corrected numerator — a consistency check) |
 | panel_addable_new_correct | 63 (31 fine-matched) | unreachable useful correct term the markers support — a new panel *might* add a correct call |
 | panel_addable_deeper_correct | 5 | already correct; an unreachable finer term is supported |
 | selection_bound | 334 | a useful correct term IS reachable but the engine didn't emit it (floor/score) — not a panel fix |
@@ -74,15 +74,21 @@ All three coverage levers are now tested and exhausted:
 
 1. `develops_from` reach — 0 new labels, otolith regression (REPORT, `develops_from_experiment.md`).
 2. Backlog grounding — dead on the benchmarks (0/629 clusters carry the markers; §1).
-3. Panel addition — the best candidate (periderm) regresses the hard gate two ways (§3).
+3. Panel addition — the best, cleanest, highest-yield candidate (periderm, 19 hard-gate clusters)
+   regresses two ways (§3). The remaining fine-matched candidates are smaller and individually untested:
+   endoderm (7, hard gate) is the only other material one; the rest are held-out ~1-cluster singletons.
 
 **Coverage is bound by marker promiscuity and the selection wall, not by reachability, grounding
 capacity, or missing anchors.** No engine or panel change is warranted. The lasting products are the
 **`coverage_headroom.py` scan** (a standing instrument that enumerates and *attributes* the headroom,
 so a future curation effort can target the few fine-matched candidates and confirm with `make
-gate-all`) and this evidence trail. The scattered fine-matched singletons (held-out pharyngeal
-arch/hypochord) remain available as future panel candidates, but each is ~1 cluster and would need the
-same poaching check periderm failed.
+gate-all`) and this evidence trail.
+
+**Scope of the panel NO-GO:** periderm is *proven* to regress; the other fine-matched candidates are not
+individually tested but are low-yield — endoderm (7, hard gate) carries a broad germ-layer + attractor
+poaching risk, and the rest are held-out ~1-cluster singletons (pharyngeal arch, hypochord, intermediate
+mesoderm). Each stays a future panel candidate only if it clears the same `make gate-all` poaching check
+periderm failed; none is expected to clear it cleanly, so none is pursued here.
 
 **Reproduce:** `uv run python analysis/zfa_usefulness/coverage_headroom.py` (the scan); the backlog
 co-occurrence check is a token grep of the 11 candidates' markers over `benchmarks/*_eval.csv`.

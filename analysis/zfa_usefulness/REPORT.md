@@ -121,7 +121,9 @@ is all-useful.
    the markers never co-occur in any of the 629 eval clusters (`grounding_pilot.md`).
 3. **Adding panels for well-grounded unanchored terms was tested (Phase 3) and regresses.** The
    headroom scan (`coverage_headroom.py`) flagged periderm, thyroid follicle, hatching gland, etc.;
-   realizing the best (periderm, hard gate) poaches epidermis/fin clusters and drops agreement.
+   realizing the best (periderm, hard gate) poaches epidermis/fin clusters and drops agreement. The
+   remaining fine-matched candidates (endoderm 7; held-out singletons) are smaller, untested, and
+   low-yield — see `grounding_pilot.md` for the per-candidate scope.
 4. **Abstract grouping cell-types** (`electrically signaling/active cell`) are now correctly capped at
    T2 by the pure-grouper guard (they have 0 direct genes — renamings of `neuron`).
 5. **A pure data rubric can't see "undifferentiated":** `blastomere` scores T1 but curators correctly
