@@ -290,7 +290,7 @@ print(label.to_yaml())                           # the evidence packet
 One entry point. The public surface is small — `Labeler`, `Label`, and the Phase 1/2
 primitives — while the decision code beneath it stays readable and unit-tested.
 
-### Confidence rubric (provisional — measured in Phase 4b; calibration deferred)
+### Confidence rubric (provisional — measured in Phase 4b; calibration now measured, read-only)
 
 `Labeler` grades an assigned call on a weighted 0–1 score: **coherence** 0.40 (rank-weighted
 strength of the winner's markers) + **margin** 0.30 (lead over the runner-up) + **grounding**
@@ -299,7 +299,14 @@ named ZFA term, or the panel anchor when the vote fails) + **stage** 0.10 (fract
 sample). Tiers: ≥ 0.80 `high`, ≥ 0.60 `medium`, else `low`. Two caps keep it honest — a
 germ-layer rollup never exceeds `medium`, and `high` requires real anatomy convergence (a fallback
 to the coarse bucket grounds against the broad anchor, lowering grounding and preventing false `high`). The weights are a
-first cut; Phase 4b measured the baseline — calibration is deferred.
+first cut; Phase 4b measured the baseline, and a read-only calibration pass (see
+`analysis/engine_audit_2026_06/`) now characterises it. The score is a useful **rank** but not a
+probability of broad-correctness (Brier 0.243 vs a 0.182 base-rate constant; the `low` tier is
+under-confident — it states ~0.45 yet is ~73% right) — read it as a **fine-call-certainty** signal,
+not P(correct). The robust high-precision operating point is `confidence ≥ 0.80` → ~100% on both
+Daniocell and ZSCAPE (`margin ≥ 0.20` → 96% is Daniocell-specific: 78% on ZSCAPE). A 5-fold isotonic
+recalibration would cut Brier to 0.171 but is intentionally **not shipped** — it would be a
+Daniocell-gold-trained component, against the gold-free principle and the byte-identical gate.
 
 ### Introspection: `trace()` (advanced surface)
 
@@ -387,7 +394,13 @@ specific term winning on the bare `CONVERGENCE_MIN` while a broader parent had m
 calls in 146 named clusters. The engine is untouched by the eval; the audit replays the vote tally
 privately. Daniocell's broad labels cannot validate
 within-bucket fine-naming, so depth correctness there is reported by the structural audit, not
-checked against truth; finer-reference depth validation (ZSCAPE/Zebrahub) is deferred to a future pass.
+checked against truth. A first finer-reference pass now measures it (read-only; see
+`analysis/engine_audit_2026_06/`): scored against ZSCAPE's `cell_type_broad` gold, **fine-naming
+agreement is ~38% (11/29 mapped named calls) where broad agreement is 87.5%** — the engine's deep
+names are often false precision. The dominant fine-error is the neural attractor collapsing distinct
+CNS/PNS neuron types onto one region (telencephalon/diencephalon); the validated grain is broad
+tissue, and deep names — neural regions especially — should be read as provisional. (N is small and
+single-atlas, so this supports the direction, not a precise rate.)
 
 **Measured against off-the-shelf annotators** (the `zlabel-bench` companion). Given the same marker
 lists zlabel sees, the abstaining engine was compared head-to-head with a frontier LLM marker-namer
