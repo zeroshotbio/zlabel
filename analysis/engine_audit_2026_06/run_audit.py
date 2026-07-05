@@ -8,7 +8,7 @@ Faithful: reuses the public loaders plus cluster_outcomes plus _label_row unchan
 reproduces the committed baselines. The CONVERGENCE_MIN probe monkeypatches the module global in memory and
 restores it. Needs data/ontologies (not in CI, like the other analysis scripts).
 
-Run: cd ~/PycharmProjects/zlabel && uv run python analysis/engine_audit_2026_06/run_audit.py
+Run (from the repo root): uv run python analysis/engine_audit_2026_06/run_audit.py
 """
 
 from __future__ import annotations
@@ -160,7 +160,7 @@ def _kept(asg: list[Row], key: str, t: float) -> str:
     return f"{len(kept)}@{acc:.2f}"
 
 
-def calibration(rows: list[Row]) -> None:
+def calibration(name: str, rows: list[Row]) -> None:
     """Brier, reliability curve, recalibration, and risk-coverage operating points."""
     asg = [r for r in rows if r["scored"] == 1 and r["kind"] in (NAMED, FALLBACK) and r["confidence_score"] != ""]
     pairs: list[Pair] = [
@@ -169,7 +169,7 @@ def calibration(rows: list[Row]) -> None:
         if r["agrees"] != ""
     ]
     base = sum(y for _, y in pairs) / len(pairs)
-    print(f"\n# CALIBRATION (n={len(pairs)})")
+    print(f"\n# CALIBRATION [{name}] (n={len(pairs)})")
     print(
         f"  raw Brier={_brier(pairs):.4f}  base-rate-constant={base * (1 - base):.4f}  "
         f"CV-isotonic={_cv_isotonic(pairs):.4f}"
@@ -358,9 +358,11 @@ def main() -> None:
     res = load_engine()
     print("=== faithfulness (must match committed baselines) ===")
     dani = build_table("daniocell", res)
-    build_table("zscape", res)
-    calibration(dani)
+    zscape = build_table("zscape", res)
+    calibration("daniocell", dani)
     abstain_triage("daniocell", dani)
+    calibration("zscape", zscape)
+    abstain_triage("zscape", zscape)
     floor_probe(res)
     injection(res)
     fine_naming(res)

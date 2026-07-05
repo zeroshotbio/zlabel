@@ -12,7 +12,7 @@ a harness that reproduces the committed baselines exactly:
 Goal: drive each open improvement lever to a confident GO / NO-GO, **extending** (not duplicating)
 `analysis/zfa_usefulness/`, `analysis/validation/disagreement_sweep.md`, and `docs/design.md §Validation`.
 
-Reproduce: `cd ~/PycharmProjects/zlabel && uv run python analysis/engine_audit_2026_06/run_audit.py`
+Reproduce (from the repo root): `uv run python analysis/engine_audit_2026_06/run_audit.py`
 (needs `data/ontologies/`; not in CI, like the other `analysis/` scripts).
 
 ---
@@ -20,8 +20,9 @@ Reproduce: `cd ~/PycharmProjects/zlabel && uv run python analysis/engine_audit_2
 ## 1. Grounding / curation as a COVERAGE lever — NO-GO (three independent lines)
 
 `analysis/zfa_usefulness/backlog.csv` ranks 50 "near-bar" cell types (1–2 ZFIN genes short of groundable);
-`grounding_augmentation.md` argued targeted curation is "the viable path" but never measured the **cluster**
-impact. Measured now:
+`grounding_augmentation.md` floated targeted curation as the predicted-viable coverage lever. Measured here
+against the actual clusters (and independently corroborated by `grounding_augmentation.md`'s own Phase-3
+correction + `grounding_pilot.md`, which reach the same NO-GO by a marker co-residence scan):
 
 - **Support-floor probe** — lowering `CONVERGENCE_MIN` 3→2→1 recovers **0** abstaining clusters (named
   172→175→176, all from already-non-abstaining fallbacks; agreement unchanged). The floor is not the blocker.
@@ -73,7 +74,9 @@ Daniocell assigned calls (n=176):
 - **A held-out (5-fold) isotonic recalibration drops Brier 0.243 → 0.171** (−30%, beating the base-rate
   constant) — recalibration genuinely helps.
 - **The rank is usable at the top:** margin ≥ 0.20 → 96% accurate (14% coverage); confidence ≥ 0.80 → 100%
-  (11%). Clean high-precision operating points.
+  (11%). Clean high-precision operating points. Cross-atlas (the reproducer also runs `calibration` on
+  ZSCAPE, n=40): `confidence ≥ 0.80` → 100% holds, but `margin ≥ 0.20` → 78% does not — the confidence
+  operating point is the robust one; the margin point is Daniocell-specific.
 
 **Deliverable (additive, gate-safe — no decision-path change):**
 1. Document that `confidence_score` is a fine-certainty signal, **not P(broad-correct)**.
