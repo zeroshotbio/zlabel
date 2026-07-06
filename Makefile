@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup setup-core setup-upgrade format lint lint-docstrings type test verify audit eval gate eval-zscape gate-zscape eval-zebrahub gate-zebrahub gate-all scorecard hooks notebook
+.PHONY: help setup setup-core setup-upgrade format format-check lint lint-docstrings type test verify audit eval gate eval-zscape gate-zscape eval-zebrahub gate-zebrahub gate-all scorecard hooks notebook
 
 help:  ## Show this help
 	@awk 'BEGIN {FS = ":.*## "; print "Usage: make <target>\n"} /^##@/ {printf "\n%s\n", substr($$0, 5)} /^[a-zA-Z0-9_.-]+:.*## / {printf "  %-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -19,6 +19,9 @@ format:  ## ruff format + safe autofixes
 	uv run ruff format .
 	uv run ruff check --fix .
 
+format-check:  ## ruff format --check (CI parity; run `make format` to fix)
+	uv run ruff format --check .
+
 lint:  ## ruff check (no fixes) — the gate verify depends on
 	uv run ruff check .
 
@@ -33,7 +36,7 @@ type:  ## pyright (basic)
 test:  ## pytest
 	uv run pytest -vv
 
-verify: lint lint-docstrings type test  ## The PR gate: lint + docstrings + types + tests
+verify: lint format-check lint-docstrings type test  ## The PR gate: lint + format + docstrings + types + tests
 
 audit:  ## Curation gate: audit panels.yaml markers vs ZFIN data (needs data/ontologies; not in CI)
 	uv run python scripts/audit_panels.py

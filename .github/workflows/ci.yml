@@ -1,0 +1,25 @@
+name: ci
+
+# Hermetic checks only. zlabel's unit tests run on small committed fixtures and need neither the
+# gitignored ontology corpus nor any external package (zlabel is the base package — no editable
+# path source). CI runs `make verify` (lint + format-check + docstrings + pyright + pytest); the
+# data-dependent regression walls (gate-all / eval / scorecard) stay on the local pre-commit hook.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      # Every `uv run` (including those inside `make verify`) uses the venv synced below instead of
+      # re-resolving on each invocation.
+      UV_NO_SYNC: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+      - run: uv sync --frozen --all-groups
+      - run: make verify
