@@ -78,21 +78,35 @@ def build_table(name: str, res: Resources) -> list[Row]:
     labels = [_label_row(row, res)[0] for row in bench]
     rows: list[Row] = []
     for o, oo, lab in zip(out_s, out_o, labels, strict=True):
-        rows.append({
-            "cluster_id": o.cluster_id, "gold": o.gold_tissue, "tissue_name": o.tissue_name,
-            "stage_hpf": o.stage_hpf if o.stage_hpf is not None else "", "kind": o.kind,
-            "scored": int(o.scored), "agrees": "" if o.agrees is None else int(o.agrees),
-            "agrees_overlay": "" if oo.agrees is None else int(oo.agrees), "confidence": o.confidence or "",
-            "confidence_score": "" if lab.confidence_score is None else round(lab.confidence_score, 4),
-            "margin": round(lab.margin, 4), "ood": lab.ood, "abstain_reason": o.abstain_reason or "",
-            "n_resolved": o.n_resolved, "n_markers": len(o.markers), "vocab_hit_rate": round(o.vocab_hit_rate, 4),
-            "depth": o.depth, "zfa_id": o.zfa_id or "", "bucket": o.bucket, "panel_bucket": o.panel_bucket,
-            "convergent_genes": ";".join(o.convergent_genes),
-            "attractor_groundings": ";".join(o.attractor_groundings),
-            "thin_overcall": "" if o.audit is None else int(o.audit.thin_support_overcall),
-            "support_fraction": "" if o.audit is None else round(o.audit.support_fraction, 3),
-            "n_candidates": len(lab.candidates),
-        })
+        rows.append(
+            {
+                "cluster_id": o.cluster_id,
+                "gold": o.gold_tissue,
+                "tissue_name": o.tissue_name,
+                "stage_hpf": o.stage_hpf if o.stage_hpf is not None else "",
+                "kind": o.kind,
+                "scored": int(o.scored),
+                "agrees": "" if o.agrees is None else int(o.agrees),
+                "agrees_overlay": "" if oo.agrees is None else int(oo.agrees),
+                "confidence": o.confidence or "",
+                "confidence_score": "" if lab.confidence_score is None else round(lab.confidence_score, 4),
+                "margin": round(lab.margin, 4),
+                "ood": lab.ood,
+                "abstain_reason": o.abstain_reason or "",
+                "n_resolved": o.n_resolved,
+                "n_markers": len(o.markers),
+                "vocab_hit_rate": round(o.vocab_hit_rate, 4),
+                "depth": o.depth,
+                "zfa_id": o.zfa_id or "",
+                "bucket": o.bucket,
+                "panel_bucket": o.panel_bucket,
+                "convergent_genes": ";".join(o.convergent_genes),
+                "attractor_groundings": ";".join(o.attractor_groundings),
+                "thin_overcall": "" if o.audit is None else int(o.audit.thin_support_overcall),
+                "support_fraction": "" if o.audit is None else round(o.audit.support_fraction, 3),
+                "n_candidates": len(lab.candidates),
+            }
+        )
     with (HERE / f"audit_table_{name}.csv").open("w", newline="", encoding="utf-8") as fh:
         writer = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         writer.writeheader()
@@ -212,8 +226,7 @@ def floor_probe(res: Resources) -> None:
             R.CONVERGENCE_MIN = floor
             now = {o.cluster_id: o for o in cluster_outcomes(bench, base, res)}
             flips = sum(
-                1 for cid, b in base3.items()
-                if b.scored and b.kind in (ABSTAIN, ROLLUP) and now[cid].kind == NAMED
+                1 for cid, b in base3.items() if b.scored and b.kind in (ABSTAIN, ROLLUP) and now[cid].kind == NAMED
             )
             named = sum(1 for o in now.values() if o.scored and o.kind == NAMED)
             print(f"    floor={floor}: named {named3}->{named}  abstain/rollup->named flips={flips}")
@@ -225,9 +238,12 @@ def injection(res: Resources) -> None:
     """Grounding NO-GO #2: injecting the proposed near-bar markers flips no clusters."""
     print("\n# GROUNDING LEVER NO-GO #2: targeted marker injection")
     inject = [
-        ("grm2", "ZFA:0009069", "Golgi cell"), ("ddc", "ZFA:0009061", "adrenergic neuron"),
-        ("gngt2a", "ZFA:0009221", "UV cone"), ("gnat2", "ZFA:0009222", "blue cone"),
-        ("glra1", "ZFA:0009396", "glycinergic neuron"), ("cpa5", "ZFA:0005739", "pancreatic acinar cell"),
+        ("grm2", "ZFA:0009069", "Golgi cell"),
+        ("ddc", "ZFA:0009061", "adrenergic neuron"),
+        ("gngt2a", "ZFA:0009221", "UV cone"),
+        ("gnat2", "ZFA:0009222", "blue cone"),
+        ("glra1", "ZFA:0009396", "glycinergic neuron"),
+        ("cpa5", "ZFA:0005739", "pancreatic acinar cell"),
     ]
     eval_csv, cw_path = atlas_paths("daniocell")
     bench, base = load_benchmark(eval_csv), load_crosswalk(cw_path)
