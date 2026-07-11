@@ -1,6 +1,8 @@
 """Build a ZSCAPE eval set for the held-out 2nd-atlas generalization check (E3).
 
-ZSCAPE (Saunders 2023, GSE202639-derived h5ad) is a whole-embryo perturbation atlas. To keep the
+ZSCAPE (Saunders 2023) is a whole-embryo perturbation atlas. We read the canonical copy staged by
+PRISM (PRISM/data/h5ad/zscape_perturbation.h5ad) at the full ~32k-gene transcriptome, not a reduced
+gene-panel subset, so the source carries committed provenance. To keep the
 generalization test about wild-type identity (not perturbation-shifted markers) we use ONLY the
 wild-type control cells (gene_target prefixed "ctrl"). Each ZSCAPE cell_type_broad annotation is
 treated as a cluster; its markers come from a one-vs-rest rank_genes_groups, harmonized from the
@@ -31,7 +33,10 @@ from zlabel.data import load_ensdarg_to_symbol
 
 REPO = Path(__file__).resolve().parent.parent
 ENS_PATH = REPO / "data" / "ontologies" / "zfin_ensembl_1_to_1.txt"
-DEFAULT_H5AD = "/home/ec2-user/PycharmProjects/transcriptformer/datasets/zscape_perturb_panel4866.h5ad"
+# Canonical PRISM-built ZSCAPE perturbation atlas (full 32k-gene transcriptome, committed provenance).
+# Filtering to gene_target "ctrl*" gives the same wild-type control population as the retired
+# transcriptformer panel4866 copy, but over all genes instead of a 4,817-gene subset.
+DEFAULT_H5AD = "/home/ec2-user/PycharmProjects/PRISM/data/h5ad/zscape_perturbation.h5ad"
 DEFAULT_OUT = REPO / "benchmarks" / "zscape_eval.csv"
 
 GROUPBY = "cell_type_broad"  # ZSCAPE's per-cell annotation -> the benchmark "clusters"
