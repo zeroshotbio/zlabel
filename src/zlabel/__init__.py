@@ -1,5 +1,11 @@
 """zlabel — label one whole-organism zebrafish scRNA-seq cluster from its markers."""
 
+from zlabel.atlas import (
+    ATLAS_FALLBACKS,
+    ATLAS_ORGANS,
+    atlas_anchor,
+    atlas_rollup,
+)
 from zlabel.data import (
     ALL_RELATION_EDGE_TYPES,
     DEFAULT_ANCESTOR_EDGE_TYPES,
@@ -37,6 +43,11 @@ from zlabel.panels import (
 __version__ = "0.1.0"
 
 __all__ = [
+    # atlas (organ-level ZFA roll-up for the studio atlas view)
+    "ATLAS_FALLBACKS",
+    "ATLAS_ORGANS",
+    "atlas_anchor",
+    "atlas_rollup",
     # data
     "ALL_RELATION_EDGE_TYPES",
     "DEFAULT_ANCESTOR_EDGE_TYPES",

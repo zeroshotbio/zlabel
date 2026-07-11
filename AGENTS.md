@@ -75,6 +75,9 @@ make hooks    # install the pre-commit hook that runs `make gate-all` on engine/
 - **Small public surface.** `Labeler` and `Label` (plus the Phase 1/2 primitives) are the
   public API; `resolve.py` and the other `src/zlabel/` modules are the internal/advanced
   surface — import them directly (`import zlabel.resolve`), do not re-export them at top level.
+  Exception: `atlas` (organ-level ZFA roll-up — `ATLAS_ORGANS`/`ATLAS_FALLBACKS`/`atlas_rollup`) IS
+  re-exported at top level; it's a sanctioned cross-repo primitive the zspine pipeline consumes as
+  `zlabel.atlas_rollup`.
 - **Google-style docstrings, written as plain text.** `name (type): desc` for Args;
   a type-first `Returns:` (`type: desc`). **No backticks**, no reST (`:roles:`), and
   no block markdown (bullet lists, fences, headers) inside Python docstrings or
