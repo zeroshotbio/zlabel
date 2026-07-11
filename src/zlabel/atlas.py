@@ -2,19 +2,19 @@
 
 The zlabel-scope studio's atlas view needs ONE human-readable, organ-level anatomy label per cluster,
 consistent across datasets. Every reference tissue or engine call resolves to a ZFA (Zebrafish Anatomy
-Ontology) term; this rolls that term up the ontology (``is_a`` + ``part_of`` ancestry, nearest-first via
-:func:`zlabel.data.ancestors`) to the nearest term in the atlas tier.
+Ontology) term; this rolls that term up the ontology (is_a + part_of ancestry, nearest-first via
+zlabel.data.ancestors) to the nearest term in the atlas tier.
 
 Two tiers, ORGAN-FIRST: take the nearest ORGAN, and only fall back to a system / germ-layer term when no
-organ ancestor is reachable. This matters because ZFA is a multi-parent DAG -- e.g. ``rhombomere`` is
-``is_a neuromere`` (→ nervous system) and ``part_of hindbrain`` (→ brain) at equal depth; organ-first
-guarantees Brain wins. It also keeps honestly-coarse labels (a generic neural cluster → "Nervous
+organ ancestor is reachable. This matters because ZFA is a multi-parent DAG -- e.g. rhombomere is
+is_a neuromere (-> nervous system) and part_of hindbrain (-> brain) at equal depth; organ-first
+guarantees Brain wins. It also keeps honestly-coarse labels (a generic neural cluster -> "Nervous
 system") instead of dropping them.
 
-Every id is verified present in ``zfa.obo`` and every roll-up on the three studio datasets was
-adversarially checked against ZFA/ZFIN. Anchors are chosen so sibling-gap terms still resolve: fin *bud*
-(``0001383``) for fin-fold terms, *pronephros* (``0000151``, the larval kidney -- a sibling of generic
-``kidney``), and *ionocyte* (``0005323``) kept distinct from its epidermis sibling under integument.
+Every id is verified present in zfa.obo and every roll-up on the three studio datasets was
+adversarially checked against ZFA/ZFIN. Anchors are chosen so sibling-gap terms still resolve: fin bud
+(0001383) for fin-fold terms, pronephros (0000151, the larval kidney -- a sibling of generic
+kidney), and ionocyte (0005323) kept distinct from its epidermis sibling under integument.
 """
 
 from __future__ import annotations
@@ -97,7 +97,7 @@ _ALL = {**ATLAS_FALLBACKS, **ATLAS_ORGANS}  # organs win on any id overlap
 
 
 def _nearest(graph: nx.MultiDiGraph, zfa_id: str | None, tier: dict[str, str]) -> str | None:
-    """The nearest ancestor id (self first) present in ``tier``, walking is_a+part_of, or None."""
+    """The nearest ancestor id (self first) present in tier, walking is_a+part_of, or None."""
     if not zfa_id or zfa_id not in graph:
         return None
     for cand in (zfa_id, *ancestors(graph, zfa_id)):
@@ -112,9 +112,9 @@ def atlas_anchor(graph: nx.MultiDiGraph, zfa_id: str | None) -> str | None:
 
 
 def atlas_rollup(graph: nx.MultiDiGraph, zfa_id: str | None) -> dict[str, str] | None:
-    """The atlas anchor a ZFA term rolls up to, as ``{"term", "zfa_id"}``, or None if it reaches no tier.
+    """The atlas anchor a ZFA term rolls up to, as {"term", "zfa_id"}, or None if it reaches no tier.
 
-    ``term`` is the human-readable organ; ``zfa_id`` is the tier anchor it grounded on.
+    term is the human-readable organ; zfa_id is the tier anchor it grounded on.
     """
     anchor = atlas_anchor(graph, zfa_id)
     return None if anchor is None else {"term": _ALL[anchor], "zfa_id": anchor}

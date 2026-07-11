@@ -1,7 +1,9 @@
 """Tests for the organ-level ZFA atlas roll-up (zlabel.atlas).
 
-Hermetic tests exercise the roll-up LOGIC on a tiny synthetic ontology; a final integration test pins
-the biologically-verified fix cases against the real zfa.obo when it is present.
+Hermetic tests exercise the PUBLIC roll-up (atlas_anchor / atlas_rollup) on a tiny synthetic ontology
+built with REAL ZFA anchor ids, so they run the real ATLAS_ORGANS / ATLAS_FALLBACKS tiers without
+needing zfa.obo. A final integration test pins the biologically-verified fix cases against the real
+zfa.obo when it is present.
 """
 
 from __future__ import annotations
@@ -15,46 +17,66 @@ from zlabel import atlas
 
 _OBO = Path(__file__).resolve().parents[1] / "data" / "ontologies" / "zfa.obo"
 
+# Real tier anchors, so the toy graph drives the real public API rather than a re-implemented precedence.
+_BRAIN = "ZFA:0000008"  # ATLAS_ORGANS -> "Brain"
+_CNS = "ZFA:0000012"  # ATLAS_FALLBACKS -> "Nervous system"
+_LIVER = "ZFA:0000123"  # ATLAS_ORGANS -> "Liver"
+_RHOMBOMERE = "ZFA:0001064"
+
 
 def _toy() -> nx.MultiDiGraph:
-    """child -> parent edges keyed by relation, mirroring obonet's graph shape."""
+    """child -> parent edges keyed by relation, mirroring obonet's graph shape.
+
+    Anchor nodes use real ZFA ids so atlas_anchor/atlas_rollup resolve against the real tiers;
+    intermediate/leaf ids are stand-ins (they never appear in a tier).
+    """
     g = nx.MultiDiGraph()
-    # rhombomere is a hindbrain segment (part_of brain) but also is_a neuromere (-> a fallback CNS)
-    g.add_edge("rhombomere", "neuromere", key="is_a")
-    g.add_edge("neuromere", "cns", key="part_of")  # nearer fallback (depth 2)
-    g.add_edge("rhombomere", "hindbrain", key="part_of")
-    g.add_edge("hindbrain", "brain", key="is_a")  # organ (depth 2)
-    g.add_edge("hepatocyte", "liver", key="is_a")
+    # rhombomere sits at an equal-depth multi-parent tie: is_a neuromere -> CNS (fallback, depth 2) and
+    # part_of hindbrain -> brain (organ, depth 2). Organ-first must pick Brain.
+    g.add_edge(_RHOMBOMERE, "neuromere", key="is_a")
+    g.add_edge("neuromere", _CNS, key="part_of")
+    g.add_edge(_RHOMBOMERE, "hindbrain", key="part_of")
+    g.add_edge("hindbrain", _BRAIN, key="is_a")
+    g.add_edge("hepatocyte", _LIVER, key="is_a")
+    # a term that IS in the graph and has an ancestor, but none of its ancestors land in any tier
+    g.add_edge("untracked_cell", "untracked_structure", key="is_a")
     return g
 
 
 def test_nearest_walks_is_a_and_part_of():
+    """The private walker returns the nearest ancestor present in the given tier (self first)."""
     g = _toy()
-    assert atlas._nearest(g, "rhombomere", {"brain": "Brain"}) == "brain"
-    assert atlas._nearest(g, "hepatocyte", {"liver": "Liver"}) == "liver"
-    assert atlas._nearest(g, "rhombomere", {"cns": "Nervous system"}) == "cns"
+    assert atlas._nearest(g, _RHOMBOMERE, {_BRAIN: "Brain"}) == _BRAIN
+    assert atlas._nearest(g, "hepatocyte", {_LIVER: "Liver"}) == _LIVER
+    assert atlas._nearest(g, _RHOMBOMERE, {_CNS: "Nervous system"}) == _CNS
 
 
-def test_organ_first_beats_a_fallback():
-    """An organ ancestor must win over a fallback ancestor (the rhombomere tie)."""
+def test_atlas_anchor_is_organ_first_on_a_tie():
+    """rhombomere reaches Brain (organ) and CNS (fallback) at equal depth -> organ-first picks Brain."""
     g = _toy()
-    organs, fallbacks = {"brain": "Brain"}, {"cns": "Nervous system"}
-    anchor = atlas._nearest(g, "rhombomere", organs) or atlas._nearest(g, "rhombomere", fallbacks)
-    assert organs[anchor] == "Brain"
+    assert atlas.atlas_anchor(g, _RHOMBOMERE) == _BRAIN
+    assert atlas.atlas_rollup(g, _RHOMBOMERE) == {"term": "Brain", "zfa_id": _BRAIN}
 
 
-def test_fallback_used_when_no_organ():
+def test_atlas_rollup_falls_back_to_a_system_when_no_organ():
+    """A term whose only tier ancestor is a system fallback is still labelled (coarse, not dropped)."""
     g = _toy()
-    organs, fallbacks = {"brain": "Brain"}, {"cns": "Nervous system"}
-    # a bare neuromere reaches only the fallback cns, no organ
-    anchor = atlas._nearest(g, "neuromere", organs) or atlas._nearest(g, "neuromere", fallbacks)
-    assert fallbacks[anchor] == "Nervous system"
+    assert atlas.atlas_anchor(g, "neuromere") == _CNS
+    assert atlas.atlas_rollup(g, "neuromere") == {"term": "Nervous system", "zfa_id": _CNS}
+
+
+def test_atlas_rollup_none_when_no_tier_ancestor():
+    """In-graph term with ancestors but none in any tier -> None (distinct from an absent id)."""
+    g = _toy()
+    assert atlas.atlas_anchor(g, "untracked_cell") is None
+    assert atlas.atlas_rollup(g, "untracked_cell") is None
 
 
 def test_absent_term_and_none():
     g = _toy()
-    assert atlas._nearest(g, "not_in_graph", {"brain": "Brain"}) is None
-    assert atlas._nearest(g, None, {"brain": "Brain"}) is None
+    assert atlas.atlas_anchor(g, "not_in_graph") is None
+    assert atlas.atlas_anchor(g, None) is None
+    assert atlas.atlas_rollup(g, None) is None
 
 
 def test_tier_invariants():
