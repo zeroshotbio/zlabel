@@ -3,49 +3,49 @@
 - clusters: 97  ·  scored: 96  ·  not_scored: 1
 
 ## Broad agreement (named + fallback, scored against the gold tissue)
-- agreement: 87.5% (35/40)
+- agreement: 86.1% (31/36)
 
 ## Coverage / split (over scored clusters)
-- coverage (non-abstain): 47.9% (46/96)
-- named: 39.6% (38/96)
-- fallback: 2.1% (2/96)
-- rollup: 6.2% (6/96)
-- abstain: 52.1% (50/96)
+- coverage (non-abstain): 42.7% (41/96)
+- named: 36.5% (35/96)
+- fallback: 1.0% (1/96)
+- rollup: 5.2% (5/96)
+- abstain: 57.3% (55/96)
 
 ## Agreement by prediction class
-- named: 86.8% (33/38)
-- fallback: 100.0% (2/2)
+- named: 85.7% (30/35)
+- fallback: 100.0% (1/1)
 
 ## Confidence by correctness (named + fallback)
-- high: 100.0% (5/5)
-- medium: 70.0% (7/10)
-- low: 92.0% (23/25)
+- high: 100.0% (4/4)
+- medium: 50.0% (3/6)
+- low: 92.3% (24/26)
 
 ## Parent-child overcall audit (named calls)
-- named calls audited: 38
-- won with exactly CONVERGENCE_MIN=3 genes: 0.0% (0/38)
-- thin-support overcalls (won at min, broader parent had more support): 0.0% (0/38)
+- named calls audited: 35
+- won with exactly CONVERGENCE_MIN=3 genes: 0.0% (0/35)
+- thin-support overcalls (won at min, broader parent had more support): 0.0% (0/35)
 
 Lowest support-fraction named calls (child support / best-parent support), top 15:
+- pronephric_podocyte: pronephric podocyte (5) vs compound organ (17)  -> fraction 0.29
 - hair_cell: neuromast (6) vs nervous system (18)  -> fraction 0.33
-- primordial_germ_cell: primordial germ cell (5) vs cell (15)  -> fraction 0.33
-- unknown_dcn_col6: mesenchyme (8) vs portion of tissue (21)  -> fraction 0.38
-- fin_bud_mesoderm_pectoral: pectoral fin (7) vs organism subdivision (18)  -> fraction 0.39
-- xanthophore: xanthophore (8) vs organism subdivision (19)  -> fraction 0.42
-- endothelium_f8_clic2: posterior cardinal vein (9) vs multi-tissue structure (19)  -> fraction 0.47
-- dorsal_spinal_cord_neuron: telencephalon (12) vs central nervous system (22)  -> fraction 0.55
-- endothelium_vein_early_artery: posterior cardinal vein (11) vs cavitated compound organ (20)  -> fraction 0.55
-- neuron_spinal_cord: telencephalon (11) vs cavitated compound organ (20)  -> fraction 0.55
-- retinal_pigmented_epithelium_late: retinal pigmented epithelium (9) vs portion of tissue (16)  -> fraction 0.56
-- neuron_dopaminergic: telencephalon (12) vs cavitated compound organ (21)  -> fraction 0.57
-- neurons_differentiating_contains_peripheral: telencephalon (12) vs nervous system (21)  -> fraction 0.57
-- neurons_gabaergic_glutamatergic_contains_purkinje: telencephalon (12) vs nervous system (21)  -> fraction 0.57
-- posterior_spinal_cord_progenitors: diencephalon (12) vs cavitated compound organ (21)  -> fraction 0.57
-- differentiating_neuron_2: telencephalon (13) vs cavitated compound organ (22)  -> fraction 0.59
+- unknown_dcn_col6: mesenchyme (7) vs portion of tissue (20)  -> fraction 0.35
+- xanthophore: xanthophore (7) vs organism subdivision (19)  -> fraction 0.37
+- primordial_germ_cell: primordial germ cell (5) vs cell (13)  -> fraction 0.38
+- endothelium_f8_clic2: axial blood vessel (7) vs multi-tissue structure (16)  -> fraction 0.44
+- endothelium_vein_early_artery: posterior cardinal vein (9) vs compound organ (19)  -> fraction 0.47
+- retinal_pigmented_epithelium_late: retinal pigmented epithelium (8) vs portion of tissue (16)  -> fraction 0.50
+- neurons_differentiating_contains_peripheral: telencephalon (11) vs nervous system (21)  -> fraction 0.52
+- neuron_spinal_cord: telencephalon (12) vs cavitated compound organ (22)  -> fraction 0.55
+- fin_bud_mesoderm_pectoral: fin (9) vs organism subdivision (16)  -> fraction 0.56
+- neuron_dopaminergic: telencephalon (13) vs nervous system (22)  -> fraction 0.59
+- retinal_neuron: telencephalon (13) vs nervous system (22)  -> fraction 0.59
+- hatching_gland: epidermis (12) vs surface structure (20)  -> fraction 0.60
+- neuron_cranial_ganglion: diencephalon (12) vs cavitated compound organ (20)  -> fraction 0.60
 
 ## Failure gallery (scored disagreements)
 - hatching_gland: gold Hatching Gland, predicted 'epidermis' (named)
-- neuron_cranial_ganglia_sensory_rohon_beard: gold Peripheral Nervous System, predicted 'forebrain' (named)
+- neuron_cranial_ganglia_sensory_rohon_beard: gold Peripheral Nervous System, predicted 'brain' (named)
 - neuron_cranial_ganglion: gold Peripheral Nervous System, predicted 'diencephalon' (named)
 - retinal_neuron: gold Eye, predicted 'telencephalon' (named)
 - unknown_dcn_col6: gold Cranial Muscle (Late), predicted 'mesenchyme' (named)
