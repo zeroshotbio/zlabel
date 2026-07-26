@@ -16,7 +16,11 @@
       "Bash(gh *)"
     ],
     "deny": [
-      "Write(./.env)"
+      "Read(.env)",
+      "Read(.env.*)",
+      "Edit(.env)",
+      "Edit(.env.*)",
+      "Edit(data/**)"
     ]
   },
   "attribution": {

@@ -24,7 +24,8 @@ words — not verbose prose.
 ## Harness wiring
 
 - [`.claude/settings.json`](.claude/settings.json) — pre-approved tools (`uv`,
-  `git`, `gh`, `make`) and an `.env` read/write deny.
+  `git`, `gh`, `make`), an `.env` read/write deny, and an edit deny on `data/**`
+  (gitignored ontology downloads).
 
 ## Authoritative design
 
